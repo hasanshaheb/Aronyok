@@ -7,6 +7,7 @@ import Footer from "../components/layout/Footer";
 import AdBanner from "../components/layout/AdBanner";
 import CartDrawer from "../components/storefront/CartDrawer";
 import FloatingAssistant from "../components/ai/FloatingAssistant";
+import { Analytics } from "@vercel/analytics/react";
 
 export const metadata: Metadata = {
   title: "Aronyok (অরণ্যক) | Pure Living, Herbs & Eco Store",
@@ -33,6 +34,7 @@ export default function RootLayout({
             <Footer />
             <CartDrawer />
             <FloatingAssistant />
+            <Analytics />
           </CartProvider>
         </LanguageProvider>
       </body>
