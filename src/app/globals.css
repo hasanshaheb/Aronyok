@@ -1,0 +1,64 @@
+@import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #fdfbf7;
+  --foreground: #1c241e;
+  --card: #ffffff;
+  --card-foreground: #1c241e;
+  --popover: #ffffff;
+  --popover-foreground: #1c241e;
+  --primary: #2d6a4f;
+  --primary-foreground: #ffffff;
+  --secondary: #ede7d8;
+  --secondary-foreground: #1c241e;
+  --muted: #f4f1ea;
+  --muted-foreground: #5e6b62;
+  --accent: #40916c;
+  --accent-foreground: #ffffff;
+  --destructive: #dc2626;
+  --destructive-foreground: #ffffff;
+  --border: #e6dfd1;
+  --input: #e6dfd1;
+  --ring: #2d6a4f;
+  --radius: 1rem;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  overflow-x: hidden;
+}
+
+.font-bengali {
+  font-family: 'Hind Siliguri', 'Plus Jakarta Sans', system-ui, sans-serif;
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #f4f1ea;
+}
+::-webkit-scrollbar-thumb {
+  background: #c7a57a;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #936639;
+}
+
+/* Hide scrollbar for category bars */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
