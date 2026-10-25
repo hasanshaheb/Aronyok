@@ -14,16 +14,13 @@ export default function BlogIndexPage() {
 
   useEffect(() => {
     async function loadBlogs() {
-      if (!isSupabaseConfigured || !supabase) return;
       try {
-        const { data } = await supabase
-          .from("blog_posts")
-          .select("*")
-          .eq("status", "published")
-          .order("created_at", { ascending: false });
-
-        if (data && data.length > 0) {
-          setPosts(data);
+        const res = await fetch("/api/admin/data?entity=blogs");
+        if (res.ok) {
+          const data = await res.json();
+          if (Array.isArray(data) && data.length > 0) {
+            setPosts(data.filter((b: any) => b.status === "published"));
+          }
         }
       } catch (err) {
         console.warn("Using fallback blogs:", err);

@@ -2,27 +2,29 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { Wrench, CheckCircle, XCircle, ExternalLink, Sparkles } from "lucide-react";
+import { Sparkles, ExternalLink, RefreshCw, CheckCircle } from "lucide-react";
 import { fallbackTools } from "../../../lib/supabase/fallback-data";
-import { isSupabaseConfigured, supabase } from "../../../lib/supabase/client";
 import { ToolMicroApp } from "../../../lib/types";
 
 export default function AdminToolsPage() {
   const [tools, setTools] = useState<ToolMicroApp[]>(fallbackTools);
+  const [isLoading, setIsLoading] = useState(false);
+  const [notification, setNotification] = useState("");
 
   const loadTools = async () => {
-    if (!isSupabaseConfigured || !supabase) return;
+    setIsLoading(true);
     try {
-      const { data } = await supabase
-        .from("tools")
-        .select("*")
-        .order("created_at", { ascending: true });
-
-      if (data && data.length > 0) {
-        setTools(data);
+      const res = await fetch("/api/admin/data?entity=tools");
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data) && data.length > 0) {
+          setTools(data);
+        }
       }
     } catch (err) {
-      console.warn("Using fallback tools:", err);
+      console.warn("Using local cache:", err);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -32,16 +34,20 @@ export default function AdminToolsPage() {
 
   const toggleToolActive = async (tool: ToolMicroApp) => {
     const updated = !tool.is_active;
-    if (isSupabaseConfigured && supabase) {
-      await supabase
-        .from("tools")
-        .update({ is_active: updated })
-        .eq("id", tool.id);
-      await loadTools();
-    } else {
-      setTools((prev) =>
-        prev.map((t) => (t.id === tool.id ? { ...t, is_active: updated } : t))
-      );
+    try {
+      const res = await fetch("/api/admin/data?entity=tools", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: tool.id, is_active: updated }),
+      });
+      const result = await res.json();
+      if (result.items) {
+        setTools(result.items);
+      }
+      setNotification(`${tool.tool_name} is now ${updated ? "active" : "disabled"}!`);
+      setTimeout(() => setNotification(""), 3000);
+    } catch {
+      setTools(prev => prev.map(t => t.id === tool.id ? { ...t, is_active: updated } : t));
     }
   };
 
@@ -56,7 +62,22 @@ export default function AdminToolsPage() {
             Activate or deactivate interactive widgets and preview front-end calculators
           </p>
         </div>
+
+        <button
+          onClick={loadTools}
+          className="p-2.5 rounded-xl border border-forest-200 bg-white hover:bg-forest-50 text-forest-700 transition-colors shadow-xs"
+          title="Refresh Tools"
+        >
+          <RefreshCw className={`w-4 h-4 ${isLoading ? "animate-spin" : ""}`} />
+        </button>
       </div>
+
+      {notification && (
+        <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-xs font-bold text-emerald-800 flex items-center gap-2 animate-in fade-in">
+          <CheckCircle className="w-4 h-4" />
+          <span>{notification}</span>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {tools.map((tool) => (

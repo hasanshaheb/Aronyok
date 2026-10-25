@@ -2,10 +2,9 @@
 
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
-import { Plus, Edit2, Trash2, Check, X, Search, Package } from "lucide-react";
+import { Plus, Edit2, Trash2, Search, CheckCircle, RefreshCw } from "lucide-react";
 import DualLangInput from "../../../components/admin/DualLangInput";
 import { fallbackProducts } from "../../../lib/supabase/fallback-data";
-import { isSupabaseConfigured, supabase } from "../../../lib/supabase/client";
 import { Product } from "../../../lib/types";
 import { slugify } from "../../../lib/utils";
 
@@ -14,8 +13,9 @@ export default function AdminProductsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [search, setSearch] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [notification, setNotification] = useState("");
 
-  // Form state
   const [form, setForm] = useState({
     name: { en: "", bn: "" },
     slug: "",
@@ -31,18 +31,19 @@ export default function AdminProductsPage() {
   });
 
   const loadProducts = async () => {
-    if (!isSupabaseConfigured || !supabase) return;
+    setIsLoading(true);
     try {
-      const { data } = await supabase
-        .from("products")
-        .select("*")
-        .order("created_at", { ascending: false });
-
-      if (data && data.length > 0) {
-        setProducts(data);
+      const res = await fetch("/api/admin/data?entity=products");
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data) && data.length > 0) {
+          setProducts(data);
+        }
       }
     } catch (err) {
-      console.warn("Using fallback products:", err);
+      console.warn("Using local cache:", err);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -90,7 +91,7 @@ export default function AdminProductsPage() {
     e.preventDefault();
     const finalSlug = form.slug || slugify(form.name.en || form.name.bn);
 
-    const productPayload = {
+    const productPayload: any = {
       name: form.name,
       slug: finalSlug,
       description: form.description,
@@ -105,34 +106,28 @@ export default function AdminProductsPage() {
     };
 
     if (editingProduct) {
-      // Update in Supabase or local
-      if (isSupabaseConfigured && supabase) {
-        await supabase
-          .from("products")
-          .update(productPayload)
-          .eq("id", editingProduct.id);
-        await loadProducts();
-      } else {
-        setProducts((prev) =>
-          prev.map((item) =>
-            item.id === editingProduct.id
-              ? { ...item, ...productPayload }
-              : item
-          )
-        );
+      productPayload.id = editingProduct.id;
+    }
+
+    try {
+      const res = await fetch("/api/admin/data?entity=products", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(productPayload),
+      });
+
+      const result = await res.json();
+      if (result.items) {
+        setProducts(result.items);
       }
-    } else {
-      // Create new
-      if (isSupabaseConfigured && supabase) {
-        await supabase.from("products").insert(productPayload);
-        await loadProducts();
+      setNotification(editingProduct ? "Product updated successfully!" : "Product added successfully!");
+      setTimeout(() => setNotification(""), 3000);
+    } catch {
+      // Optimistic local update
+      if (editingProduct) {
+        setProducts(prev => prev.map(p => p.id === editingProduct.id ? { ...p, ...productPayload } : p));
       } else {
-        const newProd: Product = {
-          id: `prod-${Date.now()}`,
-          ...productPayload,
-          compare_at_price: productPayload.compare_at_price ?? undefined,
-        };
-        setProducts((prev) => [newProd, ...prev]);
+        setProducts(prev => [{ ...productPayload, id: `prod-${Date.now()}` }, ...prev]);
       }
     }
 
@@ -141,28 +136,35 @@ export default function AdminProductsPage() {
 
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to remove this product?")) return;
-    if (isSupabaseConfigured && supabase) {
-      await supabase.from("products").delete().eq("id", id);
-      await loadProducts();
-    } else {
-      setProducts((prev) => prev.filter((p) => p.id !== id));
+    try {
+      const res = await fetch(`/api/admin/data?entity=products&id=${id}`, {
+        method: "DELETE",
+      });
+      const result = await res.json();
+      if (result.items) {
+        setProducts(result.items);
+      }
+      setNotification("Product deleted successfully!");
+      setTimeout(() => setNotification(""), 3000);
+    } catch {
+      setProducts(prev => prev.filter(p => p.id !== id));
     }
   };
 
   const toggleActive = async (p: Product) => {
     const updatedStatus = !p.is_active;
-    if (isSupabaseConfigured && supabase) {
-      await supabase
-        .from("products")
-        .update({ is_active: updatedStatus })
-        .eq("id", p.id);
-      await loadProducts();
-    } else {
-      setProducts((prev) =>
-        prev.map((item) =>
-          item.id === p.id ? { ...item, is_active: updatedStatus } : item
-        )
-      );
+    try {
+      const res = await fetch("/api/admin/data?entity=products", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: p.id, is_active: updatedStatus }),
+      });
+      const result = await res.json();
+      if (result.items) {
+        setProducts(result.items);
+      }
+    } catch {
+      setProducts(prev => prev.map(item => item.id === p.id ? { ...item, is_active: updatedStatus } : item));
     }
   };
 
@@ -175,7 +177,6 @@ export default function AdminProductsPage() {
 
   return (
     <div className="space-y-6">
-      {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-extrabold text-forest-950 tracking-tight">
@@ -186,14 +187,30 @@ export default function AdminProductsPage() {
           </p>
         </div>
 
-        <button
-          onClick={openCreateModal}
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-forest-700 hover:bg-forest-800 text-white text-xs font-bold shadow-md transition-colors"
-        >
-          <Plus className="w-4 h-4" />
-          <span>Add New Product</span>
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={loadProducts}
+            className="p-2.5 rounded-xl border border-forest-200 bg-white hover:bg-forest-50 text-forest-700 transition-colors shadow-xs"
+            title="Refresh Products"
+          >
+            <RefreshCw className={`w-4 h-4 ${isLoading ? "animate-spin" : ""}`} />
+          </button>
+          <button
+            onClick={openCreateModal}
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-forest-700 hover:bg-forest-800 text-white text-xs font-bold shadow-md transition-colors"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Add New Product</span>
+          </button>
+        </div>
       </div>
+
+      {notification && (
+        <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-xs font-bold text-emerald-800 flex items-center gap-2 animate-in fade-in">
+          <CheckCircle className="w-4 h-4" />
+          <span>{notification}</span>
+        </div>
+      )}
 
       {/* Filter / Search */}
       <div className="relative max-w-sm">
@@ -249,10 +266,10 @@ export default function AdminProductsPage() {
                   <td className="py-3 px-5">
                     <button
                       onClick={() => toggleActive(product)}
-                      className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${
+                      className={`px-2.5 py-1 rounded-full text-[10px] font-bold transition-all ${
                         product.is_active
-                          ? "bg-emerald-100 text-emerald-800"
-                          : "bg-stone-200 text-stone-700"
+                          ? "bg-emerald-100 text-emerald-800 hover:bg-emerald-200"
+                          : "bg-stone-200 text-stone-700 hover:bg-stone-300"
                       }`}
                     >
                       {product.is_active ? "Active" : "Inactive"}
@@ -281,7 +298,7 @@ export default function AdminProductsPage() {
         </div>
       </div>
 
-      {/* Create / Edit Modal with Explicit Dual Inputs */}
+      {/* Create / Edit Modal with Dual Inputs */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-forest-950/40 backdrop-blur-sm overflow-y-auto">
           <div className="w-full max-w-2xl bg-white rounded-3xl border border-forest-100 shadow-2xl p-6 sm:p-8 space-y-6 my-8 max-h-[90vh] overflow-y-auto">
@@ -293,12 +310,11 @@ export default function AdminProductsPage() {
                 onClick={() => setIsModalOpen(false)}
                 className="p-1.5 text-stone-400 hover:text-stone-900 rounded-lg hover:bg-stone-100"
               >
-                <X className="w-5 h-5" />
+                ✕
               </button>
             </div>
 
             <form onSubmit={handleSaveProduct} className="space-y-4">
-              {/* Dual Input: Product Name */}
               <DualLangInput
                 label="Product Name"
                 required
@@ -308,7 +324,6 @@ export default function AdminProductsPage() {
                 placeholderBn="যেমন: সুন্দরবনের প্রাকৃতিক চাকভাঙা খাঁটি মধু (৫০০ গ্রাম)"
               />
 
-              {/* Slug */}
               <div>
                 <label className="block text-xs font-bold text-forest-900 mb-1">
                   URL Slug (auto-generated if empty)
@@ -322,7 +337,6 @@ export default function AdminProductsPage() {
                 />
               </div>
 
-              {/* Dual Input: Description */}
               <DualLangInput
                 label="Detailed Description"
                 type="textarea"
@@ -333,7 +347,6 @@ export default function AdminProductsPage() {
                 placeholderBn="ভেষজ সংগ্রহ, উপকারিতা ও ব্যবহারের নিয়ম ব্যাখ্যা করুন..."
               />
 
-              {/* Price, Compare Price, Category, Stock */}
               <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
                 <div>
                   <label className="block text-xs font-bold text-forest-900 mb-1">
@@ -395,7 +408,6 @@ export default function AdminProductsPage() {
                 </div>
               </div>
 
-              {/* Image URL */}
               <div>
                 <label className="block text-xs font-bold text-forest-900 mb-1">
                   Product Image URL
@@ -409,7 +421,6 @@ export default function AdminProductsPage() {
                 />
               </div>
 
-              {/* Dual SEO Fields */}
               <div className="pt-2 border-t border-forest-100">
                 <DualLangInput
                   label="SEO Meta Title"
@@ -420,7 +431,6 @@ export default function AdminProductsPage() {
                 />
               </div>
 
-              {/* Modal Actions */}
               <div className="pt-4 border-t border-forest-100 flex items-center justify-end gap-3">
                 <button
                   type="button"

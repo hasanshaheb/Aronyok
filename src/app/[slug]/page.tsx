@@ -19,26 +19,23 @@ export default function DynamicPageRoute() {
   useEffect(() => {
     async function loadPage() {
       setIsLoading(true);
-      // Check fallback first
-      const found = fallbackDynamicPages.find((p) => p.slug === slug);
-      if (found) setPage(found);
-
-      if (isSupabaseConfigured && supabase) {
-        try {
-          const { data } = await supabase
-            .from("dynamic_pages")
-            .select("*")
-            .eq("slug", slug)
-            .eq("is_published", true)
-            .single();
-
-          if (data) {
-            setPage(data);
+      try {
+        const res = await fetch("/api/admin/data?entity=pages");
+        if (res.ok) {
+          const pages = await res.json();
+          if (Array.isArray(pages)) {
+            const found = pages.find((p: any) => p.slug === slug && p.is_published);
+            if (found) {
+              setPage(found);
+              setIsLoading(false);
+              return;
+            }
           }
-        } catch {
-          // fallback
         }
-      }
+      } catch {}
+
+      const foundFallback = fallbackDynamicPages.find((p) => p.slug === slug);
+      if (foundFallback) setPage(foundFallback);
       setIsLoading(false);
     }
     loadPage();

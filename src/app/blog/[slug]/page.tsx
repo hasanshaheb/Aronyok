@@ -17,22 +17,22 @@ export default function SingleBlogPostPage() {
 
   useEffect(() => {
     async function loadPost() {
-      const found = fallbackBlogPosts.find((b) => b.slug === slug);
-      if (found) setPost(found);
-
-      if (isSupabaseConfigured && supabase) {
-        try {
-          const { data } = await supabase
-            .from("blog_posts")
-            .select("*")
-            .eq("slug", slug)
-            .single();
-
-          if (data) setPost(data);
-        } catch {
-          // fallback
+      try {
+        const res = await fetch("/api/admin/data?entity=blogs");
+        if (res.ok) {
+          const blogs = await res.json();
+          if (Array.isArray(blogs)) {
+            const found = blogs.find((b: any) => b.slug === slug);
+            if (found) {
+              setPost(found);
+              return;
+            }
+          }
         }
-      }
+      } catch {}
+
+      const foundFallback = fallbackBlogPosts.find((b) => b.slug === slug);
+      if (foundFallback) setPost(foundFallback);
     }
     loadPost();
   }, [slug]);

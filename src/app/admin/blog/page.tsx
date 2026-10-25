@@ -1,10 +1,9 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Plus, Edit2, Trash2, BookOpen, X, Search } from "lucide-react";
+import { Plus, Edit2, Trash2, Search, CheckCircle, RefreshCw } from "lucide-react";
 import DualLangInput from "../../../components/admin/DualLangInput";
 import { fallbackBlogPosts } from "../../../lib/supabase/fallback-data";
-import { isSupabaseConfigured, supabase } from "../../../lib/supabase/client";
 import { BlogPost } from "../../../lib/types";
 import { slugify } from "../../../lib/utils";
 
@@ -13,6 +12,8 @@ export default function AdminBlogPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingPost, setEditingPost] = useState<BlogPost | null>(null);
   const [search, setSearch] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [notification, setNotification] = useState("");
 
   const [form, setForm] = useState({
     title: { en: "", bn: "" },
@@ -26,18 +27,19 @@ export default function AdminBlogPage() {
   });
 
   const loadBlogs = async () => {
-    if (!isSupabaseConfigured || !supabase) return;
+    setIsLoading(true);
     try {
-      const { data } = await supabase
-        .from("blog_posts")
-        .select("*")
-        .order("created_at", { ascending: false });
-
-      if (data && data.length > 0) {
-        setPosts(data);
+      const res = await fetch("/api/admin/data?entity=blogs");
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data) && data.length > 0) {
+          setPosts(data);
+        }
       }
     } catch (err) {
-      console.warn("Using fallback blogs:", err);
+      console.warn("Using local cache:", err);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -79,7 +81,7 @@ export default function AdminBlogPage() {
     e.preventDefault();
     const finalSlug = form.slug || slugify(form.title.en || form.title.bn);
 
-    const payload = {
+    const payload: any = {
       title: form.title,
       slug: finalSlug,
       excerpt: form.excerpt,
@@ -91,29 +93,27 @@ export default function AdminBlogPage() {
     };
 
     if (editingPost) {
-      if (isSupabaseConfigured && supabase) {
-        await supabase
-          .from("blog_posts")
-          .update(payload)
-          .eq("id", editingPost.id);
-        await loadBlogs();
-      } else {
-        setPosts((prev) =>
-          prev.map((item) =>
-            item.id === editingPost.id ? { ...item, ...payload } : item
-          )
-        );
+      payload.id = editingPost.id;
+    }
+
+    try {
+      const res = await fetch("/api/admin/data?entity=blogs", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const result = await res.json();
+      if (result.items) {
+        setPosts(result.items);
       }
-    } else {
-      if (isSupabaseConfigured && supabase) {
-        await supabase.from("blog_posts").insert(payload);
-        await loadBlogs();
+      setNotification(editingPost ? "Article updated successfully!" : "Article published successfully!");
+      setTimeout(() => setNotification(""), 3000);
+    } catch {
+      if (editingPost) {
+        setPosts(prev => prev.map(item => item.id === editingPost.id ? { ...item, ...payload } : item));
       } else {
-        const newPost: BlogPost = {
-          id: `blog-${Date.now()}`,
-          ...payload,
-        };
-        setPosts((prev) => [newPost, ...prev]);
+        setPosts(prev => [{ ...payload, id: `blog-${Date.now()}` }, ...prev]);
       }
     }
 
@@ -122,28 +122,35 @@ export default function AdminBlogPage() {
 
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to delete this article?")) return;
-    if (isSupabaseConfigured && supabase) {
-      await supabase.from("blog_posts").delete().eq("id", id);
-      await loadBlogs();
-    } else {
-      setPosts((prev) => prev.filter((p) => p.id !== id));
+    try {
+      const res = await fetch(`/api/admin/data?entity=blogs&id=${id}`, {
+        method: "DELETE",
+      });
+      const result = await res.json();
+      if (result.items) {
+        setPosts(result.items);
+      }
+      setNotification("Article deleted successfully!");
+      setTimeout(() => setNotification(""), 3000);
+    } catch {
+      setPosts(prev => prev.filter(p => p.id !== id));
     }
   };
 
   const toggleStatus = async (b: BlogPost) => {
     const updatedStatus = b.status === "published" ? "draft" : "published";
-    if (isSupabaseConfigured && supabase) {
-      await supabase
-        .from("blog_posts")
-        .update({ status: updatedStatus })
-        .eq("id", b.id);
-      await loadBlogs();
-    } else {
-      setPosts((prev) =>
-        prev.map((item) =>
-          item.id === b.id ? { ...item, status: updatedStatus } : item
-        )
-      );
+    try {
+      const res = await fetch("/api/admin/data?entity=blogs", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: b.id, status: updatedStatus }),
+      });
+      const result = await res.json();
+      if (result.items) {
+        setPosts(result.items);
+      }
+    } catch {
+      setPosts(prev => prev.map(item => item.id === b.id ? { ...item, status: updatedStatus } : item));
     }
   };
 
@@ -165,14 +172,30 @@ export default function AdminBlogPage() {
           </p>
         </div>
 
-        <button
-          onClick={openCreateModal}
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-forest-700 hover:bg-forest-800 text-white text-xs font-bold shadow-md transition-colors"
-        >
-          <Plus className="w-4 h-4" />
-          <span>Write New Article</span>
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={loadBlogs}
+            className="p-2.5 rounded-xl border border-forest-200 bg-white hover:bg-forest-50 text-forest-700 transition-colors shadow-xs"
+            title="Refresh Articles"
+          >
+            <RefreshCw className={`w-4 h-4 ${isLoading ? "animate-spin" : ""}`} />
+          </button>
+          <button
+            onClick={openCreateModal}
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-forest-700 hover:bg-forest-800 text-white text-xs font-bold shadow-md transition-colors"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Write New Article</span>
+          </button>
+        </div>
       </div>
+
+      {notification && (
+        <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-xs font-bold text-emerald-800 flex items-center gap-2 animate-in fade-in">
+          <CheckCircle className="w-4 h-4" />
+          <span>{notification}</span>
+        </div>
+      )}
 
       <div className="relative max-w-sm">
         <Search className="w-4 h-4 absolute left-3.5 top-3 text-stone-400" />
@@ -211,10 +234,10 @@ export default function AdminBlogPage() {
                   <td className="py-3 px-5">
                     <button
                       onClick={() => toggleStatus(post)}
-                      className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${
+                      className={`px-2.5 py-1 rounded-full text-[10px] font-bold transition-all ${
                         post.status === "published"
-                          ? "bg-emerald-100 text-emerald-800"
-                          : "bg-amber-100 text-amber-800"
+                          ? "bg-emerald-100 text-emerald-800 hover:bg-emerald-200"
+                          : "bg-amber-100 text-amber-800 hover:bg-amber-200"
                       }`}
                     >
                       {post.status}
@@ -255,7 +278,7 @@ export default function AdminBlogPage() {
                 onClick={() => setIsModalOpen(false)}
                 className="p-1.5 text-stone-400 hover:text-stone-900 rounded-lg hover:bg-stone-100"
               >
-                <X className="w-5 h-5" />
+                ✕
               </button>
             </div>
 

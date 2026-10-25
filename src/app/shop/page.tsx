@@ -18,16 +18,13 @@ export default function ShopPage() {
 
   useEffect(() => {
     async function loadProducts() {
-      if (!isSupabaseConfigured || !supabase) return;
       try {
-        const { data } = await supabase
-          .from("products")
-          .select("*")
-          .eq("is_active", true)
-          .order("created_at", { ascending: false });
-
-        if (data && data.length > 0) {
-          setProducts(data);
+        const res = await fetch("/api/admin/data?entity=products");
+        if (res.ok) {
+          const data = await res.json();
+          if (Array.isArray(data) && data.length > 0) {
+            setProducts(data.filter((p: any) => p.is_active));
+          }
         }
       } catch (err) {
         console.warn("Using fallback products:", err);

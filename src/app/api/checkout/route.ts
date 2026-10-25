@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSupabase } from "@/lib/supabase/server";
+import { runtimeStore } from "@/lib/runtime-store";
 
 export async function POST(req: NextRequest) {
   try {
@@ -91,6 +92,23 @@ export async function POST(req: NextRequest) {
         status: "Redirecting to SSLCommerz Gateway session",
       };
     }
+
+    // Add to active runtime store so admin orders table immediately updates
+    runtimeStore.addOrder({
+      id: orderId,
+      order_number: orderNumber,
+      customer_name,
+      customer_email,
+      customer_phone,
+      shipping_address,
+      city,
+      total_amount,
+      payment_method,
+      payment_status: "pending",
+      order_status: "processing",
+      notes,
+      created_at: new Date().toISOString(),
+    });
 
     return NextResponse.json({
       success: true,

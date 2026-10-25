@@ -67,26 +67,37 @@ export default function AdminDashboardPage() {
 
   useEffect(() => {
     async function loadStats() {
-      if (!isSupabaseConfigured || !supabase) return;
       try {
         const [pRes, bRes, pgRes, oRes] = await Promise.all([
-          supabase.from("products").select("id", { count: "exact", head: true }),
-          supabase.from("blog_posts").select("id", { count: "exact", head: true }),
-          supabase.from("dynamic_pages").select("id", { count: "exact", head: true }),
-          supabase.from("orders").select("*").limit(5).order("created_at", { ascending: false }),
+          fetch("/api/admin/data?entity=products"),
+          fetch("/api/admin/data?entity=blogs"),
+          fetch("/api/admin/data?entity=pages"),
+          fetch("/api/admin/data?entity=orders"),
         ]);
 
-        setStats((prev) => ({
-          ...prev,
-          products: pRes.count ?? prev.products,
-          blogs: bRes.count ?? prev.blogs,
-          pages: pgRes.count ?? prev.pages,
-          orders: oRes.data?.length ? oRes.data.length + 8 : prev.orders,
-        }));
+        const [prods, blogs, pages, orders] = await Promise.all([
+          pRes.ok ? pRes.json() : [],
+          bRes.ok ? bRes.json() : [],
+          pgRes.ok ? pgRes.json() : [],
+          oRes.ok ? oRes.json() : [],
+        ]);
 
-        if (oRes.data && oRes.data.length > 0) {
+        const totalRev = Array.isArray(orders)
+          ? orders.reduce((sum: number, o: any) => sum + Number(o.total_amount || 0), 0)
+          : 14850;
+
+        setStats({
+          products: Array.isArray(prods) ? prods.length : fallbackProducts.length,
+          blogs: Array.isArray(blogs) ? blogs.length : fallbackBlogPosts.length,
+          pages: Array.isArray(pages) ? pages.length : fallbackDynamicPages.length,
+          tools: fallbackTools.length,
+          orders: Array.isArray(orders) ? orders.length : 12,
+          revenue: totalRev,
+        });
+
+        if (Array.isArray(orders) && orders.length > 0) {
           setRecentOrders(
-            oRes.data.map((o: any) => ({
+            orders.slice(0, 5).map((o: any) => ({
               id: o.id,
               number: o.order_number,
               customer: o.customer_name,
@@ -94,7 +105,7 @@ export default function AdminDashboardPage() {
               amount: Number(o.total_amount),
               payment: o.payment_method,
               status: o.order_status,
-              time: "Just now",
+              time: "Recent",
             }))
           );
         }

@@ -1,11 +1,10 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Plus, Edit2, Trash2, FileText, X, ExternalLink } from "lucide-react";
+import { Plus, Edit2, Trash2, ExternalLink, CheckCircle, RefreshCw } from "lucide-react";
 import Link from "next/link";
 import DualLangInput from "../../../components/admin/DualLangInput";
 import { fallbackDynamicPages } from "../../../lib/supabase/fallback-data";
-import { isSupabaseConfigured, supabase } from "../../../lib/supabase/client";
 import { DynamicPage } from "../../../lib/types";
 import { slugify } from "../../../lib/utils";
 
@@ -13,6 +12,8 @@ export default function AdminDynamicPagesPage() {
   const [pages, setPages] = useState<DynamicPage[]>(fallbackDynamicPages);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingPage, setEditingPage] = useState<DynamicPage | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [notification, setNotification] = useState("");
 
   const [form, setForm] = useState({
     page_title: { en: "", bn: "" },
@@ -24,18 +25,19 @@ export default function AdminDynamicPagesPage() {
   });
 
   const loadPages = async () => {
-    if (!isSupabaseConfigured || !supabase) return;
+    setIsLoading(true);
     try {
-      const { data } = await supabase
-        .from("dynamic_pages")
-        .select("*")
-        .order("created_at", { ascending: false });
-
-      if (data && data.length > 0) {
-        setPages(data);
+      const res = await fetch("/api/admin/data?entity=pages");
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data) && data.length > 0) {
+          setPages(data);
+        }
       }
     } catch (err) {
-      console.warn("Using fallback pages:", err);
+      console.warn("Using local cache:", err);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -73,7 +75,7 @@ export default function AdminDynamicPagesPage() {
     e.preventDefault();
     const finalSlug = form.slug || slugify(form.page_title.en || form.page_title.bn);
 
-    const payload = {
+    const payload: any = {
       page_title: form.page_title,
       slug: finalSlug,
       page_content: form.page_content,
@@ -83,29 +85,27 @@ export default function AdminDynamicPagesPage() {
     };
 
     if (editingPage) {
-      if (isSupabaseConfigured && supabase) {
-        await supabase
-          .from("dynamic_pages")
-          .update(payload)
-          .eq("id", editingPage.id);
-        await loadPages();
-      } else {
-        setPages((prev) =>
-          prev.map((item) =>
-            item.id === editingPage.id ? { ...item, ...payload } : item
-          )
-        );
+      payload.id = editingPage.id;
+    }
+
+    try {
+      const res = await fetch("/api/admin/data?entity=pages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const result = await res.json();
+      if (result.items) {
+        setPages(result.items);
       }
-    } else {
-      if (isSupabaseConfigured && supabase) {
-        await supabase.from("dynamic_pages").insert(payload);
-        await loadPages();
+      setNotification(editingPage ? "Page updated successfully!" : "Page created successfully!");
+      setTimeout(() => setNotification(""), 3000);
+    } catch {
+      if (editingPage) {
+        setPages(prev => prev.map(item => item.id === editingPage.id ? { ...item, ...payload } : item));
       } else {
-        const newPage: DynamicPage = {
-          id: `page-${Date.now()}`,
-          ...payload,
-        };
-        setPages((prev) => [newPage, ...prev]);
+        setPages(prev => [{ ...payload, id: `page-${Date.now()}` }, ...prev]);
       }
     }
 
@@ -114,28 +114,35 @@ export default function AdminDynamicPagesPage() {
 
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to delete this custom page?")) return;
-    if (isSupabaseConfigured && supabase) {
-      await supabase.from("dynamic_pages").delete().eq("id", id);
-      await loadPages();
-    } else {
-      setPages((prev) => prev.filter((p) => p.id !== id));
+    try {
+      const res = await fetch(`/api/admin/data?entity=pages&id=${id}`, {
+        method: "DELETE",
+      });
+      const result = await res.json();
+      if (result.items) {
+        setPages(result.items);
+      }
+      setNotification("Page deleted successfully!");
+      setTimeout(() => setNotification(""), 3000);
+    } catch {
+      setPages(prev => prev.filter(p => p.id !== id));
     }
   };
 
   const togglePublished = async (p: DynamicPage) => {
     const updated = !p.is_published;
-    if (isSupabaseConfigured && supabase) {
-      await supabase
-        .from("dynamic_pages")
-        .update({ is_published: updated })
-        .eq("id", p.id);
-      await loadPages();
-    } else {
-      setPages((prev) =>
-        prev.map((item) =>
-          item.id === p.id ? { ...item, is_published: updated } : item
-        )
-      );
+    try {
+      const res = await fetch("/api/admin/data?entity=pages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: p.id, is_published: updated }),
+      });
+      const result = await res.json();
+      if (result.items) {
+        setPages(result.items);
+      }
+    } catch {
+      setPages(prev => prev.map(item => item.id === p.id ? { ...item, is_published: updated } : item));
     }
   };
 
@@ -151,14 +158,30 @@ export default function AdminDynamicPagesPage() {
           </p>
         </div>
 
-        <button
-          onClick={openCreateModal}
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-forest-700 hover:bg-forest-800 text-white text-xs font-bold shadow-md transition-colors"
-        >
-          <Plus className="w-4 h-4" />
-          <span>Create New Page</span>
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={loadPages}
+            className="p-2.5 rounded-xl border border-forest-200 bg-white hover:bg-forest-50 text-forest-700 transition-colors shadow-xs"
+            title="Refresh Pages"
+          >
+            <RefreshCw className={`w-4 h-4 ${isLoading ? "animate-spin" : ""}`} />
+          </button>
+          <button
+            onClick={openCreateModal}
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-forest-700 hover:bg-forest-800 text-white text-xs font-bold shadow-md transition-colors"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Create New Page</span>
+          </button>
+        </div>
       </div>
+
+      {notification && (
+        <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-xs font-bold text-emerald-800 flex items-center gap-2 animate-in fade-in">
+          <CheckCircle className="w-4 h-4" />
+          <span>{notification}</span>
+        </div>
+      )}
 
       <div className="bg-white rounded-3xl border border-forest-100 shadow-soft-sm overflow-hidden">
         <div className="overflow-x-auto">
@@ -186,10 +209,10 @@ export default function AdminDynamicPagesPage() {
                   <td className="py-3 px-5">
                     <button
                       onClick={() => togglePublished(p)}
-                      className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${
+                      className={`px-2.5 py-1 rounded-full text-[10px] font-bold transition-all ${
                         p.is_published
-                          ? "bg-emerald-100 text-emerald-800"
-                          : "bg-stone-200 text-stone-700"
+                          ? "bg-emerald-100 text-emerald-800 hover:bg-emerald-200"
+                          : "bg-stone-200 text-stone-700 hover:bg-stone-300"
                       }`}
                     >
                       {p.is_published ? "Published" : "Draft"}
@@ -238,7 +261,7 @@ export default function AdminDynamicPagesPage() {
                 onClick={() => setIsModalOpen(false)}
                 className="p-1.5 text-stone-400 hover:text-stone-900 rounded-lg hover:bg-stone-100"
               >
-                <X className="w-5 h-5" />
+                ✕
               </button>
             </div>
 

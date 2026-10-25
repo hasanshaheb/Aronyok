@@ -1,8 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { ShoppingBag, Search, Filter, CheckCircle2, Clock, AlertTriangle } from "lucide-react";
-import { isSupabaseConfigured, supabase } from "../../../lib/supabase/client";
+import { Search, RefreshCw, CheckCircle } from "lucide-react";
 
 interface AdminOrder {
   id: string;
@@ -20,72 +19,27 @@ interface AdminOrder {
   created_at?: string;
 }
 
-const INITIAL_ORDERS: AdminOrder[] = [
-  {
-    id: "ord-1",
-    order_number: "ARN-821942",
-    customer_name: "Farhan Ahmed",
-    customer_email: "farhan@example.com",
-    customer_phone: "01712345678",
-    shipping_address: "House 14, Road 5, Dhanmondi",
-    city: "Dhaka",
-    total_amount: 850,
-    payment_method: "bkash",
-    payment_status: "paid",
-    order_status: "confirmed",
-    notes: "Leave package at reception. TrxID: 9J87AK29L",
-    created_at: new Date(Date.now() - 1000 * 60 * 25).toISOString(),
-  },
-  {
-    id: "ord-2",
-    order_number: "ARN-821941",
-    customer_name: "Tasnim Rahman",
-    customer_email: "tasnim@example.com",
-    customer_phone: "01898765432",
-    shipping_address: "Sector 3, Uttara",
-    city: "Dhaka",
-    total_amount: 560,
-    payment_method: "cod",
-    payment_status: "pending",
-    order_status: "processing",
-    notes: "Call before dispatch",
-    created_at: new Date(Date.now() - 1000 * 60 * 60).toISOString(),
-  },
-  {
-    id: "ord-3",
-    order_number: "ARN-821940",
-    customer_name: "Kazi Nabil",
-    customer_email: "kazi@example.com",
-    customer_phone: "01911223344",
-    shipping_address: "GEC Circle, Nasirabad",
-    city: "Chittagong",
-    total_amount: 420,
-    payment_method: "stripe",
-    payment_status: "paid",
-    order_status: "confirmed",
-    notes: "Express packaging requested",
-    created_at: new Date(Date.now() - 1000 * 60 * 180).toISOString(),
-  },
-];
-
 export default function AdminOrdersPage() {
-  const [orders, setOrders] = useState<AdminOrder[]>(INITIAL_ORDERS);
+  const [orders, setOrders] = useState<AdminOrder[]>([]);
   const [filterMethod, setFilterMethod] = useState("all");
   const [search, setSearch] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [notification, setNotification] = useState("");
 
   const loadOrders = async () => {
-    if (!isSupabaseConfigured || !supabase) return;
+    setIsLoading(true);
     try {
-      const { data } = await supabase
-        .from("orders")
-        .select("*")
-        .order("created_at", { ascending: false });
-
-      if (data && data.length > 0) {
-        setOrders(data);
+      const res = await fetch("/api/admin/data?entity=orders");
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data)) {
+          setOrders(data);
+        }
       }
     } catch (err) {
-      console.warn("Using fallback orders:", err);
+      console.warn("Using local cache:", err);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -94,30 +48,38 @@ export default function AdminOrdersPage() {
   }, []);
 
   const updateOrderStatus = async (id: string, newStatus: string) => {
-    if (isSupabaseConfigured && supabase) {
-      await supabase
-        .from("orders")
-        .update({ order_status: newStatus })
-        .eq("id", id);
-      await loadOrders();
-    } else {
-      setOrders((prev) =>
-        prev.map((o) => (o.id === id ? { ...o, order_status: newStatus } : o))
-      );
+    try {
+      const res = await fetch("/api/admin/data?entity=orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, order_status: newStatus }),
+      });
+      const result = await res.json();
+      if (result.items) {
+        setOrders(result.items);
+      }
+      setNotification(`Order status updated to ${newStatus}`);
+      setTimeout(() => setNotification(""), 3000);
+    } catch {
+      setOrders(prev => prev.map(o => o.id === id ? { ...o, order_status: newStatus } : o));
     }
   };
 
   const updatePaymentStatus = async (id: string, newStatus: string) => {
-    if (isSupabaseConfigured && supabase) {
-      await supabase
-        .from("orders")
-        .update({ payment_status: newStatus })
-        .eq("id", id);
-      await loadOrders();
-    } else {
-      setOrders((prev) =>
-        prev.map((o) => (o.id === id ? { ...o, payment_status: newStatus } : o))
-      );
+    try {
+      const res = await fetch("/api/admin/data?entity=orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, payment_status: newStatus }),
+      });
+      const result = await res.json();
+      if (result.items) {
+        setOrders(result.items);
+      }
+      setNotification(`Payment status updated to ${newStatus}`);
+      setTimeout(() => setNotification(""), 3000);
+    } catch {
+      setOrders(prev => prev.map(o => o.id === id ? { ...o, payment_status: newStatus } : o));
     }
   };
 
@@ -142,7 +104,22 @@ export default function AdminOrdersPage() {
             Track customer transactions across Cash on Delivery, bKash, SSLCommerz, and Stripe
           </p>
         </div>
+
+        <button
+          onClick={loadOrders}
+          className="p-2.5 rounded-xl border border-forest-200 bg-white hover:bg-forest-50 text-forest-700 transition-colors shadow-xs"
+          title="Refresh Orders"
+        >
+          <RefreshCw className={`w-4 h-4 ${isLoading ? "animate-spin" : ""}`} />
+        </button>
       </div>
+
+      {notification && (
+        <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-xs font-bold text-emerald-800 flex items-center gap-2 animate-in fade-in">
+          <CheckCircle className="w-4 h-4" />
+          <span>{notification}</span>
+        </div>
+      )}
 
       {/* Filters */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-white p-4 rounded-2xl border border-forest-100 shadow-soft-sm">

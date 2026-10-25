@@ -34,27 +34,22 @@ export default function ProductDetailPage() {
 
   useEffect(() => {
     async function loadProduct() {
-      // Check fallback first
-      const foundFallback = fallbackProducts.find((p) => p.slug === slug);
-      if (foundFallback) {
-        setProduct(foundFallback);
-      }
-
-      if (isSupabaseConfigured && supabase) {
-        try {
-          const { data } = await supabase
-            .from("products")
-            .select("*")
-            .eq("slug", slug)
-            .single();
-
-          if (data) {
-            setProduct(data);
+      try {
+        const res = await fetch("/api/admin/data?entity=products");
+        if (res.ok) {
+          const prods = await res.json();
+          if (Array.isArray(prods)) {
+            const found = prods.find((p: any) => p.slug === slug);
+            if (found) {
+              setProduct(found);
+              return;
+            }
           }
-        } catch {
-          // Keep fallback
         }
-      }
+      } catch {}
+
+      const foundFallback = fallbackProducts.find((p) => p.slug === slug);
+      if (foundFallback) setProduct(foundFallback);
     }
     loadProduct();
   }, [slug]);

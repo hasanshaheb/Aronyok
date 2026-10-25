@@ -1,34 +1,32 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Save, Sparkles, Globe, Code, Megaphone, CheckCircle } from "lucide-react";
+import { Save, Sparkles, Globe, Code, Megaphone, CheckCircle, RefreshCw } from "lucide-react";
 import DualLangInput from "../../../components/admin/DualLangInput";
 import { fallbackSettings } from "../../../lib/supabase/fallback-data";
-import { isSupabaseConfigured, supabase } from "../../../lib/supabase/client";
 import { SiteSettings } from "../../../lib/types";
 
 export default function AdminSettingsPage() {
   const [settings, setSettings] = useState<SiteSettings>(fallbackSettings);
   const [isSaved, setIsSaved] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [syncedNotice, setSyncedNotice] = useState("");
 
-  useEffect(() => {
-    async function loadSettings() {
-      if (!isSupabaseConfigured || !supabase) return;
-      try {
-        const { data } = await supabase
-          .from("settings")
-          .select("*")
-          .limit(1)
-          .single();
-
-        if (data) {
+  const loadSettings = async () => {
+    try {
+      const res = await fetch("/api/admin/data?entity=settings");
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.global_seo_title) {
           setSettings(data);
         }
-      } catch (err) {
-        console.warn("Using fallback settings:", err);
       }
+    } catch (err) {
+      console.warn("Using local settings:", err);
     }
+  };
+
+  useEffect(() => {
     loadSettings();
   }, []);
 
@@ -37,25 +35,24 @@ export default function AdminSettingsPage() {
     setLoading(true);
 
     try {
-      if (isSupabaseConfigured && supabase) {
-        await supabase
-          .from("settings")
-          .upsert({
-            id: settings.id || "00000000-0000-0000-0000-000000000001",
-            global_seo_title: settings.global_seo_title,
-            global_seo_description: settings.global_seo_description,
-            analytics_script: settings.analytics_script,
-            ad_banner_top_html: settings.ad_banner_top_html,
-            ai_system_prompt: settings.ai_system_prompt,
-            contact_email: settings.contact_email,
-            contact_phone: settings.contact_phone,
-            updated_at: new Date().toISOString(),
-          });
+      const res = await fetch("/api/admin/data?entity=settings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(settings),
+      });
+
+      const result = await res.json();
+      if (result.settings) {
+        setSettings(result.settings);
       }
 
       setIsSaved(true);
-      setTimeout(() => setIsSaved(false), 3000);
-    } catch (err) {
+      setSyncedNotice(result.synced ? "Synced directly to Supabase cloud!" : "Saved to active runtime cache & AI assistant!");
+      setTimeout(() => {
+        setIsSaved(false);
+        setSyncedNotice("");
+      }, 4000);
+    } catch {
       alert("Failed to save settings. Please try again.");
     } finally {
       setLoading(false);
@@ -86,7 +83,7 @@ export default function AdminSettingsPage() {
         {isSaved && (
           <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-100 text-emerald-800 text-xs font-bold animate-in fade-in">
             <CheckCircle className="w-4 h-4" />
-            <span>Settings saved successfully!</span>
+            <span>{syncedNotice || "Settings saved successfully!"}</span>
           </div>
         )}
       </div>
@@ -128,7 +125,7 @@ export default function AdminSettingsPage() {
               className="w-full p-4 rounded-2xl bg-cream-50 border border-forest-200 text-xs sm:text-sm text-forest-950 focus:outline-none focus:ring-2 focus:ring-forest-600 leading-relaxed font-mono"
             />
             <p className="text-[11px] text-stone-400 mt-1.5">
-              💡 Tip: Tell the assistant which specific plants or promotions to recommend when customers ask for advice.
+              💡 Changes here immediately take effect for the floating AI assistant!
             </p>
           </div>
         </div>

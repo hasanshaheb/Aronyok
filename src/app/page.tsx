@@ -19,33 +19,25 @@ export default function HomePage() {
 
   useEffect(() => {
     async function fetchData() {
-      if (!isSupabaseConfigured || !supabase) return;
-
       try {
-        // Fetch active products
-        const { data: prodData } = await supabase
-          .from("products")
-          .select("*")
-          .eq("is_active", true)
-          .order("created_at", { ascending: false });
-
-        if (prodData && prodData.length > 0) {
-          setProducts(prodData);
+        const [prodRes, blogRes] = await Promise.all([
+          fetch("/api/admin/data?entity=products"),
+          fetch("/api/admin/data?entity=blogs"),
+        ]);
+        if (prodRes.ok) {
+          const prods = await prodRes.json();
+          if (Array.isArray(prods) && prods.length > 0) {
+            setProducts(prods.filter((p: any) => p.is_active));
+          }
         }
-
-        // Fetch published blog posts
-        const { data: blogData } = await supabase
-          .from("blog_posts")
-          .select("*")
-          .eq("status", "published")
-          .order("created_at", { ascending: false })
-          .limit(3);
-
-        if (blogData && blogData.length > 0) {
-          setBlogPosts(blogData);
+        if (blogRes.ok) {
+          const blogs = await blogRes.json();
+          if (Array.isArray(blogs) && blogs.length > 0) {
+            setBlogPosts(blogs.filter((b: any) => b.status === "published"));
+          }
         }
       } catch (err) {
-        console.warn("Using offline fallback data:", err);
+        console.warn("Using fallback data:", err);
       }
     }
 

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSupabase } from "@/lib/supabase/server";
 import { fallbackSettings } from "@/lib/supabase/fallback-data";
+import { runtimeStore } from "@/lib/runtime-store";
 
 // Fallback intelligent natural herbal answers for demo mode if no OpenRouter key is set
 function getBotanicalDemoResponse(query: string, lang: string): string {
@@ -52,8 +53,8 @@ export async function POST(req: NextRequest) {
 
     const latestUserMessage = messages[messages.length - 1]?.content || "";
 
-    // 1. Fetch dynamic system prompt from Supabase Settings or fallback
-    let systemPrompt = fallbackSettings.ai_system_prompt;
+    // 1. Fetch dynamic system prompt from runtime store or Supabase Settings
+    let systemPrompt = runtimeStore.getSettings().ai_system_prompt || fallbackSettings.ai_system_prompt;
     const supabase = getServerSupabase();
     if (supabase) {
       try {
