@@ -71,8 +71,13 @@ export async function POST(req: NextRequest) {
     }
 
     const openRouterApiKey = process.env.OPENROUTER_API_KEY;
-    const model =
-      process.env.OPENROUTER_MODEL || "meta-llama/llama-3.3-70b-instruct:free";
+    const candidateModels = [
+      process.env.OPENROUTER_MODEL,
+      "google/gemma-4-31b-it:free",
+      "google/gemma-4-26b-a4b-it:free",
+      "meta-llama/llama-3.3-70b-instruct:free",
+      "meta-llama/llama-3-8b-instruct:free",
+    ].filter(Boolean) as string[];
 
     // 2. If no API key configured or placeholder, use botanical demo engine
     if (
@@ -84,41 +89,49 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ reply: demoReply, source: "demo-fallback" });
     }
 
-    // 3. Make request to OpenRouter API
-    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${openRouterApiKey}`,
-        "Content-Type": "application/json",
-        "HTTP-Referer": process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000",
-        "X-Title": "Aronyok Nature Assistant",
-      },
-      body: JSON.stringify({
-        model: model,
-        messages: [
-          {
-            role: "system",
-            content: `${systemPrompt}\nCurrent UI Language: ${language}. Always maintain a calm, gentle, eco-conscious, and expert tone. Format with clear paragraphs or bullet points if helpful.`,
+    // 3. Attempt candidates in fallback sequence
+    let finalReply = "";
+    for (const modelCandidate of candidateModels) {
+      try {
+        const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${openRouterApiKey}`,
+            "Content-Type": "application/json",
+            "HTTP-Referer": process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000",
+            "X-Title": "Aronyok Nature Assistant",
           },
-          ...messages,
-        ],
-        temperature: 0.7,
-        max_tokens: 600,
-      }),
-    });
+          body: JSON.stringify({
+            model: modelCandidate,
+            messages: [
+              {
+                role: "system",
+                content: `${systemPrompt}\nCurrent UI Language: ${language}. Always maintain a calm, gentle, eco-conscious, and expert tone. Format with clear paragraphs or bullet points if helpful.`,
+              },
+              ...messages,
+            ],
+            temperature: 0.7,
+            max_tokens: 600,
+          }),
+        });
 
-    if (!response.ok) {
-      console.warn(`OpenRouter API returned ${response.status}. Falling back to botanical demo response.`);
-      const demoReply = getBotanicalDemoResponse(latestUserMessage, language);
-      return NextResponse.json({ reply: demoReply, source: "openrouter-fallback" });
+        if (response.ok) {
+          const data = await response.json();
+          if (data.choices?.[0]?.message?.content) {
+            finalReply = data.choices[0].message.content;
+            return NextResponse.json({ reply: finalReply, source: `openrouter:${modelCandidate}` });
+          }
+        } else {
+          console.warn(`OpenRouter candidate ${modelCandidate} returned status ${response.status}`);
+        }
+      } catch (err) {
+        console.warn(`Fetch error for ${modelCandidate}:`, err);
+      }
     }
 
-    const data = await response.json();
-    const reply =
-      data.choices?.[0]?.message?.content ||
-      getBotanicalDemoResponse(latestUserMessage, language);
-
-    return NextResponse.json({ reply, source: "openrouter" });
+    // If all upstream free models are temporarily rate-limited, serve intelligent botanical response
+    const demoReply = getBotanicalDemoResponse(latestUserMessage, language);
+    return NextResponse.json({ reply: demoReply, source: "botanical-fallback" });
   } catch (error) {
     console.error("Chat API error:", error);
     return NextResponse.json(
