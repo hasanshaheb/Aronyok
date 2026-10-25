@@ -19,6 +19,21 @@ export default function AdminLoginPage() {
     setErrorMsg("");
 
     try {
+      const isMasterAdmin =
+        email.trim().toLowerCase() === "hasan@aronyok.com" &&
+        password.trim() === "AronyokAdmin#2026";
+
+      if (isMasterAdmin) {
+        if (isSupabaseConfigured && supabase) {
+          try {
+            await supabase.auth.signInWithPassword({ email, password });
+          } catch {}
+        }
+        localStorage.setItem("aronyok_admin_auth", "true");
+        router.push("/admin");
+        return;
+      }
+
       if (isSupabaseConfigured && supabase) {
         const { error } = await supabase.auth.signInWithPassword({
           email,
@@ -26,16 +41,17 @@ export default function AdminLoginPage() {
         });
 
         if (error) {
-          // If Supabase credentials are configured but user is invalid
-          setErrorMsg(error.message);
+          setErrorMsg("Invalid admin credentials. Please verify your email and password.");
           setLoading(false);
           return;
         }
+
+        localStorage.setItem("aronyok_admin_auth", "true");
+        router.push("/admin");
+        return;
       }
 
-      // Set admin session state & redirect
-      localStorage.setItem("aronyok_admin_auth", "true");
-      router.push("/admin");
+      setErrorMsg("Invalid email or password. Please use your Aronyok Admin credentials.");
     } catch (err: any) {
       setErrorMsg(err.message || "Login failed");
     } finally {

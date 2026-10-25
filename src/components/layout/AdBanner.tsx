@@ -11,19 +11,29 @@ export default function AdBanner() {
 
   useEffect(() => {
     async function loadBanner() {
-      if (!isSupabaseConfigured) return;
       try {
-        const { data } = await supabase
-          .from("settings")
-          .select("ad_banner_top_html")
-          .limit(1)
-          .single();
-
-        if (data?.ad_banner_top_html) {
-          setBannerHtml(data.ad_banner_top_html);
+        const res = await fetch("/api/settings");
+        if (res.ok) {
+          const data = await res.json();
+          if (data?.ad_banner_top_html !== undefined) {
+            setBannerHtml(data.ad_banner_top_html);
+            return;
+          }
         }
-      } catch {
-        // Fallback is already loaded
+      } catch {}
+
+      if (isSupabaseConfigured && supabase) {
+        try {
+          const { data } = await supabase
+            .from("settings")
+            .select("ad_banner_top_html")
+            .limit(1)
+            .single();
+
+          if (data?.ad_banner_top_html !== undefined) {
+            setBannerHtml(data.ad_banner_top_html);
+          }
+        } catch {}
       }
     }
     loadBanner();

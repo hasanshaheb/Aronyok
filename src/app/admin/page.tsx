@@ -101,11 +101,23 @@ export default function AdminDashboardPage() {
               id: o.id,
               number: o.order_number,
               customer: o.customer_name,
-              items: "Eco Order Items",
+              items:
+                Array.isArray(o.items) && o.items.length > 0
+                  ? o.items
+                      .map((i: any) => `${i.product_name || "Item"} (x${i.quantity || 1})`)
+                      .join(", ")
+                  : "Eco Order Package",
               amount: Number(o.total_amount),
               payment: o.payment_method,
               status: o.order_status,
-              time: "Recent",
+              time: o.created_at
+                ? new Date(o.created_at).toLocaleDateString("en-US", {
+                    month: "short",
+                    day: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })
+                : "Recent",
             }))
           );
         }

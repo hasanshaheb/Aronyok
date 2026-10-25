@@ -140,7 +140,7 @@ export const fallbackProducts: Product[] = [
     "price": 180,
     "compare_at_price": 220,
     "stock": 50,
-    "image_url": "https://images.unsplash.com/photo-1596726694605-648b253b27b4?auto=format&fit=crop&w=800&q=80",
+    "image_url": "https://images.unsplash.com/photo-1512428813834-c702c7702b78?auto=format&fit=crop&w=800&q=80",
     "category": "plants",
     "is_active": true,
     "is_featured": true,

@@ -13,6 +13,9 @@ export default function ProductCard({ product }: { product: Product }) {
   const { language, t, localize } = useLanguage();
   const { addToCart } = useCart();
   const [isAdded, setIsAdded] = useState(false);
+  const [imgSrc, setImgSrc] = useState(
+    product.image_url || "https://images.unsplash.com/photo-1545241047-6083a3684587?auto=format&fit=crop&w=800&q=80"
+  );
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -39,12 +42,17 @@ export default function ProductCard({ product }: { product: Product }) {
         className="relative w-full aspect-[4/3] bg-stone-100 overflow-hidden"
       >
         <Image
-          src={product.image_url}
+          src={imgSrc}
           alt={localize(product.name)}
           fill
           unoptimized
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
           className="object-cover group-hover:scale-105 transition-transform duration-500"
+          onError={() =>
+            setImgSrc(
+              "https://images.unsplash.com/photo-1545241047-6083a3684587?auto=format&fit=crop&w=800&q=80"
+            )
+          }
         />
 
         {/* Category Pill */}

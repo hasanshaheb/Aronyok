@@ -1,9 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSupabase } from "@/lib/supabase/server";
-import { fallbackSettings } from "@/lib/supabase/fallback-data";
-
-// In-memory server-side cache for instant persistence even before Supabase table is created
-let runtimeSettings = { ...fallbackSettings };
+import { runtimeStore } from "@/lib/runtime-store";
 
 export async function GET() {
   const supabase = getServerSupabase();
@@ -15,19 +12,19 @@ export async function GET() {
         .limit(1)
         .single();
       if (!error && data) {
-        runtimeSettings = { ...runtimeSettings, ...data };
+        runtimeStore.updateSettings(data);
       }
     } catch {
-      // Use runtimeSettings
+      // Use runtimeStore
     }
   }
-  return NextResponse.json(runtimeSettings);
+  return NextResponse.json(runtimeStore.getSettings());
 }
 
 export async function POST(req: NextRequest) {
   try {
     const updated = await req.json();
-    runtimeSettings = { ...runtimeSettings, ...updated };
+    const currentSettings = runtimeStore.updateSettings(updated);
 
     const supabase = getServerSupabase();
     let syncedToSupabase = false;
@@ -35,27 +32,27 @@ export async function POST(req: NextRequest) {
     if (supabase) {
       try {
         const { error } = await supabase.from("settings").upsert({
-          id: runtimeSettings.id || "00000000-0000-0000-0000-000000000001",
-          global_seo_title: runtimeSettings.global_seo_title,
-          global_seo_description: runtimeSettings.global_seo_description,
-          analytics_script: runtimeSettings.analytics_script,
-          ad_banner_top_html: runtimeSettings.ad_banner_top_html,
-          ai_system_prompt: runtimeSettings.ai_system_prompt,
-          contact_email: runtimeSettings.contact_email,
-          contact_phone: runtimeSettings.contact_phone,
+          id: currentSettings.id || "00000000-0000-0000-0000-000000000001",
+          global_seo_title: currentSettings.global_seo_title,
+          global_seo_description: currentSettings.global_seo_description,
+          analytics_script: currentSettings.analytics_script,
+          ad_banner_top_html: currentSettings.ad_banner_top_html,
+          ai_system_prompt: currentSettings.ai_system_prompt,
+          contact_email: currentSettings.contact_email,
+          contact_phone: currentSettings.contact_phone,
           updated_at: new Date().toISOString(),
         });
         if (!error) {
           syncedToSupabase = true;
         }
       } catch {
-        // Fallback to runtimeSettings
+        // Fallback to runtimeStore
       }
     }
 
     return NextResponse.json({
       success: true,
-      settings: runtimeSettings,
+      settings: currentSettings,
       syncedToSupabase,
     });
   } catch (error: any) {

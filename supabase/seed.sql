@@ -92,7 +92,7 @@ VALUES
   180.00,
   220.00,
   50,
-  'https://images.unsplash.com/photo-1596726694605-648b253b27b4?auto=format&fit=crop&w=800&q=80',
+  'https://images.unsplash.com/photo-1512428813834-c702c7702b78?auto=format&fit=crop&w=800&q=80',
   'plants',
   true,
   true,

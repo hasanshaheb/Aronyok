@@ -62,3 +62,24 @@ body {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* Print Optimization for Invoices & Receipts */
+@media print {
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+  header,
+  footer,
+  aside,
+  .aronyok-top-banner {
+    display: none !important;
+  }
+  #printable-invoice {
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+}

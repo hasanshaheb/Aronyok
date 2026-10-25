@@ -31,6 +31,7 @@ export default function ProductDetailPage() {
   const [product, setProduct] = useState<Product | null>(null);
   const [quantity, setQuantity] = useState(1);
   const [isAdded, setIsAdded] = useState(false);
+  const [imgSrc, setImgSrc] = useState<string>("");
 
   useEffect(() => {
     async function loadProduct() {
@@ -42,6 +43,7 @@ export default function ProductDetailPage() {
             const found = prods.find((p: any) => p.slug === slug);
             if (found) {
               setProduct(found);
+              setImgSrc(found.image_url || "https://images.unsplash.com/photo-1545241047-6083a3684587?auto=format&fit=crop&w=800&q=80");
               return;
             }
           }
@@ -49,7 +51,10 @@ export default function ProductDetailPage() {
       } catch {}
 
       const foundFallback = fallbackProducts.find((p) => p.slug === slug);
-      if (foundFallback) setProduct(foundFallback);
+      if (foundFallback) {
+        setProduct(foundFallback);
+        setImgSrc(foundFallback.image_url || "https://images.unsplash.com/photo-1545241047-6083a3684587?auto=format&fit=crop&w=800&q=80");
+      }
     }
     loadProduct();
   }, [slug]);
@@ -97,11 +102,14 @@ export default function ProductDetailPage() {
         {/* Product Image Frame */}
         <div className="relative aspect-square w-full rounded-3xl overflow-hidden bg-stone-100 border border-forest-100 shadow-soft-md">
           <Image
-            src={product.image_url}
+            src={imgSrc || product.image_url || "https://images.unsplash.com/photo-1545241047-6083a3684587?auto=format&fit=crop&w=800&q=80"}
             alt={localize(product.name)}
             fill
             priority
             unoptimized
+            onError={() =>
+              setImgSrc("https://images.unsplash.com/photo-1545241047-6083a3684587?auto=format&fit=crop&w=800&q=80")
+            }
             sizes="(max-width: 1024px) 100vw, 50vw"
             className="object-cover"
           />
