@@ -1,0 +1,80 @@
+[
+  {
+    "id": "ord-1",
+    "order_number": "ARN-821942",
+    "customer_name": "Farhan Ahmed",
+    "customer_email": "farhan@example.com",
+    "customer_phone": "01712345678",
+    "shipping_address": "House 14, Road 5, Dhanmondi",
+    "city": "Dhaka",
+    "total_amount": 850,
+    "payment_method": "bkash",
+    "payment_status": "paid",
+    "order_status": "confirmed",
+    "is_archived": false,
+    "items": [
+      {
+        "product_id": "prod-1",
+        "product_name": "Organic Sundarbans Mangrove Raw Honey (500g)",
+        "price": 850,
+        "quantity": 1
+      }
+    ],
+    "notes": "Leave package at reception. TrxID: 9J87AK29L",
+    "created_at": "2026-10-25T18:00:00.000Z"
+  },
+  {
+    "id": "ord-2",
+    "order_number": "ARN-821941",
+    "customer_name": "Tasnim Rahman",
+    "customer_email": "tasnim@example.com",
+    "customer_phone": "01898765432",
+    "shipping_address": "Sector 3, Uttara",
+    "city": "Dhaka",
+    "total_amount": 560,
+    "payment_method": "cod",
+    "payment_status": "pending",
+    "order_status": "processing",
+    "is_archived": false,
+    "items": [
+      {
+        "product_id": "prod-5",
+        "product_name": "Krishna Tulsi Live Potted Plant",
+        "price": 180,
+        "quantity": 1
+      },
+      {
+        "product_id": "prod-2",
+        "product_name": "Cold-Pressed Organic Neem Seed Oil (200ml)",
+        "price": 380,
+        "quantity": 1
+      }
+    ],
+    "notes": "Call before dispatch",
+    "created_at": "2026-10-25T18:30:00.000Z"
+  },
+  {
+    "id": "ord-3",
+    "order_number": "ARN-821940",
+    "customer_name": "Kazi Nabil",
+    "customer_email": "kazi@example.com",
+    "customer_phone": "01911223344",
+    "shipping_address": "GEC Circle, Nasirabad",
+    "city": "Chittagong",
+    "total_amount": 420,
+    "payment_method": "stripe",
+    "payment_status": "paid",
+    "order_status": "confirmed",
+    "is_archived": false,
+    "items": [
+      {
+        "product_id": "prod-3",
+        "product_name": "Artisanal Tulsi & Ashwagandha Herbal Tea (100g)",
+        "price": 420,
+        "quantity": 1
+      }
+    ],
+    "notes": "Express packaging requested",
+    "created_at": "2026-10-25T19:00:00.000Z"
+  }
+]
