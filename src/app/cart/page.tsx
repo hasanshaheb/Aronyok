@@ -410,6 +410,7 @@ export default function CartCheckoutPage() {
                         src={item.product.image_url}
                         alt={localize(item.product.name)}
                         fill
+                        unoptimized
                         className="object-cover"
                       />
                     </div>

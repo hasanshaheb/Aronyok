@@ -30,3 +30,23 @@ export function slugify(text: string): string {
     .replace(/[^\w\-]+/g, '')
     .replace(/\-\-+/g, '-');
 }
+
+// Convert Google Drive share links to direct embeddable image URLs
+export function formatImageLink(url: string): string {
+  if (!url) return '';
+  const trimmed = url.trim();
+
+  // Pattern 1: https://drive.google.com/file/d/ID/view...
+  const match1 = trimmed.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+  if (match1 && match1[1]) {
+    return `https://drive.google.com/uc?export=view&id=${match1[1]}`;
+  }
+
+  // Pattern 2: https://drive.google.com/open?id=ID
+  const match2 = trimmed.match(/id=([a-zA-Z0-9_-]+)/);
+  if (trimmed.includes('drive.google.com') && match2 && match2[1]) {
+    return `https://drive.google.com/uc?export=view&id=${match2[1]}`;
+  }
+
+  return trimmed;
+}

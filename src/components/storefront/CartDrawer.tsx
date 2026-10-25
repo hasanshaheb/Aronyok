@@ -87,6 +87,7 @@ export default function CartDrawer() {
                       src={item.product.image_url}
                       alt={localize(item.product.name)}
                       fill
+                      unoptimized
                       sizes="80px"
                       className="object-cover"
                     />

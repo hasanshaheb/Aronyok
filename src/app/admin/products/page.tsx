@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { Plus, Edit2, Trash2, Search, CheckCircle, RefreshCw } from "lucide-react";
 import DualLangInput from "../../../components/admin/DualLangInput";
+import ProductImagePicker from "../../../components/admin/ProductImagePicker";
 import { fallbackProducts } from "../../../lib/supabase/fallback-data";
 import { Product } from "../../../lib/types";
 import { slugify } from "../../../lib/utils";
@@ -408,18 +409,10 @@ export default function AdminProductsPage() {
                 </div>
               </div>
 
-              <div>
-                <label className="block text-xs font-bold text-forest-900 mb-1">
-                  Product Image URL
-                </label>
-                <input
-                  type="url"
-                  value={form.image_url}
-                  onChange={(e) => setForm({ ...form, image_url: e.target.value })}
-                  placeholder="https://images.unsplash.com/..."
-                  className="w-full px-3.5 py-2 rounded-xl bg-cream-50 border border-forest-200 text-xs text-forest-900 focus:outline-none focus:ring-2 focus:ring-forest-600"
-                />
-              </div>
+              <ProductImagePicker
+                value={form.image_url}
+                onChange={(image_url) => setForm({ ...form, image_url })}
+              />
 
               <div className="pt-2 border-t border-forest-100">
                 <DualLangInput
