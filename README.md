@@ -93,9 +93,9 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 ## 🔒 Protected Admin CMS
 
 - **URL:** [http://localhost:3000/admin](http://localhost:3000/admin)
-- **Default Credentials:**
-  - Email: `admin@aronyok.com`
-  - Password: `aronyok123`
+- **Admin Credentials:**
+  - Email: `hasan@aronyok.com`
+  - Password: `AronyokAdmin#2026`
 - **Features:**
   - **Dual Input Fields:** Side-by-side / tabbed fields for English and Bengali for seamless bilingual entry.
   - **Live AI Tuning:** Change the Assistant's system prompt directly in the Settings panel.

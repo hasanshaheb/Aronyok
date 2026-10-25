@@ -8,8 +8,8 @@ import { isSupabaseConfigured, supabase } from "../../../lib/supabase/client";
 
 export default function AdminLoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState("admin@aronyok.com");
-  const [password, setPassword] = useState("aronyok123");
+  const [email, setEmail] = useState("hasan@aronyok.com");
+  const [password, setPassword] = useState("AronyokAdmin#2026");
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
 
