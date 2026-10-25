@@ -102,6 +102,7 @@ export interface Order {
   order_status: 'processing' | 'confirmed' | 'shipped' | 'delivered' | 'cancelled';
   payment_reference?: string;
   notes?: string;
+  is_archived?: boolean;
   items?: OrderItem[];
   created_at?: string;
 }

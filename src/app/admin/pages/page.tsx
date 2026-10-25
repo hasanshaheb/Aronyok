@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Plus, Edit2, Trash2, ExternalLink, CheckCircle, RefreshCw } from "lucide-react";
+import { Plus, Edit2, Trash2, ExternalLink, CheckCircle, RefreshCw, CloudUpload } from "lucide-react";
 import Link from "next/link";
 import DualLangInput from "../../../components/admin/DualLangInput";
 import { fallbackDynamicPages } from "../../../lib/supabase/fallback-data";
@@ -14,6 +14,8 @@ export default function AdminDynamicPagesPage() {
   const [editingPage, setEditingPage] = useState<DynamicPage | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [notification, setNotification] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
+  const [syncToGit, setSyncToGit] = useState(true);
 
   const [form, setForm] = useState({
     page_title: { en: "", bn: "" },
@@ -71,9 +73,10 @@ export default function AdminDynamicPagesPage() {
     setIsModalOpen(true);
   };
 
-  const handleSavePage = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSavePage = async (e?: React.FormEvent, forceSyncGit?: boolean) => {
+    if (e) e.preventDefault();
     const finalSlug = form.slug || slugify(form.page_title.en || form.page_title.bn);
+    const shouldSync = forceSyncGit !== undefined ? forceSyncGit : syncToGit;
 
     const payload: any = {
       page_title: form.page_title,
@@ -82,12 +85,15 @@ export default function AdminDynamicPagesPage() {
       is_published: form.is_published,
       seo_title: form.seo_title,
       seo_description: form.seo_description,
+      sync_git: shouldSync,
+      git_message: `${editingPage ? "Update" : "Create"} custom page "${form.page_title.en || form.slug}"`,
     };
 
     if (editingPage) {
       payload.id = editingPage.id;
     }
 
+    setIsSaving(true);
     try {
       const res = await fetch("/api/admin/data?entity=pages", {
         method: "POST",
@@ -99,17 +105,24 @@ export default function AdminDynamicPagesPage() {
       if (result.items) {
         setPages(result.items);
       }
-      setNotification(editingPage ? "Page updated successfully!" : "Page created successfully!");
-      setTimeout(() => setNotification(""), 3000);
+
+      if (result.git_sync?.success) {
+        setNotification(`Page saved to Database & Codebase! Pushed to GitHub (${result.git_sync.commitHash || "main"}) 🚀`);
+      } else {
+        setNotification(editingPage ? "Page updated in Database & Codebase (fallback-data.ts)!" : "Page created in Database & Codebase!");
+      }
+      setTimeout(() => setNotification(""), 4000);
+      setIsModalOpen(false);
     } catch {
       if (editingPage) {
         setPages(prev => prev.map(item => item.id === editingPage.id ? { ...item, ...payload } : item));
       } else {
         setPages(prev => [{ ...payload, id: `page-${Date.now()}` }, ...prev]);
       }
+      setIsModalOpen(false);
+    } finally {
+      setIsSaving(false);
     }
-
-    setIsModalOpen(false);
   };
 
   const handleDelete = async (id: string) => {
@@ -318,20 +331,44 @@ export default function AdminDynamicPagesPage() {
                 </label>
               </div>
 
-              <div className="pt-4 border-t border-forest-100 flex items-center justify-end gap-3">
-                <button
-                  type="button"
-                  onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 rounded-xl border border-stone-200 text-xs font-bold text-stone-600 hover:bg-stone-50"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-5 py-2 rounded-xl bg-forest-700 hover:bg-forest-800 text-white text-xs font-bold shadow-md"
-                >
-                  Save Dynamic Page
-                </button>
+              {/* Sync Options */}
+              <div className="pt-3 border-t border-forest-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <label className="flex items-center gap-2 cursor-pointer text-xs text-forest-800 font-semibold select-none">
+                  <input
+                    type="checkbox"
+                    checked={syncToGit}
+                    onChange={(e) => setSyncToGit(e.target.checked)}
+                    className="w-4 h-4 rounded text-forest-700 focus:ring-forest-600 border-forest-300"
+                  />
+                  <span>Commit code & trigger Vercel deployment on save</span>
+                </label>
+
+                <div className="flex items-center gap-2 justify-end">
+                  <button
+                    type="button"
+                    onClick={() => setIsModalOpen(false)}
+                    className="px-3.5 py-2 rounded-xl border border-stone-200 text-xs font-bold text-stone-600 hover:bg-stone-50 cursor-pointer"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    disabled={isSaving}
+                    onClick={() => handleSavePage(undefined, false)}
+                    className="px-4 py-2 rounded-xl bg-forest-100 hover:bg-forest-200 text-forest-900 text-xs font-bold transition-all cursor-pointer border border-forest-300 disabled:opacity-50"
+                  >
+                    Save Locally & DB
+                  </button>
+                  <button
+                    type="button"
+                    disabled={isSaving}
+                    onClick={() => handleSavePage(undefined, true)}
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-forest-700 hover:bg-forest-800 text-white text-xs font-bold shadow-md transition-all cursor-pointer disabled:opacity-50"
+                  >
+                    <CloudUpload className={`w-3.5 h-3.5 ${isSaving ? "animate-spin" : ""}`} />
+                    <span>{isSaving ? "Publishing..." : "Save & Push to GitHub"}</span>
+                  </button>
+                </div>
               </div>
             </form>
           </div>

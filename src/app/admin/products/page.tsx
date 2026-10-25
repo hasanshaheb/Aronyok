@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
-import { Plus, Edit2, Trash2, Search, CheckCircle, RefreshCw } from "lucide-react";
+import { Plus, Edit2, Trash2, Search, CheckCircle, RefreshCw, CloudUpload, GitBranch } from "lucide-react";
 import DualLangInput from "../../../components/admin/DualLangInput";
 import ProductImagePicker from "../../../components/admin/ProductImagePicker";
 import { fallbackProducts } from "../../../lib/supabase/fallback-data";
@@ -16,6 +16,8 @@ export default function AdminProductsPage() {
   const [search, setSearch] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [notification, setNotification] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
+  const [syncToGit, setSyncToGit] = useState(true);
 
   const [form, setForm] = useState({
     name: { en: "", bn: "" },
@@ -88,9 +90,11 @@ export default function AdminProductsPage() {
     setIsModalOpen(true);
   };
 
-  const handleSaveProduct = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSaveProduct = async (e?: React.FormEvent, forceSyncGit?: boolean) => {
+    if (e) e.preventDefault();
     const finalSlug = form.slug || slugify(form.name.en || form.name.bn);
+
+    const shouldSync = forceSyncGit !== undefined ? forceSyncGit : syncToGit;
 
     const productPayload: any = {
       name: form.name,
@@ -104,12 +108,15 @@ export default function AdminProductsPage() {
       is_active: form.is_active,
       seo_title: form.seo_title,
       seo_description: form.seo_description,
+      sync_git: shouldSync,
+      git_message: `${editingProduct ? "Update" : "Add"} product "${form.name.en || form.slug}"`,
     };
 
     if (editingProduct) {
       productPayload.id = editingProduct.id;
     }
 
+    setIsSaving(true);
     try {
       const res = await fetch("/api/admin/data?entity=products", {
         method: "POST",
@@ -121,8 +128,14 @@ export default function AdminProductsPage() {
       if (result.items) {
         setProducts(result.items);
       }
-      setNotification(editingProduct ? "Product updated successfully!" : "Product added successfully!");
-      setTimeout(() => setNotification(""), 3000);
+
+      if (result.git_sync?.success) {
+        setNotification(`Product saved to Database & Codebase! Pushed to GitHub (${result.git_sync.commitHash || "main"}) 🚀`);
+      } else {
+        setNotification(editingProduct ? "Product updated in Database & Codebase (fallback-data.ts)!" : "Product added to Database & Codebase!");
+      }
+      setTimeout(() => setNotification(""), 4000);
+      setIsModalOpen(false);
     } catch {
       // Optimistic local update
       if (editingProduct) {
@@ -130,9 +143,10 @@ export default function AdminProductsPage() {
       } else {
         setProducts(prev => [{ ...productPayload, id: `prod-${Date.now()}` }, ...prev]);
       }
+      setIsModalOpen(false);
+    } finally {
+      setIsSaving(false);
     }
-
-    setIsModalOpen(false);
   };
 
   const handleDelete = async (id: string) => {
@@ -424,20 +438,44 @@ export default function AdminProductsPage() {
                 />
               </div>
 
-              <div className="pt-4 border-t border-forest-100 flex items-center justify-end gap-3">
-                <button
-                  type="button"
-                  onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 rounded-xl border border-stone-200 text-xs font-bold text-stone-600 hover:bg-stone-50"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-5 py-2 rounded-xl bg-forest-700 hover:bg-forest-800 text-white text-xs font-bold shadow-md"
-                >
-                  Save Product
-                </button>
+              {/* Sync Options */}
+              <div className="pt-3 border-t border-forest-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <label className="flex items-center gap-2 cursor-pointer text-xs text-forest-800 font-semibold select-none">
+                  <input
+                    type="checkbox"
+                    checked={syncToGit}
+                    onChange={(e) => setSyncToGit(e.target.checked)}
+                    className="w-4 h-4 rounded text-forest-700 focus:ring-forest-600 border-forest-300"
+                  />
+                  <span>Commit code & trigger Vercel deployment on save</span>
+                </label>
+
+                <div className="flex items-center gap-2 justify-end">
+                  <button
+                    type="button"
+                    onClick={() => setIsModalOpen(false)}
+                    className="px-3.5 py-2 rounded-xl border border-stone-200 text-xs font-bold text-stone-600 hover:bg-stone-50 cursor-pointer"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    disabled={isSaving}
+                    onClick={() => handleSaveProduct(undefined, false)}
+                    className="px-4 py-2 rounded-xl bg-forest-100 hover:bg-forest-200 text-forest-900 text-xs font-bold transition-all cursor-pointer border border-forest-300 disabled:opacity-50"
+                  >
+                    Save Locally & DB
+                  </button>
+                  <button
+                    type="button"
+                    disabled={isSaving}
+                    onClick={() => handleSaveProduct(undefined, true)}
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-forest-700 hover:bg-forest-800 text-white text-xs font-bold shadow-md transition-all cursor-pointer disabled:opacity-50"
+                  >
+                    <CloudUpload className={`w-3.5 h-3.5 ${isSaving ? "animate-spin" : ""}`} />
+                    <span>{isSaving ? "Deploying..." : "Save & Push to GitHub"}</span>
+                  </button>
+                </div>
               </div>
             </form>
           </div>

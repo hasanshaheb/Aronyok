@@ -107,6 +107,13 @@ export async function POST(req: NextRequest) {
       payment_status: "pending",
       order_status: "processing",
       notes,
+      items: (items || []).map((item: any) => ({
+        product_id: item.product?.id || item.id || "item",
+        product_name: item.product?.name?.en || item.product?.name?.bn || item.product?.name || item.name || "Eco Item",
+        price: item.product?.price || item.price || 0,
+        quantity: item.quantity || 1,
+      })),
+      is_archived: false,
       created_at: new Date().toISOString(),
     });
 

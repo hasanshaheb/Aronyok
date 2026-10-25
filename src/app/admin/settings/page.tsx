@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Save, Sparkles, Globe, Code, Megaphone, CheckCircle, RefreshCw } from "lucide-react";
+import { Save, Sparkles, Globe, Code, Megaphone, CheckCircle, RefreshCw, CloudUpload } from "lucide-react";
 import DualLangInput from "../../../components/admin/DualLangInput";
 import { fallbackSettings } from "../../../lib/supabase/fallback-data";
 import { SiteSettings } from "../../../lib/types";
@@ -11,6 +11,7 @@ export default function AdminSettingsPage() {
   const [isSaved, setIsSaved] = useState(false);
   const [loading, setLoading] = useState(false);
   const [syncedNotice, setSyncedNotice] = useState("");
+  const [syncToGit, setSyncToGit] = useState(true);
 
   const loadSettings = async () => {
     try {
@@ -30,15 +31,22 @@ export default function AdminSettingsPage() {
     loadSettings();
   }, []);
 
-  const handleSave = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSave = async (e?: React.FormEvent, forceSyncGit?: boolean) => {
+    if (e) e.preventDefault();
     setLoading(true);
+
+    const shouldSync = forceSyncGit !== undefined ? forceSyncGit : syncToGit;
+    const payload = {
+      ...settings,
+      sync_git: shouldSync,
+      git_message: "Admin CMS: Update store SEO, banners & AI Assistant prompt",
+    };
 
     try {
       const res = await fetch("/api/admin/data?entity=settings", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(settings),
+        body: JSON.stringify(payload),
       });
 
       const result = await res.json();
@@ -47,7 +55,11 @@ export default function AdminSettingsPage() {
       }
 
       setIsSaved(true);
-      setSyncedNotice(result.synced ? "Synced directly to Supabase cloud!" : "Saved to active runtime cache & AI assistant!");
+      if (result.git_sync?.success) {
+        setSyncedNotice(`Settings saved to Database & Codebase! Pushed to GitHub (${result.git_sync.commitHash || "main"}) 🚀`);
+      } else {
+        setSyncedNotice(result.synced ? "Synced to Supabase & Codebase (fallback-data.ts)!" : "Saved to active runtime cache & Codebase!");
+      }
       setTimeout(() => {
         setIsSaved(false);
         setSyncedNotice("");
@@ -254,15 +266,36 @@ export default function AdminSettingsPage() {
         </div>
 
         {/* Save Bar */}
-        <div className="flex justify-end">
-          <button
-            type="submit"
-            disabled={loading}
-            className="inline-flex items-center gap-2 px-8 py-3.5 rounded-2xl bg-forest-700 hover:bg-forest-800 text-white font-bold text-sm shadow-md hover:shadow-lg transition-all"
-          >
-            <Save className="w-4 h-4" />
-            <span>{loading ? "Saving Settings..." : "Save All Settings"}</span>
-          </button>
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-white p-5 rounded-3xl border border-forest-100 shadow-soft-sm">
+          <label className="flex items-center gap-2 cursor-pointer text-xs text-forest-800 font-semibold select-none">
+            <input
+              type="checkbox"
+              checked={syncToGit}
+              onChange={(e) => setSyncToGit(e.target.checked)}
+              className="w-4 h-4 rounded text-forest-700 focus:ring-forest-600 border-forest-300"
+            />
+            <span>Commit code & trigger Vercel deployment on save</span>
+          </label>
+
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              disabled={loading}
+              onClick={() => handleSave(undefined, false)}
+              className="px-5 py-3 rounded-2xl bg-forest-100 hover:bg-forest-200 text-forest-900 font-bold text-xs transition-all cursor-pointer border border-forest-300 disabled:opacity-50"
+            >
+              Save Locally & DB
+            </button>
+            <button
+              type="button"
+              disabled={loading}
+              onClick={() => handleSave(undefined, true)}
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-forest-700 hover:bg-forest-800 text-white font-bold text-xs shadow-md hover:shadow-lg transition-all cursor-pointer disabled:opacity-50"
+            >
+              <CloudUpload className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
+              <span>{loading ? "Deploying..." : "Save & Push to GitHub"}</span>
+            </button>
+          </div>
         </div>
       </form>
     </div>

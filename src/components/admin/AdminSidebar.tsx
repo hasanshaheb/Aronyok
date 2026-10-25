@@ -17,6 +17,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { isSupabaseConfigured, supabase } from "../../lib/supabase/client";
+import AdminSyncWidget from "./AdminSyncWidget";
 
 export default function AdminSidebar() {
   const pathname = usePathname();
@@ -86,8 +87,10 @@ export default function AdminSidebar() {
         })}
       </nav>
 
-      {/* Bottom Shortcuts */}
-      <div className="p-4 border-t border-forest-850 space-y-2">
+      {/* Bottom Shortcuts & Code Sync */}
+      <div className="p-4 border-t border-forest-850 space-y-3">
+        <AdminSyncWidget />
+
         <Link
           href="/"
           target="_blank"
