@@ -194,7 +194,7 @@ export const fallbackProducts: Product[] = [
     "price": 250,
     "compare_at_price": 300,
     "stock": 40,
-    "image_url": "https://images.unsplash.com/photo-1509358271058-acd22cc93898?auto=format&fit=crop&w=800&q=80",
+    "image_url": "https://kmxrcebqozxnyoopdhnr.supabase.co/storage/v1/object/public/products/product-1793394420837-________-_____-____-___-2.jpg",
     "category": "plants",
     "is_active": true,
     "is_featured": true,
@@ -205,7 +205,9 @@ export const fallbackProducts: Product[] = [
     "seo_description": {
       "en": "Aromatic and therapeutic live cinnamon tree seedling. Its bark and leaves yield aromatic spice and herbal infusions. Ideal for terrace pots or home orchards.",
       "bn": "সুগন্ধি ও ঔষধি গুণসম্পন্ন সতেজ দারুচিনি গাছের চারা। এর ছাল ও পাতা মসলা এবং ভেষজ চা তৈরিতে ব্যবহৃত হয়। টবে বা বাগানে সহজেই চাষযোগ্য।"
-    }
+    },
+    "sync_git": true,
+    "git_message": "Update product \"Cinnamon (Daruchini) Live Spice Seedling\""
   },
   {
     "id": "prod-8",
