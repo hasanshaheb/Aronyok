@@ -1,4 +1,4 @@
-# Aronyok (অরণ্যক) - Bilingual Eco & Botanical Web Platform
+# Aronyok (আরণ্যক) - Bilingual Eco & Botanical Web Platform
 
 A comprehensive, nature-inspired web platform combining an organic e-commerce storefront, an integrated herbal blog, interactive green micro-tools, dynamic informational pages, and a protected custom CMS dashboard.
 

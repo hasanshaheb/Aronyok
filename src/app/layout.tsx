@@ -10,7 +10,7 @@ import FloatingAssistant from "../components/ai/FloatingAssistant";
 import { Analytics } from "@vercel/analytics/next";
 
 export const metadata: Metadata = {
-  title: "Aronyok (অরণ্যক) | Pure Living, Herbs & Eco Store",
+  title: "Aronyok (আরণ্যক) | Pure Living, Herbs & Eco Store",
   description:
     "A comprehensive bilingual platform for wild raw honey, organic herbs, pottery, living plants, and traditional eco wisdom.",
   icons: {

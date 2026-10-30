@@ -76,7 +76,7 @@ export default function OrderInvoiceModal({ order, onClose }: OrderInvoiceModalP
             <div>
               <div className="flex items-center gap-2">
                 <span className="text-3xl font-extrabold text-forest-950 font-serif tracking-tight">
-                  অরণ্যক
+                  আরণ্যক
                 </span>
                 <span className="text-xl font-bold text-forest-700 font-serif">
                   Aronyok

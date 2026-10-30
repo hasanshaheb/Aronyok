@@ -4,15 +4,15 @@ export const fallbackSettings: SiteSettings = {
   "id": "00000000-0000-0000-0000-000000000001",
   "global_seo_title": {
     "en": "Aronyok | Pure Living, Organic Herbs & Eco Store",
-    "bn": "অরণ্যক | বিশুদ্ধ জীবনধারা, জৈব ভেষজ ও পরিবেশবান্ধব পণ্য"
+    "bn": "আরণ্যক | বিশুদ্ধ জীবনধারা, জৈব ভেষজ ও পরিবেশবান্ধব পণ্য"
   },
   "global_seo_description": {
     "en": "Explore wild raw honey, cold-pressed oils, medicinal herbs, and artisanal pottery from Bangladesh with Aronyok.",
-    "bn": "অরণ্যকে আবিষ্কার করুন খাঁটি প্রাকৃতিক মধু, ঘানিতে ভাঙা তেল, ওষধি গাছ এবং পরিবেশবান্ধব মাটির সামগ্রী।"
+    "bn": "আরণ্যকে আবিষ্কার করুন খাঁটি প্রাকৃতিক মধু, ঘানিতে ভাঙা তেল, ওষধি গাছ এবং পরিবেশবান্ধব মাটির সামগ্রী।"
   },
   "analytics_script": "<!-- Aronyok Analytics -->",
   "ad_banner_top_html": "<div class=\"bg-forest-800 text-cream-100 text-xs py-2 px-4 text-center font-medium flex items-center justify-center gap-2\"><span class=\"bg-forest-600 text-white text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full\">Spring Eco Special</span> <span>Enjoy 15% off all medicinal herbs with code <strong>ARONYOKGREEN</strong> 🌱</span></div>",
-  "ai_system_prompt": "You are Aronyok (অরণ্যক), an intelligent, gentle, and highly knowledgeable nature expert, herbalist, and eco-living guide. You are fluent in both English and Bengali. If the user asks in Bengali, reply warmly in Bengali. If in English, reply in English. Help users identify therapeutic herbs, offer plant care advice, suggest organic solutions, and guide them through our eco products.",
+  "ai_system_prompt": "You are Aronyok (আরণ্যক), an intelligent, gentle, and highly knowledgeable nature expert, herbalist, and eco-living guide. You are fluent in both English and Bengali. If the user asks in Bengali, reply warmly in Bengali. If in English, reply in English. Help users identify therapeutic herbs, offer plant care advice, suggest organic solutions, and guide them through our eco products.",
   "contact_email": "care@aronyok.com",
   "contact_phone": "+880 1700 000000"
 };
@@ -200,7 +200,7 @@ export const fallbackProducts: Product[] = [
     "is_featured": true,
     "seo_title": {
       "en": "Cinnamon (Daruchini) Live Spice Seedling | Aronyok Plant Nursery",
-      "bn": "দারুচিনি গাছের চারা (Cinnamon Plant) | অরণ্যক নার্সারি"
+      "bn": "দারুচিনি গাছের চারা (Cinnamon Plant) | আরণ্যক নার্সারি"
     },
     "seo_description": {
       "en": "Aromatic and therapeutic live cinnamon tree seedling. Its bark and leaves yield aromatic spice and herbal infusions. Ideal for terrace pots or home orchards.",
@@ -227,7 +227,7 @@ export const fallbackProducts: Product[] = [
     "is_featured": false,
     "seo_title": {
       "en": "Indian Black Plum (Jamun) Grafted Live Plant | Aronyok Plant Nursery",
-      "bn": "ইন্ডিয়ান কালো জামের কলম চারা (Indian Jamun Plant) | অরণ্যক নার্সারি"
+      "bn": "ইন্ডিয়ান কালো জামের কলম চারা (Indian Jamun Plant) | আরণ্যক নার্সারি"
     },
     "seo_description": {
       "en": "High-yield grafted Indian Black Plum (Jamun) seedling. Produces juicy, sweet, purple fruits beneficial for blood sugar management.",
@@ -254,7 +254,7 @@ export const fallbackProducts: Product[] = [
     "is_featured": true,
     "seo_title": {
       "en": "Vietnamese All-Season Sweet Malta Seedling | Aronyok Plant Nursery",
-      "bn": "ভিয়েতনামি বারোমাসি মাল্টা চারা (Vietnamese Malta Plant) | অরণ্যক নার্সারি"
+      "bn": "ভিয়েতনামি বারোমাসি মাল্টা চারা (Vietnamese Malta Plant) | আরণ্যক নার্সারি"
     },
     "seo_description": {
       "en": "Ever-bearing grafted Vietnamese sweet Malta citrus plant. Highly productive, sweet and juicy, suitable for rooftop drum cultivation.",
@@ -281,7 +281,7 @@ export const fallbackProducts: Product[] = [
     "is_featured": true,
     "seo_title": {
       "en": "BARI-1 Sweet Malta Citrus Live Plant | Aronyok Plant Nursery",
-      "bn": "বারি-১ মিষ্টি মাল্টা চারা (BARI-1 Malta Plant) | অরণ্যক নার্সারি"
+      "bn": "বারি-১ মিষ্টি মাল্টা চারা (BARI-1 Malta Plant) | আরণ্যক নার্সারি"
     },
     "seo_description": {
       "en": "Authentic BARI-1 variety Malta developed by BARI. Known for its distinct sweet taste, thin peel, and heavy fruiting capacity.",
@@ -308,7 +308,7 @@ export const fallbackProducts: Product[] = [
     "is_featured": true,
     "seo_title": {
       "en": "Tropical Low-Chill Apple Live Plant | Aronyok Plant Nursery",
-      "bn": "উষ্ণমণ্ডলীয় আপেল চারা (Tropical Apple Plant) | অরণ্যক নার্সারি"
+      "bn": "উষ্ণমণ্ডলীয় আপেল চারা (Tropical Apple Plant) | আরণ্যক নার্সারি"
     },
     "seo_description": {
       "en": "Acclimatized low-chill tropical apple seedling suited for warm subtropical climates. Thrives in containers with regular organic feed.",
@@ -335,7 +335,7 @@ export const fallbackProducts: Product[] = [
     "is_featured": false,
     "seo_title": {
       "en": "Wild Green Olive (Jolpai) Live Seedling | Aronyok Plant Nursery",
-      "bn": "দেশি টক-মিষ্টি জলপাই চারা (Jolpai Olive Plant) | অরণ্যক নার্সারি"
+      "bn": "দেশি টক-মিষ্টি জলপাই চারা (Jolpai Olive Plant) | আরণ্যক নার্সারি"
     },
     "seo_description": {
       "en": "Native South Asian green olive (Elaeocarpus floribundus) seedling. Excellent for vitamin C and making savory pickles.",
@@ -362,7 +362,7 @@ export const fallbackProducts: Product[] = [
     "is_featured": false,
     "seo_title": {
       "en": "Velvet Apple (Gaub / Mabolo) Live Seedling | Aronyok Plant Nursery",
-      "bn": "দেশি মিষ্টি বিলাতি গাব চারা (Velvet Apple / Gaub Plant) | অরণ্যক নার্সারি"
+      "bn": "দেশি মিষ্টি বিলাতি গাব চারা (Velvet Apple / Gaub Plant) | আরণ্যক নার্সারি"
     },
     "seo_description": {
       "en": "Traditional velvet apple (Diospyros blancoi) plant. Produces aromatic, creamy sweet fruits with velvet-textured skin.",
@@ -389,7 +389,7 @@ export const fallbackProducts: Product[] = [
     "is_featured": false,
     "seo_title": {
       "en": "Native Black Plum (Jamun) Live Tree Seedling | Aronyok Plant Nursery",
-      "bn": "দেশি কালো জাম গাছের চারা (Black Plum / Jam Plant) | অরণ্যক নার্সারি"
+      "bn": "দেশি কালো জাম গাছের চারা (Black Plum / Jam Plant) | আরণ্যক নার্সারি"
     },
     "seo_description": {
       "en": "Sturdy native black plum (Syzygium cumini) tree sapling. Prized for its antioxidant-rich purple berries and medicinal benefits.",
@@ -416,7 +416,7 @@ export const fallbackProducts: Product[] = [
     "is_featured": true,
     "seo_title": {
       "en": "Thai Sweet Apple Jujube (Boroi) Live Plant | Aronyok Plant Nursery",
-      "bn": "থাই আপেল কুল / বরই কলম চারা (Thai Apple Jujube Plant) | অরণ্যক নার্সারি"
+      "bn": "থাই আপেল কুল / বরই কলম চারা (Thai Apple Jujube Plant) | আরণ্যক নার্সারি"
     },
     "seo_description": {
       "en": "High-yielding grafted Thai apple jujube sapling. Bears large, crisp, sweet fruits within its first year of planting.",
@@ -443,7 +443,7 @@ export const fallbackProducts: Product[] = [
     "is_featured": true,
     "seo_title": {
       "en": "Winter Dawn Sweet Strawberry Live Plant | Aronyok Plant Nursery",
-      "bn": "উইন্টার ডন স্ট্রবেরি চারা (Strawberry Live Plant) | অরণ্যক নার্সারি"
+      "bn": "উইন্টার ডন স্ট্রবেরি চারা (Strawberry Live Plant) | আরণ্যক নার্সারি"
     },
     "seo_description": {
       "en": "Prolific sweet strawberry plant suited for balcony pots and hanging baskets. Yields vibrant, aromatic crimson berries.",
@@ -470,7 +470,7 @@ export const fallbackProducts: Product[] = [
     "is_featured": false,
     "seo_title": {
       "en": "Sweet Karonda (Carissa Carandas) Live Plant | Aronyok Plant Nursery",
-      "bn": "থাই মিষ্টি করমচা চারা (Karonda / Carissa Plant) | অরণ্যক নার্সারি"
+      "bn": "থাই মিষ্টি করমচা চারা (Karonda / Carissa Plant) | আরণ্যক নার্সারি"
     },
     "seo_description": {
       "en": "Ornamental and fruiting sweet Karonda shrub. Bears cluster berries that transition from white-pink to ruby red.",
@@ -497,7 +497,7 @@ export const fallbackProducts: Product[] = [
     "is_featured": false,
     "seo_title": {
       "en": "Aegle Marmelos (Large Sweet Bael) Seedling | Aronyok Plant Nursery",
-      "bn": "সুস্বাদু মিষ্টি বড় বেল চারা (Large Sweet Bael Plant) | অরণ্যক নার্সারি"
+      "bn": "সুস্বাদু মিষ্টি বড় বেল চারা (Large Sweet Bael Plant) | আরণ্যক নার্সারি"
     },
     "seo_description": {
       "en": "Sacred sweet Golden Bael (Aegle marmelos) plant. Renowned for gut health, cooling beverages, and medicinal goodness.",
@@ -524,7 +524,7 @@ export const fallbackProducts: Product[] = [
     "is_featured": true,
     "seo_title": {
       "en": "Thai Golden-8 Sweet Guava Grafted Plant | Aronyok Plant Nursery",
-      "bn": "থাই গোল্ডেন-৮ পেয়ারা কলম চারা (Golden Guava Plant) | অরণ্যক নার্সারি"
+      "bn": "থাই গোল্ডেন-৮ পেয়ারা কলম চারা (Golden Guava Plant) | আরণ্যক নার্সারি"
     },
     "seo_description": {
       "en": "Grafted Thai Golden-8 guava plant with crisp sweet flesh and few seeds. Produces abundantly year-round in pots.",
@@ -551,7 +551,7 @@ export const fallbackProducts: Product[] = [
     "is_featured": false,
     "seo_title": {
       "en": "All-Season Dwarf Hog Plum (Amra) Live Plant | Aronyok Plant Nursery",
-      "bn": "বারোমাসি মিষ্টি থাই আমড়া চারা (Hog Plum / Amra Plant) | অরণ্যক নার্সারি"
+      "bn": "বারোমাসি মিষ্টি থাই আমড়া চারা (Hog Plum / Amra Plant) | আরণ্যক নার্সারি"
     },
     "seo_description": {
       "en": "Ever-bearing dwarf hog plum (Spondias mombin) plant. Clusters of tangy-sweet crunchy fruits grow readily on compact plants.",
@@ -578,7 +578,7 @@ export const fallbackProducts: Product[] = [
     "is_featured": false,
     "seo_title": {
       "en": "Sweet Burmese Grape (Lotkon) Live Seedling | Aronyok Plant Nursery",
-      "bn": "নরসিংদীর সুমিষ্ট লটকন চারা (Burmese Grape / Lotkon) | অরণ্যক নার্সারি"
+      "bn": "নরসিংদীর সুমিষ্ট লটকন চারা (Burmese Grape / Lotkon) | আরণ্যক নার্সারি"
     },
     "seo_description": {
       "en": "Famous sweet Narsingdi Lotkon (Baccaurea ramiflora) sapling. Unique trunk-fruiting habit packed with vitamin C.",
@@ -605,7 +605,7 @@ export const fallbackProducts: Product[] = [
     "is_featured": false,
     "seo_title": {
       "en": "All-Season Sweet Sapodilla (Chikoo / Sobeda) Plant | Aronyok Plant Nursery",
-      "bn": "বারোমাসি থাই সবেদা কলম চারা (Sapodilla / Sobeda) | অরণ্যক নার্সারি"
+      "bn": "বারোমাসি থাই সবেদা কলম চারা (Sapodilla / Sobeda) | আরণ্যক নার্সারি"
     },
     "seo_description": {
       "en": "Sweet honey-flavored grafted Sapodilla (Manilkara zapota) tree. Consistent all-season bearer suitable for rooftop containers.",
@@ -632,7 +632,7 @@ export const fallbackProducts: Product[] = [
     "is_featured": false,
     "seo_title": {
       "en": "Elephant Apple (Chalta) Live Tree Plant | Aronyok Plant Nursery",
-      "bn": "দেশি টক-মিষ্টি চালতা চারা (Elephant Apple / Chalta) | অরণ্যক নার্সারি"
+      "bn": "দেশি টক-মিষ্টি চালতা চারা (Elephant Apple / Chalta) | আরণ্যক নার্সারি"
     },
     "seo_description": {
       "en": "Traditional Dillenia indica (Elephant Apple) plant with large fragrant blossoms. Celebrated for culinary delicacies and scalp tonics.",
@@ -659,7 +659,7 @@ export const fallbackProducts: Product[] = [
     "is_featured": false,
     "seo_title": {
       "en": "Red Dwarf Ixora (Rangan) Flowering Shrub | Aronyok Plant Nursery",
-      "bn": "লাল থোকা রঙ্গন ফুলের চারা (Red Ixora / Rangan Plant) | অরণ্যক নার্সারি"
+      "bn": "লাল থোকা রঙ্গন ফুলের চারা (Red Ixora / Rangan Plant) | আরণ্যক নার্সারি"
     },
     "seo_description": {
       "en": "Evergreen dwarf Ixora coccinea shrub with vibrant clusters of fiery red blossoms. Perfect for sunny balconies and garden borders.",
@@ -686,7 +686,7 @@ export const fallbackProducts: Product[] = [
     "is_featured": true,
     "seo_title": {
       "en": "Katimon All-Season Sweet Mango Grafted Plant | Aronyok Plant Nursery",
-      "bn": "কাটিমন বারোমাসি মিষ্টি আম চারা (Katimon Mango Plant) | অরণ্যক নার্সারি"
+      "bn": "কাটিমন বারোমাসি মিষ্টি আম চারা (Katimon Mango Plant) | আরণ্যক নার্সারি"
     },
     "seo_description": {
       "en": "Renowned Thai Katimon all-season mango graft. Yields exceptionally sweet, fiberless mangoes up to 3 times a year in pots.",
@@ -713,7 +713,7 @@ export const fallbackProducts: Product[] = [
     "is_featured": true,
     "seo_title": {
       "en": "Vietnamese Dwarf Coconut (Dwarf Narkel) Live Plant | Aronyok Plant Nursery",
-      "bn": "ভিয়েতনামি খাটো জাতের নারিকেল চারা (Dwarf Coconut Plant) | অরণ্যক নার্সারি"
+      "bn": "ভিয়েতনামি খাটো জাতের নারিকেল চারা (Dwarf Coconut Plant) | আরণ্যক নার্সারি"
     },
     "seo_description": {
       "en": "High-producing dwarf coconut palm. Bears sweet tender water coconuts within 3-4 years at easily accessible low heights.",
@@ -740,7 +740,7 @@ export const fallbackProducts: Product[] = [
     "is_featured": true,
     "seo_title": {
       "en": "Aromatic Green Cardamom (Elachi) Live Plant | Aronyok Plant Nursery",
-      "bn": "সবুজ সুগন্ধি এলাচ গাছের চারা (Green Cardamom Plant) | অরণ্যক নার্সারি"
+      "bn": "সবুজ সুগন্ধি এলাচ গাছের চারা (Green Cardamom Plant) | আরণ্যক নার্সারি"
     },
     "seo_description": {
       "en": "True Green Cardamom (Elettaria cardamomum) seedling. Thrives in semi-shade and moist rich soil, emitting heavenly fragrance.",
@@ -767,7 +767,7 @@ export const fallbackProducts: Product[] = [
     "is_featured": false,
     "seo_title": {
       "en": "Sweet Thai Longan (Kat Lichu / Dragon Eye) Plant | Aronyok Plant Nursery",
-      "bn": "মিষ্টি থাই কাটলিচু / আঁশফল চারা (Thai Longan Plant) | অরণ্যক নার্সারি"
+      "bn": "মিষ্টি থাই কাটলিচু / আঁশফল চারা (Thai Longan Plant) | আরণ্যক নার্সারি"
     },
     "seo_description": {
       "en": "Juicy sweet Thai Longan (Dimocarpus longan) grafted tree. Produces dense clusters of translucent sweet fruit resembling lychee.",
@@ -794,7 +794,7 @@ export const fallbackProducts: Product[] = [
     "is_featured": false,
     "seo_title": {
       "en": "Mini Dwarf Crepe Jasmine (Mini Togor) Live Plant | Aronyok Plant Nursery",
-      "bn": "সাদা মিনি টগর ফুলের চারা (Mini Crepe Jasmine) | অরণ্যক নার্সারি"
+      "bn": "সাদা মিনি টগর ফুলের চারা (Mini Crepe Jasmine) | আরণ্যক নার্সারি"
     },
     "seo_description": {
       "en": "Dwarf Crepe Jasmine (Tabernaemontana divaricata) with delicate pinwheel white flowers. Compact growth ideal for table and balcony pots.",
@@ -821,7 +821,7 @@ export const fallbackProducts: Product[] = [
     "is_featured": false,
     "seo_title": {
       "en": "Aromatic Wood Apple (Kodbel) Live Sapling | Aronyok Plant Nursery",
-      "bn": "মিষ্টি সুবাসিত কদবেল চারা (Wood Apple / Kodbel) | অরণ্যক নার্সারি"
+      "bn": "মিষ্টি সুবাসিত কদবেল চারা (Wood Apple / Kodbel) | আরণ্যক নার্সারি"
     },
     "seo_description": {
       "en": "Native Feronia limonia (Wood Apple) sapling. Highly valued for flavorful tangy-sweet mashes and digestive tonic properties.",
@@ -848,7 +848,7 @@ export const fallbackProducts: Product[] = [
     "is_featured": true,
     "seo_title": {
       "en": "Russian Baikonur Sweet Table Grape Vine Plant | Aronyok Plant Nursery",
-      "bn": "রাশিয়ান বাইকনুর মিষ্টি আঙ্গুর চারা (Baikonur Grape Plant) | অরণ্যক নার্সারি"
+      "bn": "রাশিয়ান বাইকনুর মিষ্টি আঙ্গুর চারা (Baikonur Grape Plant) | আরণ্যক নার্সারি"
     },
     "seo_description": {
       "en": "Celebrated cold-hardy and heat-tolerant Baikonur dark purple table grape vine. Bears massive, sweet, crunchy elongated berries.",
@@ -875,7 +875,7 @@ export const fallbackProducts: Product[] = [
     "is_featured": false,
     "seo_title": {
       "en": "Native Acclimatized Green Grape Live Vine | Aronyok Plant Nursery",
-      "bn": "দেশি সবুজ আঙ্গুর লতা চারা (Native Grape Vine Plant) | অরণ্যক নার্সারি"
+      "bn": "দেশি সবুজ আঙ্গুর লতা চারা (Native Grape Vine Plant) | আরণ্যক নার্সারি"
     },
     "seo_description": {
       "en": "Robust acclimatized green grape vine. Vigorous climber producing refreshing clusters while providing lush canopy shade.",
@@ -902,7 +902,7 @@ export const fallbackProducts: Product[] = [
     "is_featured": false,
     "seo_title": {
       "en": "Sweet Sugar Apple (Shorifa / Annona Squamosa) Plant | Aronyok Plant Nursery",
-      "bn": "থাই মিষ্টি আতা / শরীফা চারা (Thai Sugar Apple / Shorifa) | অরণ্যক নার্সারি"
+      "bn": "থাই মিষ্টি আতা / শরীফা চারা (Thai Sugar Apple / Shorifa) | আরণ্যক নার্সারি"
     },
     "seo_description": {
       "en": "Sweet custard-like Sugar Apple (Annona squamosa) plant. Compact tree producing succulent segmented fruits rich in dietary fiber.",
@@ -929,7 +929,7 @@ export const fallbackProducts: Product[] = [
     "is_featured": true,
     "seo_title": {
       "en": "Fragrant White-Yellow Plumeria (Kathgolap) Shrub | Aronyok Plant Nursery",
-      "bn": "সুগন্ধি সাদা-হলুদ কাঠগোলাপ চারা (Kathgolap / Plumeria) | অরণ্যক নার্সারি"
+      "bn": "সুগন্ধি সাদা-হলুদ কাঠগোলাপ চারা (Kathgolap / Plumeria) | আরণ্যক নার্সারি"
     },
     "seo_description": {
       "en": "Aromatic Plumeria rubra (Frangipani) plant. Features velvety fragrant ivory petals with sunny golden centers; exceptionally drought-tolerant.",
@@ -956,7 +956,7 @@ export const fallbackProducts: Product[] = [
     "is_featured": true,
     "seo_title": {
       "en": "Exotic Pink Flesh Jackfruit Live Grafted Plant | Aronyok Plant Nursery",
-      "bn": "গোলাপি কোয়ার পিঙ্ক কাঁঠাল চারা (Pink Jackfruit Plant) | অরণ্যক নার্সারি"
+      "bn": "গোলাপি কোয়ার পিঙ্ক কাঁঠাল চারা (Pink Jackfruit Plant) | আরণ্যক নার্সারি"
     },
     "seo_description": {
       "en": "Rare grafted Pink Jackfruit (Artocarpus heterophyllus) tree. Produces exquisite rose-pink pods with rich honey sweetness.",
@@ -983,7 +983,7 @@ export const fallbackProducts: Product[] = [
     "is_featured": true,
     "seo_title": {
       "en": "Black Stone Exotic Sweet Mango Live Grafted Plant | Aronyok Plant Nursery",
-      "bn": "ব্ল্যাকস্টোন মিষ্টি আম কলম চারা (Black Stone Mango Plant) | অরণ্যক নার্সারি"
+      "bn": "ব্ল্যাকস্টোন মিষ্টি আম কলম চারা (Black Stone Mango Plant) | আরণ্যক নার্সারি"
     },
     "seo_description": {
       "en": "Prized Black Stone exotic mango variety featuring deep dark purple skin and intensely sweet, fragrant golden pulp.",
@@ -1010,7 +1010,7 @@ export const fallbackProducts: Product[] = [
     "is_featured": true,
     "seo_title": {
       "en": "Darjeeling Sweet Mandarin Orange Live Plant | Aronyok Plant Nursery",
-      "bn": "দার্জিলিং মিষ্টি কমলা কলম চারা (Darjeeling Orange Plant) | অরণ্যক নার্সারি"
+      "bn": "দার্জিলিং মিষ্টি কমলা কলম চারা (Darjeeling Orange Plant) | আরণ্যক নার্সারি"
     },
     "seo_description": {
       "en": "Prolific sweet Darjeeling Mandarin orange plant. Loose easy-peel rinds and aromatic juicy segments thrive in pots.",
@@ -1037,7 +1037,7 @@ export const fallbackProducts: Product[] = [
     "is_featured": false,
     "seo_title": {
       "en": "Alubukhara (Sweet Persian Plum / Prune) Live Plant | Aronyok Plant Nursery",
-      "bn": "মিষ্টি পোলাও ও আচারের আলুবোখারা চারা (Alubukhara Plant) | অরণ্যক নার্সারি"
+      "bn": "মিষ্টি পোলাও ও আচারের আলুবোখারা চারা (Alubukhara Plant) | আরণ্যক নার্সারি"
     },
     "seo_description": {
       "en": "Culinary favorite Alubukhara (Prunus domestica) plum plant. Bears deep purple stone fruits celebrated in gourmet rice dishes and preserves.",
@@ -1064,7 +1064,7 @@ export const fallbackProducts: Product[] = [
     "is_featured": true,
     "seo_title": {
       "en": "Golden Pothos (Air Purifying Money Plant) Live Pot | Aronyok Plant Nursery",
-      "bn": "গোল্ডেন মানি প্ল্যান্ট ইনডোর লতা (Golden Money Plant) | অরণ্যক নার্সারি"
+      "bn": "গোল্ডেন মানি প্ল্যান্ট ইনডোর লতা (Golden Money Plant) | আরণ্যক নার্সারি"
     },
     "seo_description": {
       "en": "Hardy Golden Pothos (Epipremnum aureum). Renowned NASA-certified indoor air purifier that flourishes in low light and water.",
@@ -1091,7 +1091,7 @@ export const fallbackProducts: Product[] = [
     "is_featured": true,
     "seo_title": {
       "en": "Aglaonema Lipstick (Chinese Evergreen) Indoor Plant | Aronyok Plant Nursery",
-      "bn": "অ্যাগলোনিমা লিপস্টিক ইনডোর প্ল্যান্ট (Indoor Foliage Plant) | অরণ্যক নার্সারি"
+      "bn": "অ্যাগলোনিমা লিপস্টিক ইনডোর প্ল্যান্ট (Indoor Foliage Plant) | আরণ্যক নার্সারি"
     },
     "seo_description": {
       "en": "Lush Aglaonema with striking pink-edged emerald foliage. Low-maintenance air purifier that brightens living rooms and workspaces.",
@@ -1118,7 +1118,7 @@ export const fallbackProducts: Product[] = [
     "is_featured": false,
     "seo_title": {
       "en": "Creeping Fig (Lotabahar / Ficus Pumila) Ornamental Vine | Aronyok Plant Nursery",
-      "bn": "সবুজ লতাবাহার দেয়াল লতা (Lotabahar / Creeping Fig) | অরণ্যক নার্সারি"
+      "bn": "সবুজ লতাবাহার দেয়াল লতা (Lotabahar / Creeping Fig) | আরণ্যক নার্সারি"
     },
     "seo_description": {
       "en": "Ficus pumila evergreen climbing vine. Climbs vertical trellis and walls with delicate heart-shaped leaves creating a living green wall.",
@@ -1145,7 +1145,7 @@ export const fallbackProducts: Product[] = [
     "is_featured": true,
     "seo_title": {
       "en": "Mediterranean Sweet Fig (Tin Fol / Anjeer) Live Plant | Aronyok Plant Nursery",
-      "bn": "পবিত্র ডুমুর / মিষ্টি তিন ফল চারা (Anjeer / Fig Plant) | অরণ্যক নার্সারি"
+      "bn": "পবিত্র ডুমুর / মিষ্টি তিন ফল চারা (Anjeer / Fig Plant) | আরণ্যক নার্সারি"
     },
     "seo_description": {
       "en": "Revered Ficus carica (Tin Fol / Fig) plant. Yields sweet, nutrient-dense purple-green figs directly on young branches.",
@@ -1172,7 +1172,7 @@ export const fallbackProducts: Product[] = [
     "is_featured": true,
     "seo_title": {
       "en": "Sansevieria Trifasciata (Snake Plant / Mother-in-Law Tongue) | Aronyok Plant Nursery",
-      "bn": "স্নেক প্ল্যান্ট - প্রাকৃতিক অক্সিজেন প্ল্যান্ট (Snake Plant) | অরণ্যক নার্সারি"
+      "bn": "স্নেক প্ল্যান্ট - প্রাকৃতিক অক্সিজেন প্ল্যান্ট (Snake Plant) | আরণ্যক নার্সারি"
     },
     "seo_description": {
       "en": "Top air-purifying Sansevieria that produces oxygen at night and filters airborne toxins. Virtually indestructible and drought-resistant.",
@@ -1199,7 +1199,7 @@ export const fallbackProducts: Product[] = [
     "is_featured": false,
     "seo_title": {
       "en": "Crown of Thorns (Euphorbia Milii) Vibrant Red Bloom | Aronyok Plant Nursery",
-      "bn": "লাল কাটামুকুট ফুল গাছ (Crown of Thorns / Euphorbia) | অরণ্যক নার্সারি"
+      "bn": "লাল কাটামুকুট ফুল গাছ (Crown of Thorns / Euphorbia) | আরণ্যক নার্সারি"
     },
     "seo_description": {
       "en": "Euphorbia milii flowering succulent shrub. Features clusters of long-lasting coral-red bracts and excels in intense sunny balconies.",
@@ -1226,7 +1226,7 @@ export const fallbackProducts: Product[] = [
     "is_featured": true,
     "seo_title": {
       "en": "All-Season Seedless Kagzi Lemon Live Plant | Aronyok Plant Nursery",
-      "bn": "বারোমাসি কাগজি লেবু কলম চারা (Kagzi Lemon Plant) | অরণ্যক নার্সারি"
+      "bn": "বারোমাসি কাগজি লেবু কলম চারা (Kagzi Lemon Plant) | আরণ্যক নার্সারি"
     },
     "seo_description": {
       "en": "Fragrant, highly juicy thin-skinned Kagzi lemon plant. Yields constant clusters of refreshing citrus fruit in home containers.",
@@ -1253,7 +1253,7 @@ export const fallbackProducts: Product[] = [
     "is_featured": false,
     "seo_title": {
       "en": "Natural Henna (Lawsonia Inermis / Mehendi) Live Shrub | Aronyok Plant Nursery",
-      "bn": "গাঢ় রঙের দেশি মেহেদি গাছের চারা (Mehendi / Henna Plant) | অরণ্যক নার্সারি"
+      "bn": "গাঢ় রঙের দেশি মেহেদি গাছের চারা (Mehendi / Henna Plant) | আরণ্যক নার্সারি"
     },
     "seo_description": {
       "en": "Authentic Lawsonia inermis (Henna) seedling. Fresh leaves yield dark, organic natural dye for skin ornamentation and scalp conditioning.",
@@ -1280,7 +1280,7 @@ export const fallbackProducts: Product[] = [
     "is_featured": false,
     "seo_title": {
       "en": "Shatavari (Asparagus Racemosus) Vitality Herb Plant | Aronyok Plant Nursery",
-      "bn": "ভেষজ শতমূলী ঔষধি চারা (Shatavari / Satamool Plant) | অরণ্যক নার্সারি"
+      "bn": "ভেষজ শতমূলী ঔষধি চারা (Shatavari / Satamool Plant) | আরণ্যক নার্সারি"
     },
     "seo_description": {
       "en": "Premier Ayurvedic adaptogenic climbing herb (Asparagus racemosus). Revered for hormonal balance, vitality, and cooling rejuvenation.",
@@ -1307,7 +1307,7 @@ export const fallbackProducts: Product[] = [
     "is_featured": false,
     "seo_title": {
       "en": "Areca Palm (Supari / Betel Nut) Slender Seedling | Aronyok Plant Nursery",
-      "bn": "উন্নত জাতের সুপারি গাছের চারা (Betel Nut / Supari Palm) | অরণ্যক নার্সারি"
+      "bn": "উন্নত জাতের সুপারি গাছের চারা (Betel Nut / Supari Palm) | আরণ্যক নার্সারি"
     },
     "seo_description": {
       "en": "Graceful Areca catechu (Betel Nut Palm) sapling. Adds elegant tropical symmetry while bearing traditional betel nuts.",
@@ -1334,7 +1334,7 @@ export const fallbackProducts: Product[] = [
     "is_featured": false,
     "seo_title": {
       "en": "Black Musli (Curculigo Orchioides / Talmool) Medicinal Plant | Aronyok Plant Nursery",
-      "bn": "মূল্যবান ঔষধি তালমূল চারা (Talmool / Black Musli) | অরণ্যক নার্সারি"
+      "bn": "মূল্যবান ঔষধি তালমূল চারা (Talmool / Black Musli) | আরণ্যক নার্সারি"
     },
     "seo_description": {
       "en": "Rare Ayurvedic restorative herb (Curculigo orchioides / Kali Musli). Known for stamina tonics, palm-like fronds, and golden blossoms.",
@@ -1397,17 +1397,17 @@ export const fallbackDynamicPages: DynamicPage[] = [
     },
     "slug": "about-us",
     "page_content": {
-      "en": "### Welcome to Aronyok (অরণ্যক)\n\nRooted in the ancient riverbeds and verdant forests of Bengal, Aronyok was born out of a desire to rekindle humanity's sacred bond with mother earth. We curate wild, pesticide-free harvests directly from indigenous forest harvesters and organic village artisans.\n\n#### Our Guiding Tenets:\n- **Authenticity:** Zero chemical adulteration, direct farm-to-table sourcing.\n- **Ecological Stewardship:** Biodegradable packaging and carbon-conscious delivery.\n- **Empowerment:** Fair living wages for forest honey hunters and local clay craftspeople.",
-      "bn": "### অরণ্যকে আপনাকে স্বাগতম\n\nবাংলার চিরসবুজ প্রকৃতির স্নিগ্ধতা ও ভেষজ ঐতিহ্যের প্রতি গভীর শ্রদ্ধা থেকে অরণ্যকের জন্ম। আমাদের লক্ষ্য রাসায়নিকমুক্ত প্রাকৃতিক জীবনধারাকে সবার নাগালে পৌঁছে দেওয়া।\n\n#### আমাদের মূল দর্শন:\n- **বিশুদ্ধতা:** কোনো কৃত্রিম উপাদান ছাড়া সরাসরি বনাঞ্চল ও কৃষকের থেকে সংগৃহীত।\n- **পরিবেশবান্ধব:** প্লাস্টিকবিহীন প্যাকেজিং ও টেকসই উৎপাদন পদ্ধতি।\n- **সামাজিক দায়বদ্ধতা:** সুন্দরবনের মৌয়াল এবং প্রান্তিক মৃৎশিল্পীদের ন্যায্য অধিকার নিশ্চিতকরণ।"
+      "en": "### Welcome to Aronyok (আরণ্যক)\n\nRooted in the ancient riverbeds and verdant forests of Bengal, Aronyok was born out of a desire to rekindle humanity's sacred bond with mother earth. We curate wild, pesticide-free harvests directly from indigenous forest harvesters and organic village artisans.\n\n#### Our Guiding Tenets:\n- **Authenticity:** Zero chemical adulteration, direct farm-to-table sourcing.\n- **Ecological Stewardship:** Biodegradable packaging and carbon-conscious delivery.\n- **Empowerment:** Fair living wages for forest honey hunters and local clay craftspeople.",
+      "bn": "### আরণ্যকে আপনাকে স্বাগতম\n\nবাংলার চিরসবুজ প্রকৃতির স্নিগ্ধতা ও ভেষজ ঐতিহ্যের প্রতি গভীর শ্রদ্ধা থেকে আরণ্যকের জন্ম। আমাদের লক্ষ্য রাসায়নিকমুক্ত প্রাকৃতিক জীবনধারাকে সবার নাগালে পৌঁছে দেওয়া।\n\n#### আমাদের মূল দর্শন:\n- **বিশুদ্ধতা:** কোনো কৃত্রিম উপাদান ছাড়া সরাসরি বনাঞ্চল ও কৃষকের থেকে সংগৃহীত।\n- **পরিবেশবান্ধব:** প্লাস্টিকবিহীন প্যাকেজিং ও টেকসই উৎপাদন পদ্ধতি।\n- **সামাজিক দায়বদ্ধতা:** সুন্দরবনের মৌয়াল এবং প্রান্তিক মৃৎশিল্পীদের ন্যায্য অধিকার নিশ্চিতকরণ।"
     },
     "is_published": true,
     "seo_title": {
       "en": "About Aronyok | Nature & Sustainability",
-      "bn": "অরণ্যক পরিচিতি | টেকসই জীবন"
+      "bn": "আরণ্যক পরিচিতি | টেকসই জীবন"
     },
     "seo_description": {
       "en": "The story and mission of Aronyok",
-      "bn": "অরণ্যকের লক্ষ্য ও পরিচিতি"
+      "bn": "আরণ্যকের লক্ষ্য ও পরিচিতি"
     }
   },
   {
@@ -1419,12 +1419,12 @@ export const fallbackDynamicPages: DynamicPage[] = [
     "slug": "sustainability",
     "page_content": {
       "en": "### Our Eco-Commitment\n\nAt Aronyok, every package sent out uses recycled paper padding, jute twine strings, and terracotta containers wherever possible. We plant 1 native tree seedling for every 10 orders completed.",
-      "bn": "### পরিবেশের প্রতি দায়বদ্ধতা\n\nঅরণ্যকের প্রতিটি অর্ডারে আমরা ব্যবহার করি পুনর্ব্যবহারযোগ্য কাগজের বক্স, পাটের সুতলি এবং মাটির পাত্র। এছাড়া প্রতি ১০টি সফল অর্ডারের বিপরীতে আমরা একটি দেশীয় বনজ বা ওষধি চারা রোপণ করি।"
+      "bn": "### পরিবেশের প্রতি দায়বদ্ধতা\n\nআরণ্যকের প্রতিটি অর্ডারে আমরা ব্যবহার করি পুনর্ব্যবহারযোগ্য কাগজের বক্স, পাটের সুতলি এবং মাটির পাত্র। এছাড়া প্রতি ১০টি সফল অর্ডারের বিপরীতে আমরা একটি দেশীয় বনজ বা ওষধি চারা রোপণ করি।"
     },
     "is_published": true,
     "seo_title": {
       "en": "Sustainability Pledge | Aronyok",
-      "bn": "আমাদের টেকসই অঙ্গীকার | অরণ্যক"
+      "bn": "আমাদের টেকসই অঙ্গীকার | আরণ্যক"
     },
     "seo_description": {
       "en": "How we preserve nature with every order",

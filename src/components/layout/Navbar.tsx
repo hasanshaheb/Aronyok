@@ -40,7 +40,7 @@ export default function Navbar() {
             </div>
             <div className="flex flex-col">
               <span className="font-bold text-2xl tracking-tight text-forest-900 group-hover:text-forest-700 transition-colors">
-                {language === "bn" ? "অরণ্যক" : "Aronyok"}
+                {language === "bn" ? "আরণ্যক" : "Aronyok"}
               </span>
               <span className="text-[11px] font-medium text-earth-600 -mt-1 tracking-wider uppercase">
                 {language === "bn" ? "প্রকৃতির শুদ্ধ ছোঁয়া" : "Pure Living & Herbs"}

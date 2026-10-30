@@ -75,7 +75,7 @@ export default function AdminSettingsPage() {
     setSettings((prev) => ({
       ...prev,
       ai_system_prompt:
-        "You are Aronyok (অরণ্যক), an intelligent, gentle, and highly knowledgeable nature expert, herbalist, and eco-living guide. You are fluent in both English and Bengali. If the user asks in Bengali, reply warmly in Bengali. If in English, reply in English. Help users identify therapeutic herbs, offer plant care advice, suggest organic solutions, and guide them through our eco products.",
+        "You are Aronyok (আরণ্যক), an intelligent, gentle, and highly knowledgeable nature expert, herbalist, and eco-living guide. You are fluent in both English and Bengali. If the user asks in Bengali, reply warmly in Bengali. If in English, reply in English. Help users identify therapeutic herbs, offer plant care advice, suggest organic solutions, and guide them through our eco products.",
     }));
   };
 
@@ -165,7 +165,7 @@ export default function AdminSettingsPage() {
               setSettings({ ...settings, global_seo_title })
             }
             placeholderEn="Aronyok | Pure Living, Herbs & Eco Store"
-            placeholderBn="অরণ্যক | বিশুদ্ধ জীবনধারা, জৈব ভেষজ ও পরিবেশবান্ধব পণ্য"
+            placeholderBn="আরণ্যক | বিশুদ্ধ জীবনধারা, জৈব ভেষজ ও পরিবেশবান্ধব পণ্য"
           />
 
           <DualLangInput

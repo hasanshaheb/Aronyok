@@ -59,7 +59,7 @@ export default function ShopPage() {
           <span>{language === "bn" ? "প্রাকৃতিক বাজার" : "Organic Catalog"}</span>
         </div>
         <h1 className="text-3xl sm:text-4xl font-extrabold text-forest-950 tracking-tight">
-          {language === "bn" ? "অরণ্যক প্রকৃতি সম্ভার" : "Aronyok Earth Goods"}
+          {language === "bn" ? "আরণ্যক প্রকৃতি সম্ভার" : "Aronyok Earth Goods"}
         </h1>
         <p className="text-sm text-forest-700/80">
           {language === "bn"

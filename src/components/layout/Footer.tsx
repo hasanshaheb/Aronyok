@@ -26,7 +26,7 @@ export default function Footer() {
                 <Sprout className="w-5 h-5 text-forest-300" />
               </div>
               <span className="font-bold text-2xl tracking-tight text-white">
-                {language === "bn" ? "অরণ্যক" : "Aronyok"}
+                {language === "bn" ? "আরণ্যক" : "Aronyok"}
               </span>
             </div>
             <p className="text-forest-200/80 text-sm leading-relaxed">
@@ -138,7 +138,7 @@ export default function Footer() {
 
         {/* Bottom Bar */}
         <div className="pt-8 mt-8 border-t border-forest-800 flex flex-col sm:flex-row items-center justify-between text-xs text-forest-300/80 gap-4">
-          <p>© {new Date().getFullYear()} Aronyok (অরণ্যক). {t.footer.rights}</p>
+          <p>© {new Date().getFullYear()} Aronyok (আরণ্যক). {t.footer.rights}</p>
           <div className="flex items-center gap-1.5 text-forest-400">
             <span>Crafted with</span>
             <Heart className="w-3.5 h-3.5 text-red-400 fill-red-400" />

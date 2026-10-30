@@ -1,5 +1,5 @@
 -- ==============================================================================
--- ARONYOK (অরণ্যক) - SUPABASE COMPLETE DATABASE SCHEMA
+-- ARONYOK (আরণ্যক) - SUPABASE COMPLETE DATABASE SCHEMA
 -- Bilingual (EN/BN) Nature & Eco Storefront, Blog, Tools, Pages & Admin CMS
 -- ==============================================================================
 
@@ -118,11 +118,11 @@ CREATE TABLE IF NOT EXISTS public.tools (
 -- 6. SETTINGS & ADS TABLE
 CREATE TABLE IF NOT EXISTS public.settings (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  global_seo_title jsonb DEFAULT '{"en": "Aronyok - Pure Living & Herbal Eco Store", "bn": "অরণ্যক - বিশুদ্ধ প্রাকৃতিক জীবন ও ভেষজ সম্ভার"}'::jsonb,
+  global_seo_title jsonb DEFAULT '{"en": "Aronyok - Pure Living & Herbal Eco Store", "bn": "আরণ্যক - বিশুদ্ধ প্রাকৃতিক জীবন ও ভেষজ সম্ভার"}'::jsonb,
   global_seo_description jsonb DEFAULT '{"en": "Discover organic herbs, natural wellness, and green gardening tools.", "bn": "আবিষ্কার করুন জৈব ভেষজ, প্রাকৃতিক সুস্থতা এবং পরিবেশবান্ধব বাগান উপাদান।"}'::jsonb,
   analytics_script text DEFAULT '',
   ad_banner_top_html text DEFAULT '',
-  ai_system_prompt text DEFAULT 'You are Aronyok (অরণ্যক), an intelligent, gentle, and highly knowledgeable nature expert, herbalist, and eco-living guide. You are fluent in both English and Bengali. If the user asks in Bengali, reply warmly in Bengali. If in English, reply in English. Help users identify therapeutic herbs, offer plant care advice, suggest organic solutions, and guide them through our eco products.',
+  ai_system_prompt text DEFAULT 'You are Aronyok (আরণ্যক), an intelligent, gentle, and highly knowledgeable nature expert, herbalist, and eco-living guide. You are fluent in both English and Bengali. If the user asks in Bengali, reply warmly in Bengali. If in English, reply in English. Help users identify therapeutic herbs, offer plant care advice, suggest organic solutions, and guide them through our eco products.',
   contact_email text DEFAULT 'care@aronyok.com',
   contact_phone text DEFAULT '+880 1700 000000',
   created_at timestamptz DEFAULT timezone('utc'::text, now()) NOT NULL,

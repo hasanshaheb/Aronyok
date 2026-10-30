@@ -27,7 +27,7 @@ export default function FloatingAssistant() {
           role: "assistant",
           content:
             language === "bn"
-              ? "নমস্কার ও স্বাগতম! আমি অরণ্যক—আপনার ব্যক্তিগত প্রকৃতি ও ভেষজ বিশেষজ্ঞ। গাছের যত্ন, ওষধি পাতার গুণাগুণ বা পরিবেশবান্ধব জীবনধারা সম্পর্কিত যেকোনো প্রশ্ন করতে পারেন।"
+              ? "নমস্কার ও স্বাগতম! আমি আরণ্যক—আপনার ব্যক্তিগত প্রকৃতি ও ভেষজ বিশেষজ্ঞ। গাছের যত্ন, ওষধি পাতার গুণাগুণ বা পরিবেশবান্ধব জীবনধারা সম্পর্কিত যেকোনো প্রশ্ন করতে পারেন।"
               : "Greetings! I am Aronyok—your dedicated nature and herbal guide. Ask me anything about medicinal plants, gardening tips, or organic remedies.",
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         },

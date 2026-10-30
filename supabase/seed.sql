@@ -1,5 +1,5 @@
 -- ==============================================================================
--- ARONYOK (অরণ্যক) - SEED DATA FOR BILINGUAL STOREFRONT, BLOG, TOOLS, PAGES
+-- ARONYOK (আরণ্যক) - SEED DATA FOR BILINGUAL STOREFRONT, BLOG, TOOLS, PAGES
 -- ==============================================================================
 
 -- 1. SETTINGS ROW
@@ -14,11 +14,11 @@ INSERT INTO public.settings (
   contact_phone
 ) VALUES (
   '00000000-0000-0000-0000-000000000001',
-  '{"en": "Aronyok | Pure Living, Organic Herbs & Eco Store", "bn": "অরণ্যক | বিশুদ্ধ জীবনধারা, জৈব ভেষজ ও পরিবেশবান্ধব পণ্য"}',
-  '{"en": "Explore wild raw honey, cold-pressed oils, medicinal herbs, and artisanal pottery from Bangladesh with Aronyok.", "bn": "অরণ্যকে আবিষ্কার করুন খাঁটি প্রাকৃতিক মধু, ঘানিতে ভাঙা তেল, ওষধি গাছ এবং পরিবেশবান্ধব মাটির সামগ্রী।"}',
+  '{"en": "Aronyok | Pure Living, Organic Herbs & Eco Store", "bn": "আরণ্যক | বিশুদ্ধ জীবনধারা, জৈব ভেষজ ও পরিবেশবান্ধব পণ্য"}',
+  '{"en": "Explore wild raw honey, cold-pressed oils, medicinal herbs, and artisanal pottery from Bangladesh with Aronyok.", "bn": "আরণ্যকে আবিষ্কার করুন খাঁটি প্রাকৃতিক মধু, ঘানিতে ভাঙা তেল, ওষধি গাছ এবং পরিবেশবান্ধব মাটির সামগ্রী।"}',
   '<!-- Google tag (gtag.js) sample analytics -->',
   '<div class="bg-forest-800 text-cream-100 text-xs py-2 px-4 text-center font-medium flex items-center justify-center gap-2"><span class="bg-forest-600 text-white text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full">Spring Eco Sale</span> <span>Enjoy 15% off all medicinal herbs with code <strong>ARONYOKGREEN</strong> 🌱</span></div>',
-  'You are Aronyok (অরণ্যক), an intelligent, gentle, and highly knowledgeable nature expert, herbalist, and eco-living guide. You are fluent in both English and Bengali. If the user asks in Bengali, reply warmly in Bengali. If in English, reply in English. Help users identify therapeutic herbs, offer plant care advice, suggest organic solutions, and guide them through our eco products.',
+  'You are Aronyok (আরণ্যক), an intelligent, gentle, and highly knowledgeable nature expert, herbalist, and eco-living guide. You are fluent in both English and Bengali. If the user asks in Bengali, reply warmly in Bengali. If in English, reply in English. Help users identify therapeutic herbs, offer plant care advice, suggest organic solutions, and guide them through our eco products.',
   'hello@aronyok.com',
   '+880 1711 223344'
 ) ON CONFLICT (id) DO UPDATE SET
@@ -40,7 +40,7 @@ VALUES
   'honey',
   true,
   true,
-  '{"en": "Buy Pure Sundarbans Raw Honey Online | Aronyok", "bn": "সুন্দরবনের খাঁটি কাঁচা মধু কিনুন | অরণ্যক"}',
+  '{"en": "Buy Pure Sundarbans Raw Honey Online | Aronyok", "bn": "সুন্দরবনের খাঁটি কাঁচা মধু কিনুন | আরণ্যক"}',
   '{"en": "Unfiltered raw honey harvested directly from the wild mangroves of Sundarbans.", "bn": "সুন্দরবনের প্রাকৃতিক বন থেকে সংগৃহীত শতভাগ খাঁটি কাঁচা মধু।"}'
 ),
 (
@@ -54,7 +54,7 @@ VALUES
   'herbs',
   true,
   true,
-  '{"en": "Pure Cold Pressed Neem Oil | Natural Pest & Skin Care", "bn": "ঘানিতে ভাঙা খাঁটি নিম তেল | অরণ্যক"}',
+  '{"en": "Pure Cold Pressed Neem Oil | Natural Pest & Skin Care", "bn": "ঘানিতে ভাঙা খাঁটি নিম তেল | আরণ্যক"}',
   '{"en": "All-natural cold pressed neem oil for organic gardening and herbal personal care.", "bn": "গাছের যত্ন ও ভেষজ ত্বকের সুরক্ষায় শতভাগ খাঁটি নিম তেল।"}'
 ),
 (
@@ -68,7 +68,7 @@ VALUES
   'wellness',
   true,
   true,
-  '{"en": "Tulsi Ashwagandha Immunity Herbal Tea | Aronyok", "bn": "তুলসী ও অশ্বগন্ধা হারবাল চা | অরণ্যক"}',
+  '{"en": "Tulsi Ashwagandha Immunity Herbal Tea | Aronyok", "bn": "তুলসী ও অশ্বগন্ধা হারবাল চা | আরণ্যক"}',
   '{"en": "Relaxing organic herbal tea blend with Krishna Tulsi and Ashwagandha.", "bn": "প্রাকৃতিক উপাদানে তৈরি রোগ প্রতিরোধকারী ও মানসিক প্রশান্তিদায়ক হারবাল চা।"}'
 ),
 (
@@ -96,7 +96,7 @@ VALUES
   'plants',
   true,
   true,
-  '{"en": "Live Holy Basil Plant Online | Aronyok", "bn": "কৃষ্ণ তুলসীর লাইভ চারা কিনুন | অরণ্যক"}',
+  '{"en": "Live Holy Basil Plant Online | Aronyok", "bn": "কৃষ্ণ তুলসীর লাইভ চারা কিনুন | আরণ্যক"}',
   '{"en": "Healthy live Krishna Tulsi plant delivered to your door.", "bn": "ঔষধি গুণসম্পন্ন সতেজ কৃষ্ণ তুলসী চারা।"}'
 ),
 (
@@ -110,7 +110,7 @@ VALUES
   'gardening',
   true,
   false,
-  '{"en": "Organic Vermicompost Fertilizer 2kg | Aronyok", "bn": "প্রাকৃতিক ভার্মিকম্পোস্ট জৈব সার | অরণ্যক"}',
+  '{"en": "Organic Vermicompost Fertilizer 2kg | Aronyok", "bn": "প্রাকৃতিক ভার্মিকম্পোস্ট জৈব সার | আরণ্যক"}',
   '{"en": "Premium organic vermicompost for potted herbs, vegetables, and flowers.", "bn": "টবের গাছ ও সবজির জন্য সেরা প্রাকৃতিক কেঁচো সার।"}'
 ),
 (
@@ -124,7 +124,7 @@ VALUES
   'plants',
   true,
   true,
-  '{"en":"Cinnamon (Daruchini) Live Spice Seedling | Aronyok Plant Nursery","bn":"দারুচিনি গাছের চারা (Cinnamon Plant) | অরণ্যক নার্সারি"}',
+  '{"en":"Cinnamon (Daruchini) Live Spice Seedling | Aronyok Plant Nursery","bn":"দারুচিনি গাছের চারা (Cinnamon Plant) | আরণ্যক নার্সারি"}',
   '{"en":"Aromatic and therapeutic live cinnamon tree seedling. Its bark and leaves yield aromatic spice and herbal infusions. Ideal for terrace pots or home orchards.","bn":"সুগন্ধি ও ঔষধি গুণসম্পন্ন সতেজ দারুচিনি গাছের চারা। এর ছাল ও পাতা মসলা এবং ভেষজ চা তৈরিতে ব্যবহৃত হয়। টবে বা বাগানে সহজেই চাষযোগ্য।"}'
 ),
 (
@@ -138,7 +138,7 @@ VALUES
   'plants',
   true,
   false,
-  '{"en":"Indian Black Plum (Jamun) Grafted Live Plant | Aronyok Plant Nursery","bn":"ইন্ডিয়ান কালো জামের কলম চারা (Indian Jamun Plant) | অরণ্যক নার্সারি"}',
+  '{"en":"Indian Black Plum (Jamun) Grafted Live Plant | Aronyok Plant Nursery","bn":"ইন্ডিয়ান কালো জামের কলম চারা (Indian Jamun Plant) | আরণ্যক নার্সারি"}',
   '{"en":"High-yield grafted Indian Black Plum (Jamun) seedling. Produces juicy, sweet, purple fruits beneficial for blood sugar management.","bn":"উন্নত জাতের বড় মিষ্টি ইন্ডিয়ান জামের কলম করা চারা। কম সময়ে ফলনশীল এবং ডায়াবেটিস নিয়ন্ত্রণে জাম ও এর বীজ অত্যন্ত উপকারী।"}'
 ),
 (
@@ -152,7 +152,7 @@ VALUES
   'plants',
   true,
   true,
-  '{"en":"Vietnamese All-Season Sweet Malta Seedling | Aronyok Plant Nursery","bn":"ভিয়েতনামি বারোমাসি মাল্টা চারা (Vietnamese Malta Plant) | অরণ্যক নার্সারি"}',
+  '{"en":"Vietnamese All-Season Sweet Malta Seedling | Aronyok Plant Nursery","bn":"ভিয়েতনামি বারোমাসি মাল্টা চারা (Vietnamese Malta Plant) | আরণ্যক নার্সারি"}',
   '{"en":"Ever-bearing grafted Vietnamese sweet Malta citrus plant. Highly productive, sweet and juicy, suitable for rooftop drum cultivation.","bn":"সারাবছর ফলনশীল সুমিষ্ট ও রসালো ভিয়েতনামি মাল্টার কলম চারা। ছাদে বড় টবে বা ড্রামে খুব দ্রুত ফলন দেয়।"}'
 ),
 (
@@ -166,7 +166,7 @@ VALUES
   'plants',
   true,
   true,
-  '{"en":"BARI-1 Sweet Malta Citrus Live Plant | Aronyok Plant Nursery","bn":"বারি-১ মিষ্টি মাল্টা চারা (BARI-1 Malta Plant) | অরণ্যক নার্সারি"}',
+  '{"en":"BARI-1 Sweet Malta Citrus Live Plant | Aronyok Plant Nursery","bn":"বারি-১ মিষ্টি মাল্টা চারা (BARI-1 Malta Plant) | আরণ্যক নার্সারি"}',
   '{"en":"Authentic BARI-1 variety Malta developed by BARI. Known for its distinct sweet taste, thin peel, and heavy fruiting capacity.","bn":"বাংলাদেশ কৃষি গবেষণা ইনস্টিটিউট উদ্ভাবিত জনপ্রিয় বারি-১ মাল্টা। হলুদ-সবুজ রঙের পাতলা খোসা ও প্রচুর রসালো মিষ্টি মাল্টা ধরে।"}'
 ),
 (
@@ -180,7 +180,7 @@ VALUES
   'plants',
   true,
   true,
-  '{"en":"Tropical Low-Chill Apple Live Plant | Aronyok Plant Nursery","bn":"উষ্ণমণ্ডলীয় আপেল চারা (Tropical Apple Plant) | অরণ্যক নার্সারি"}',
+  '{"en":"Tropical Low-Chill Apple Live Plant | Aronyok Plant Nursery","bn":"উষ্ণমণ্ডলীয় আপেল চারা (Tropical Apple Plant) | আরণ্যক নার্সারি"}',
   '{"en":"Acclimatized low-chill tropical apple seedling suited for warm subtropical climates. Thrives in containers with regular organic feed.","bn":"বাংলাদেশের আবহাওয়া উপযোগী উষ্ণমণ্ডলীয় জাতের মিষ্টি আপেল চারা। ছাদে বড় টবে সঠিক পরিচর্যায় মিষ্টি আপেল ধরে।"}'
 ),
 (
@@ -194,7 +194,7 @@ VALUES
   'plants',
   true,
   false,
-  '{"en":"Wild Green Olive (Jolpai) Live Seedling | Aronyok Plant Nursery","bn":"দেশি টক-মিষ্টি জলপাই চারা (Jolpai Olive Plant) | অরণ্যক নার্সারি"}',
+  '{"en":"Wild Green Olive (Jolpai) Live Seedling | Aronyok Plant Nursery","bn":"দেশি টক-মিষ্টি জলপাই চারা (Jolpai Olive Plant) | আরণ্যক নার্সারি"}',
   '{"en":"Native South Asian green olive (Elaeocarpus floribundus) seedling. Excellent for vitamin C and making savory pickles.","bn":"পুষ্টিগুণে ভরপুর ঐতিহ্যবাহী জলপাইয়ের কলম চারা। সুস্বাদু আচার ও চাটনি তৈরিতে বহুল ব্যবহৃত এবং ভিটামিন সি সমৃদ্ধ।"}'
 ),
 (
@@ -208,7 +208,7 @@ VALUES
   'plants',
   true,
   false,
-  '{"en":"Velvet Apple (Gaub / Mabolo) Live Seedling | Aronyok Plant Nursery","bn":"দেশি মিষ্টি বিলাতি গাব চারা (Velvet Apple / Gaub Plant) | অরণ্যক নার্সারি"}',
+  '{"en":"Velvet Apple (Gaub / Mabolo) Live Seedling | Aronyok Plant Nursery","bn":"দেশি মিষ্টি বিলাতি গাব চারা (Velvet Apple / Gaub Plant) | আরণ্যক নার্সারি"}',
   '{"en":"Traditional velvet apple (Diospyros blancoi) plant. Produces aromatic, creamy sweet fruits with velvet-textured skin.","bn":"ঐতিহ্যবাহী লালচে সুস্বাদু বিলাতি গাবের চারা। মখমলের মতো খোসাযুক্ত এবং দারুণ মিষ্টি সুবাসের দেশীয় ফল।"}'
 ),
 (
@@ -222,7 +222,7 @@ VALUES
   'plants',
   true,
   false,
-  '{"en":"Native Black Plum (Jamun) Live Tree Seedling | Aronyok Plant Nursery","bn":"দেশি কালো জাম গাছের চারা (Black Plum / Jam Plant) | অরণ্যক নার্সারি"}',
+  '{"en":"Native Black Plum (Jamun) Live Tree Seedling | Aronyok Plant Nursery","bn":"দেশি কালো জাম গাছের চারা (Black Plum / Jam Plant) | আরণ্যক নার্সারি"}',
   '{"en":"Sturdy native black plum (Syzygium cumini) tree sapling. Prized for its antioxidant-rich purple berries and medicinal benefits.","bn":"আমাদের দেশীয় মিষ্টি কালো জামের স্বাস্থ্যবান চারা। ছায়া প্রদানকারী বৃক্ষ এবং ডায়াবেটিস ও পেটের সমস্যায় অত্যন্ত উপকারী।"}'
 ),
 (
@@ -236,7 +236,7 @@ VALUES
   'plants',
   true,
   true,
-  '{"en":"Thai Sweet Apple Jujube (Boroi) Live Plant | Aronyok Plant Nursery","bn":"থাই আপেল কুল / বরই কলম চারা (Thai Apple Jujube Plant) | অরণ্যক নার্সারি"}',
+  '{"en":"Thai Sweet Apple Jujube (Boroi) Live Plant | Aronyok Plant Nursery","bn":"থাই আপেল কুল / বরই কলম চারা (Thai Apple Jujube Plant) | আরণ্যক নার্সারি"}',
   '{"en":"High-yielding grafted Thai apple jujube sapling. Bears large, crisp, sweet fruits within its first year of planting.","bn":"উন্নত জাতের মিষ্টি আপেল কুলের কলম চারা। প্রথম বছর থেকেই প্রচুর বড় সাইজের মিষ্টি বরই ধরে।"}'
 ),
 (
@@ -250,7 +250,7 @@ VALUES
   'plants',
   true,
   true,
-  '{"en":"Winter Dawn Sweet Strawberry Live Plant | Aronyok Plant Nursery","bn":"উইন্টার ডন স্ট্রবেরি চারা (Strawberry Live Plant) | অরণ্যক নার্সারি"}',
+  '{"en":"Winter Dawn Sweet Strawberry Live Plant | Aronyok Plant Nursery","bn":"উইন্টার ডন স্ট্রবেরি চারা (Strawberry Live Plant) | আরণ্যক নার্সারি"}',
   '{"en":"Prolific sweet strawberry plant suited for balcony pots and hanging baskets. Yields vibrant, aromatic crimson berries.","bn":"টবে চাষ উপযোগী উন্নত শীতকালীন মিষ্টি স্ট্রবেরি চারা। লাল টকটকে মিষ্টি স্ট্রবেরি ছাদে বা ব্যালকনিতে খুব সহজেই ফলে।"}'
 ),
 (
@@ -264,7 +264,7 @@ VALUES
   'plants',
   true,
   false,
-  '{"en":"Sweet Karonda (Carissa Carandas) Live Plant | Aronyok Plant Nursery","bn":"থাই মিষ্টি করমচা চারা (Karonda / Carissa Plant) | অরণ্যক নার্সারি"}',
+  '{"en":"Sweet Karonda (Carissa Carandas) Live Plant | Aronyok Plant Nursery","bn":"থাই মিষ্টি করমচা চারা (Karonda / Carissa Plant) | আরণ্যক নার্সারি"}',
   '{"en":"Ornamental and fruiting sweet Karonda shrub. Bears cluster berries that transition from white-pink to ruby red.","bn":"গোলাপি-সাদা রঙের আকর্ষণীয় থাই মিষ্টি করমচার চারা। সুস্বাদু আচার তৈরিতে সেরা এবং দেখতে দারুণ সুন্দর।"}'
 ),
 (
@@ -278,7 +278,7 @@ VALUES
   'plants',
   true,
   false,
-  '{"en":"Aegle Marmelos (Large Sweet Bael) Seedling | Aronyok Plant Nursery","bn":"সুস্বাদু মিষ্টি বড় বেল চারা (Large Sweet Bael Plant) | অরণ্যক নার্সারি"}',
+  '{"en":"Aegle Marmelos (Large Sweet Bael) Seedling | Aronyok Plant Nursery","bn":"সুস্বাদু মিষ্টি বড় বেল চারা (Large Sweet Bael Plant) | আরণ্যক নার্সারি"}',
   '{"en":"Sacred sweet Golden Bael (Aegle marmelos) plant. Renowned for gut health, cooling beverages, and medicinal goodness.","bn":"পেটের পীড়ায় মহৌষধ হিসেবে পরিচিত মিষ্টি সুগন্ধি বড় বেলের চারা। এর সরবত শরীর ঠাণ্ডা রাখে ও হজমশক্তি বাড়ায়।"}'
 ),
 (
@@ -292,7 +292,7 @@ VALUES
   'plants',
   true,
   true,
-  '{"en":"Thai Golden-8 Sweet Guava Grafted Plant | Aronyok Plant Nursery","bn":"থাই গোল্ডেন-৮ পেয়ারা কলম চারা (Golden Guava Plant) | অরণ্যক নার্সারি"}',
+  '{"en":"Thai Golden-8 Sweet Guava Grafted Plant | Aronyok Plant Nursery","bn":"থাই গোল্ডেন-৮ পেয়ারা কলম চারা (Golden Guava Plant) | আরণ্যক নার্সারি"}',
   '{"en":"Grafted Thai Golden-8 guava plant with crisp sweet flesh and few seeds. Produces abundantly year-round in pots.","bn":"বীজ কম ও মিষ্টি সুস্বাদু থাই গোল্ডেন পেয়ারার কলম চারা। সারাবছর টবে বা বাগানে প্রচুর পেয়ারা ধরে।"}'
 ),
 (
@@ -306,7 +306,7 @@ VALUES
   'plants',
   true,
   false,
-  '{"en":"All-Season Dwarf Hog Plum (Amra) Live Plant | Aronyok Plant Nursery","bn":"বারোমাসি মিষ্টি থাই আমড়া চারা (Hog Plum / Amra Plant) | অরণ্যক নার্সারি"}',
+  '{"en":"All-Season Dwarf Hog Plum (Amra) Live Plant | Aronyok Plant Nursery","bn":"বারোমাসি মিষ্টি থাই আমড়া চারা (Hog Plum / Amra Plant) | আরণ্যক নার্সারি"}',
   '{"en":"Ever-bearing dwarf hog plum (Spondias mombin) plant. Clusters of tangy-sweet crunchy fruits grow readily on compact plants.","bn":"বারোমাসি থাই আমড়ার বামন জাতের কলম চারা। ছোট গাছেই প্রচুর রসালো আমড়া থোকায় থোকায় ধরে।"}'
 ),
 (
@@ -320,7 +320,7 @@ VALUES
   'plants',
   true,
   false,
-  '{"en":"Sweet Burmese Grape (Lotkon) Live Seedling | Aronyok Plant Nursery","bn":"নরসিংদীর সুমিষ্ট লটকন চারা (Burmese Grape / Lotkon) | অরণ্যক নার্সারি"}',
+  '{"en":"Sweet Burmese Grape (Lotkon) Live Seedling | Aronyok Plant Nursery","bn":"নরসিংদীর সুমিষ্ট লটকন চারা (Burmese Grape / Lotkon) | আরণ্যক নার্সারি"}',
   '{"en":"Famous sweet Narsingdi Lotkon (Baccaurea ramiflora) sapling. Unique trunk-fruiting habit packed with vitamin C.","bn":"নরসিংদীর বিখ্যাত মিষ্টি রসালো লটকনের চারা। কাণ্ডের চারপাশে থোকায় থোকায় ফল ধরে, যা ভিটামিন সি তে ভরপুর।"}'
 ),
 (
@@ -334,7 +334,7 @@ VALUES
   'plants',
   true,
   false,
-  '{"en":"All-Season Sweet Sapodilla (Chikoo / Sobeda) Plant | Aronyok Plant Nursery","bn":"বারোমাসি থাই সবেদা কলম চারা (Sapodilla / Sobeda) | অরণ্যক নার্সারি"}',
+  '{"en":"All-Season Sweet Sapodilla (Chikoo / Sobeda) Plant | Aronyok Plant Nursery","bn":"বারোমাসি থাই সবেদা কলম চারা (Sapodilla / Sobeda) | আরণ্যক নার্সারি"}',
   '{"en":"Sweet honey-flavored grafted Sapodilla (Manilkara zapota) tree. Consistent all-season bearer suitable for rooftop containers.","bn":"মধু মিষ্টি বারোমাসি সবেদার কলম করা চারা। টবে খুব সুন্দর বাড়ে এবং সারাবছর নিয়মিত ফলন পাওয়া যায়।"}'
 ),
 (
@@ -348,7 +348,7 @@ VALUES
   'plants',
   true,
   false,
-  '{"en":"Elephant Apple (Chalta) Live Tree Plant | Aronyok Plant Nursery","bn":"দেশি টক-মিষ্টি চালতা চারা (Elephant Apple / Chalta) | অরণ্যক নার্সারি"}',
+  '{"en":"Elephant Apple (Chalta) Live Tree Plant | Aronyok Plant Nursery","bn":"দেশি টক-মিষ্টি চালতা চারা (Elephant Apple / Chalta) | আরণ্যক নার্সারি"}',
   '{"en":"Traditional Dillenia indica (Elephant Apple) plant with large fragrant blossoms. Celebrated for culinary delicacies and scalp tonics.","bn":"সুন্দর সুগন্ধি বড় ফুল ও আচারের উপযোগী ঐতিহ্যবাহী চালতার চারা। চুল পড়া রোধ ও পেটের সমস্যা দূর করতে অত্যন্ত উপকারী।"}'
 ),
 (
@@ -362,7 +362,7 @@ VALUES
   'plants',
   true,
   false,
-  '{"en":"Red Dwarf Ixora (Rangan) Flowering Shrub | Aronyok Plant Nursery","bn":"লাল থোকা রঙ্গন ফুলের চারা (Red Ixora / Rangan Plant) | অরণ্যক নার্সারি"}',
+  '{"en":"Red Dwarf Ixora (Rangan) Flowering Shrub | Aronyok Plant Nursery","bn":"লাল থোকা রঙ্গন ফুলের চারা (Red Ixora / Rangan Plant) | আরণ্যক নার্সারি"}',
   '{"en":"Evergreen dwarf Ixora coccinea shrub with vibrant clusters of fiery red blossoms. Perfect for sunny balconies and garden borders.","bn":"গাঢ় লাল রঙের থোকা রঙ্গন ফুলের চারা। বারান্দার টব বা বাগানের সীমানায় সারা বছর আকর্ষণীয় রঙিন ফুল ফোটায়।"}'
 ),
 (
@@ -376,7 +376,7 @@ VALUES
   'plants',
   true,
   true,
-  '{"en":"Katimon All-Season Sweet Mango Grafted Plant | Aronyok Plant Nursery","bn":"কাটিমন বারোমাসি মিষ্টি আম চারা (Katimon Mango Plant) | অরণ্যক নার্সারি"}',
+  '{"en":"Katimon All-Season Sweet Mango Grafted Plant | Aronyok Plant Nursery","bn":"কাটিমন বারোমাসি মিষ্টি আম চারা (Katimon Mango Plant) | আরণ্যক নার্সারি"}',
   '{"en":"Renowned Thai Katimon all-season mango graft. Yields exceptionally sweet, fiberless mangoes up to 3 times a year in pots.","bn":"বছরে ৩ বার মিষ্টি আম উৎপাদনকারী বিখ্যাত থাই কাটিমন জাতের কলম চারা। ছাদে ড্রামে চাষের জন্য এক নম্বর পছন্দ।"}'
 ),
 (
@@ -390,7 +390,7 @@ VALUES
   'plants',
   true,
   true,
-  '{"en":"Vietnamese Dwarf Coconut (Dwarf Narkel) Live Plant | Aronyok Plant Nursery","bn":"ভিয়েতনামি খাটো জাতের নারিকেল চারা (Dwarf Coconut Plant) | অরণ্যক নার্সারি"}',
+  '{"en":"Vietnamese Dwarf Coconut (Dwarf Narkel) Live Plant | Aronyok Plant Nursery","bn":"ভিয়েতনামি খাটো জাতের নারিকেল চারা (Dwarf Coconut Plant) | আরণ্যক নার্সারি"}',
   '{"en":"High-producing dwarf coconut palm. Bears sweet tender water coconuts within 3-4 years at easily accessible low heights.","bn":"দ্রুত ফলনশীল খাটো জাতের ভিয়েতনামি নারিকেল চারা। মাত্র ৩-৪ বছরেই মাটি থেকে হাত দিয়ে নারিকেল ও ডাব পাড়া যায়।"}'
 ),
 (
@@ -404,7 +404,7 @@ VALUES
   'plants',
   true,
   true,
-  '{"en":"Aromatic Green Cardamom (Elachi) Live Plant | Aronyok Plant Nursery","bn":"সবুজ সুগন্ধি এলাচ গাছের চারা (Green Cardamom Plant) | অরণ্যক নার্সারি"}',
+  '{"en":"Aromatic Green Cardamom (Elachi) Live Plant | Aronyok Plant Nursery","bn":"সবুজ সুগন্ধি এলাচ গাছের চারা (Green Cardamom Plant) | আরণ্যক নার্সারি"}',
   '{"en":"True Green Cardamom (Elettaria cardamomum) seedling. Thrives in semi-shade and moist rich soil, emitting heavenly fragrance.","bn":"মসলার রানী হিসেবে খ্যাত সুগন্ধি সবুজ এলাচের চারা। ছায়াযুক্ত আর্দ্র স্থানে খুব ভালো বাড়ে এবং মিষ্টি সুবাস ছড়ায়।"}'
 ),
 (
@@ -418,7 +418,7 @@ VALUES
   'plants',
   true,
   false,
-  '{"en":"Sweet Thai Longan (Kat Lichu / Dragon Eye) Plant | Aronyok Plant Nursery","bn":"মিষ্টি থাই কাটলিচু / আঁশফল চারা (Thai Longan Plant) | অরণ্যক নার্সারি"}',
+  '{"en":"Sweet Thai Longan (Kat Lichu / Dragon Eye) Plant | Aronyok Plant Nursery","bn":"মিষ্টি থাই কাটলিচু / আঁশফল চারা (Thai Longan Plant) | আরণ্যক নার্সারি"}',
   '{"en":"Juicy sweet Thai Longan (Dimocarpus longan) grafted tree. Produces dense clusters of translucent sweet fruit resembling lychee.","bn":"লিচুর মতো সুস্বাদু মিষ্টি থাই কাটলিচুর কলম চারা। খোসা ছাড়িয়ে সহজে খাওয়া যায় এবং গাছে প্রচুর ফলন হয়।"}'
 ),
 (
@@ -432,7 +432,7 @@ VALUES
   'plants',
   true,
   false,
-  '{"en":"Mini Dwarf Crepe Jasmine (Mini Togor) Live Plant | Aronyok Plant Nursery","bn":"সাদা মিনি টগর ফুলের চারা (Mini Crepe Jasmine) | অরণ্যক নার্সারি"}',
+  '{"en":"Mini Dwarf Crepe Jasmine (Mini Togor) Live Plant | Aronyok Plant Nursery","bn":"সাদা মিনি টগর ফুলের চারা (Mini Crepe Jasmine) | আরণ্যক নার্সারি"}',
   '{"en":"Dwarf Crepe Jasmine (Tabernaemontana divaricata) with delicate pinwheel white flowers. Compact growth ideal for table and balcony pots.","bn":"স্নো-হোয়াইট থোকা মিনি টগরের চারা। ছোট টবে সারা বছর প্রচুর সাদা স্নিগ্ধ ফুল ফোটে এবং দেখতে দারুণ পরিপাটি লাগে।"}'
 ),
 (
@@ -446,7 +446,7 @@ VALUES
   'plants',
   true,
   false,
-  '{"en":"Aromatic Wood Apple (Kodbel) Live Sapling | Aronyok Plant Nursery","bn":"মিষ্টি সুবাসিত কদবেল চারা (Wood Apple / Kodbel) | অরণ্যক নার্সারি"}',
+  '{"en":"Aromatic Wood Apple (Kodbel) Live Sapling | Aronyok Plant Nursery","bn":"মিষ্টি সুবাসিত কদবেল চারা (Wood Apple / Kodbel) | আরণ্যক নার্সারি"}',
   '{"en":"Native Feronia limonia (Wood Apple) sapling. Highly valued for flavorful tangy-sweet mashes and digestive tonic properties.","bn":"টক-ঝাল-মিষ্টি ভর্তা তৈরির প্রিয় ফল কদবেলের কলম চারা। পেটের সুস্থতা ও হজম রস বাড়াতে দারুণ কার্যকর।"}'
 ),
 (
@@ -460,7 +460,7 @@ VALUES
   'plants',
   true,
   true,
-  '{"en":"Russian Baikonur Sweet Table Grape Vine Plant | Aronyok Plant Nursery","bn":"রাশিয়ান বাইকনুর মিষ্টি আঙ্গুর চারা (Baikonur Grape Plant) | অরণ্যক নার্সারি"}',
+  '{"en":"Russian Baikonur Sweet Table Grape Vine Plant | Aronyok Plant Nursery","bn":"রাশিয়ান বাইকনুর মিষ্টি আঙ্গুর চারা (Baikonur Grape Plant) | আরণ্যক নার্সারি"}',
   '{"en":"Celebrated cold-hardy and heat-tolerant Baikonur dark purple table grape vine. Bears massive, sweet, crunchy elongated berries.","bn":"লম্বাটে মিষ্টি কালো আঙ্গুরের বিশ্বখ্যাত রাশিয়ান বাইকনুর জাত। বাংলাদেশের গরমেও ছাদে মাচায় চমৎকার ফলন দেয়।"}'
 ),
 (
@@ -474,7 +474,7 @@ VALUES
   'plants',
   true,
   false,
-  '{"en":"Native Acclimatized Green Grape Live Vine | Aronyok Plant Nursery","bn":"দেশি সবুজ আঙ্গুর লতা চারা (Native Grape Vine Plant) | অরণ্যক নার্সারি"}',
+  '{"en":"Native Acclimatized Green Grape Live Vine | Aronyok Plant Nursery","bn":"দেশি সবুজ আঙ্গুর লতা চারা (Native Grape Vine Plant) | আরণ্যক নার্সারি"}',
   '{"en":"Robust acclimatized green grape vine. Vigorous climber producing refreshing clusters while providing lush canopy shade.","bn":"বাংলাদেশের আবহাওয়া উপযোগী সবল দেশি আঙ্গুর লতা। ছাদের মাচায় বা গ্রিলে খুব দ্রুত সবুজ শামিয়ানা তৈরি করে।"}'
 ),
 (
@@ -488,7 +488,7 @@ VALUES
   'plants',
   true,
   false,
-  '{"en":"Sweet Sugar Apple (Shorifa / Annona Squamosa) Plant | Aronyok Plant Nursery","bn":"থাই মিষ্টি আতা / শরীফা চারা (Thai Sugar Apple / Shorifa) | অরণ্যক নার্সারি"}',
+  '{"en":"Sweet Sugar Apple (Shorifa / Annona Squamosa) Plant | Aronyok Plant Nursery","bn":"থাই মিষ্টি আতা / শরীফা চারা (Thai Sugar Apple / Shorifa) | আরণ্যক নার্সারি"}',
   '{"en":"Sweet custard-like Sugar Apple (Annona squamosa) plant. Compact tree producing succulent segmented fruits rich in dietary fiber.","bn":"ক্রিমি মিষ্টি থাই জাতের শরীফা বা আতা ফলের চারা। ছাদে বড় টবে অল্প পরিচর্যাতেই দারুণ মিষ্টি ফল দেয়।"}'
 ),
 (
@@ -502,7 +502,7 @@ VALUES
   'plants',
   true,
   true,
-  '{"en":"Fragrant White-Yellow Plumeria (Kathgolap) Shrub | Aronyok Plant Nursery","bn":"সুগন্ধি সাদা-হলুদ কাঠগোলাপ চারা (Kathgolap / Plumeria) | অরণ্যক নার্সারি"}',
+  '{"en":"Fragrant White-Yellow Plumeria (Kathgolap) Shrub | Aronyok Plant Nursery","bn":"সুগন্ধি সাদা-হলুদ কাঠগোলাপ চারা (Kathgolap / Plumeria) | আরণ্যক নার্সারি"}',
   '{"en":"Aromatic Plumeria rubra (Frangipani) plant. Features velvety fragrant ivory petals with sunny golden centers; exceptionally drought-tolerant.","bn":"অপূর্ব সুবাস ও স্নিগ্ধ সাদা-হলুদ রঙের কাঠগোলাপের চারা। কম পানিতেও চমৎকার বাঁচে এবং ছাদে দারুণ আভিজাত্য আনে।"}'
 ),
 (
@@ -516,7 +516,7 @@ VALUES
   'plants',
   true,
   true,
-  '{"en":"Exotic Pink Flesh Jackfruit Live Grafted Plant | Aronyok Plant Nursery","bn":"গোলাপি কোয়ার পিঙ্ক কাঁঠাল চারা (Pink Jackfruit Plant) | অরণ্যক নার্সারি"}',
+  '{"en":"Exotic Pink Flesh Jackfruit Live Grafted Plant | Aronyok Plant Nursery","bn":"গোলাপি কোয়ার পিঙ্ক কাঁঠাল চারা (Pink Jackfruit Plant) | আরণ্যক নার্সারি"}',
   '{"en":"Rare grafted Pink Jackfruit (Artocarpus heterophyllus) tree. Produces exquisite rose-pink pods with rich honey sweetness.","bn":"বিরল ও আকর্ষণীয় লালচে-গোলাপি কোয়ার মিষ্টি পিঙ্ক কাঁঠালের কলম চারা। দেখতে যেমন সুন্দর, খেতেও তেমনি সুমিষ্ট।"}'
 ),
 (
@@ -530,7 +530,7 @@ VALUES
   'plants',
   true,
   true,
-  '{"en":"Black Stone Exotic Sweet Mango Live Grafted Plant | Aronyok Plant Nursery","bn":"ব্ল্যাকস্টোন মিষ্টি আম কলম চারা (Black Stone Mango Plant) | অরণ্যক নার্সারি"}',
+  '{"en":"Black Stone Exotic Sweet Mango Live Grafted Plant | Aronyok Plant Nursery","bn":"ব্ল্যাকস্টোন মিষ্টি আম কলম চারা (Black Stone Mango Plant) | আরণ্যক নার্সারি"}',
   '{"en":"Prized Black Stone exotic mango variety featuring deep dark purple skin and intensely sweet, fragrant golden pulp.","bn":"অনন্য কালো-বেগুনী রঙের বহিরাবরণ ও সুমিষ্ট হলুদ আঁশের ব্ল্যাকস্টোন জাতের আম চারা। ছাদবাগানে ফলনের এক অনন্য আকর্ষণ।"}'
 ),
 (
@@ -544,7 +544,7 @@ VALUES
   'plants',
   true,
   true,
-  '{"en":"Darjeeling Sweet Mandarin Orange Live Plant | Aronyok Plant Nursery","bn":"দার্জিলিং মিষ্টি কমলা কলম চারা (Darjeeling Orange Plant) | অরণ্যক নার্সারি"}',
+  '{"en":"Darjeeling Sweet Mandarin Orange Live Plant | Aronyok Plant Nursery","bn":"দার্জিলিং মিষ্টি কমলা কলম চারা (Darjeeling Orange Plant) | আরণ্যক নার্সারি"}',
   '{"en":"Prolific sweet Darjeeling Mandarin orange plant. Loose easy-peel rinds and aromatic juicy segments thrive in pots.","bn":"সহজে খোসা ছাড়ানো মিষ্টি রসালো দার্জিলিং জাতের কমলার কলম চারা। শীতে সোনালী কমলায় ভরে ওঠে পুরো গাছ।"}'
 ),
 (
@@ -558,7 +558,7 @@ VALUES
   'plants',
   true,
   false,
-  '{"en":"Alubukhara (Sweet Persian Plum / Prune) Live Plant | Aronyok Plant Nursery","bn":"মিষ্টি পোলাও ও আচারের আলুবোখারা চারা (Alubukhara Plant) | অরণ্যক নার্সারি"}',
+  '{"en":"Alubukhara (Sweet Persian Plum / Prune) Live Plant | Aronyok Plant Nursery","bn":"মিষ্টি পোলাও ও আচারের আলুবোখারা চারা (Alubukhara Plant) | আরণ্যক নার্সারি"}',
   '{"en":"Culinary favorite Alubukhara (Prunus domestica) plum plant. Bears deep purple stone fruits celebrated in gourmet rice dishes and preserves.","bn":"বিরিয়ানি, রোস্ট ও আচারের অপরিহার্য উপাদান মিষ্টি আলুবোখারার কলম চারা। টবে রোপণের ২ বছরেই ফলন দিতে শুরু করে।"}'
 ),
 (
@@ -572,7 +572,7 @@ VALUES
   'plants',
   true,
   true,
-  '{"en":"Golden Pothos (Air Purifying Money Plant) Live Pot | Aronyok Plant Nursery","bn":"গোল্ডেন মানি প্ল্যান্ট ইনডোর লতা (Golden Money Plant) | অরণ্যক নার্সারি"}',
+  '{"en":"Golden Pothos (Air Purifying Money Plant) Live Pot | Aronyok Plant Nursery","bn":"গোল্ডেন মানি প্ল্যান্ট ইনডোর লতা (Golden Money Plant) | আরণ্যক নার্সারি"}',
   '{"en":"Hardy Golden Pothos (Epipremnum aureum). Renowned NASA-certified indoor air purifier that flourishes in low light and water.","bn":"বাতাস বিশুদ্ধকারী উজ্জ্বল সবুজ পাতার গোল্ডেন মানি প্ল্যান্ট। ঘর বা অফিসের ইনডোরে স্বল্প আলো ও পানিতেও সতেজ থাকে।"}'
 ),
 (
@@ -586,7 +586,7 @@ VALUES
   'plants',
   true,
   true,
-  '{"en":"Aglaonema Lipstick (Chinese Evergreen) Indoor Plant | Aronyok Plant Nursery","bn":"অ্যাগলোনিমা লিপস্টিক ইনডোর প্ল্যান্ট (Indoor Foliage Plant) | অরণ্যক নার্সারি"}',
+  '{"en":"Aglaonema Lipstick (Chinese Evergreen) Indoor Plant | Aronyok Plant Nursery","bn":"অ্যাগলোনিমা লিপস্টিক ইনডোর প্ল্যান্ট (Indoor Foliage Plant) | আরণ্যক নার্সারি"}',
   '{"en":"Lush Aglaonema with striking pink-edged emerald foliage. Low-maintenance air purifier that brightens living rooms and workspaces.","bn":"গোলাপি ও সবুজ রঙের রঙিন পাতার প্রিমিয়াম ইনডোর প্ল্যান্ট। ড্রয়িং রুম বা ডেস্কের সৌন্দর্য বৃদ্ধি করতে দারুণ মানানসই।"}'
 ),
 (
@@ -600,7 +600,7 @@ VALUES
   'plants',
   true,
   false,
-  '{"en":"Creeping Fig (Lotabahar / Ficus Pumila) Ornamental Vine | Aronyok Plant Nursery","bn":"সবুজ লতাবাহার দেয়াল লতা (Lotabahar / Creeping Fig) | অরণ্যক নার্সারি"}',
+  '{"en":"Creeping Fig (Lotabahar / Ficus Pumila) Ornamental Vine | Aronyok Plant Nursery","bn":"সবুজ লতাবাহার দেয়াল লতা (Lotabahar / Creeping Fig) | আরণ্যক নার্সারি"}',
   '{"en":"Ficus pumila evergreen climbing vine. Climbs vertical trellis and walls with delicate heart-shaped leaves creating a living green wall.","bn":"দেয়াল ও টবের গায়ে সবুজ গালিচা বিছানো সুন্দর লতাবাহার গাছ। কম আলো ও আর্দ্রতায় দ্রুত ছড়িয়ে পড়ে আকর্ষণীয় সবুজ আবরণ তৈরি করে।"}'
 ),
 (
@@ -614,7 +614,7 @@ VALUES
   'plants',
   true,
   true,
-  '{"en":"Mediterranean Sweet Fig (Tin Fol / Anjeer) Live Plant | Aronyok Plant Nursery","bn":"পবিত্র ডুমুর / মিষ্টি তিন ফল চারা (Anjeer / Fig Plant) | অরণ্যক নার্সারি"}',
+  '{"en":"Mediterranean Sweet Fig (Tin Fol / Anjeer) Live Plant | Aronyok Plant Nursery","bn":"পবিত্র ডুমুর / মিষ্টি তিন ফল চারা (Anjeer / Fig Plant) | আরণ্যক নার্সারি"}',
   '{"en":"Revered Ficus carica (Tin Fol / Fig) plant. Yields sweet, nutrient-dense purple-green figs directly on young branches.","bn":"কোরআনে বর্ণিত পবিত্র সুমিষ্ট তিন ফল (আঞ্জির) এর কলম চারা। টবে প্রচুর মিষ্টি ডুমুর ধরে যা পেটের জন্য মহৌষধ।"}'
 ),
 (
@@ -628,7 +628,7 @@ VALUES
   'plants',
   true,
   true,
-  '{"en":"Sansevieria Trifasciata (Snake Plant / Mother-in-Law Tongue) | Aronyok Plant Nursery","bn":"স্নেক প্ল্যান্ট - প্রাকৃতিক অক্সিজেন প্ল্যান্ট (Snake Plant) | অরণ্যক নার্সারি"}',
+  '{"en":"Sansevieria Trifasciata (Snake Plant / Mother-in-Law Tongue) | Aronyok Plant Nursery","bn":"স্নেক প্ল্যান্ট - প্রাকৃতিক অক্সিজেন প্ল্যান্ট (Snake Plant) | আরণ্যক নার্সারি"}',
   '{"en":"Top air-purifying Sansevieria that produces oxygen at night and filters airborne toxins. Virtually indestructible and drought-resistant.","bn":"রাতে অক্সিজেন সরবরাহকারী ও টক্সিন ফিল্টারকারী জনপ্রিয় স্নেক প্ল্যান্ট। পানি খুব কম লাগে এবং শোবার ঘরের জন্য আদর্শ।"}'
 ),
 (
@@ -642,7 +642,7 @@ VALUES
   'plants',
   true,
   false,
-  '{"en":"Crown of Thorns (Euphorbia Milii) Vibrant Red Bloom | Aronyok Plant Nursery","bn":"লাল কাটামুকুট ফুল গাছ (Crown of Thorns / Euphorbia) | অরণ্যক নার্সারি"}',
+  '{"en":"Crown of Thorns (Euphorbia Milii) Vibrant Red Bloom | Aronyok Plant Nursery","bn":"লাল কাটামুকুট ফুল গাছ (Crown of Thorns / Euphorbia) | আরণ্যক নার্সারি"}',
   '{"en":"Euphorbia milii flowering succulent shrub. Features clusters of long-lasting coral-red bracts and excels in intense sunny balconies.","bn":"প্রখর রোদেও সারাবছর লাল টকটকে ফুল ফোটানো কাটামুকুট গাছ। পানি খুব কম লাগে এবং ব্যালকনির জন্য দারুণ উপযোগী।"}'
 ),
 (
@@ -656,7 +656,7 @@ VALUES
   'plants',
   true,
   true,
-  '{"en":"All-Season Seedless Kagzi Lemon Live Plant | Aronyok Plant Nursery","bn":"বারোমাসি কাগজি লেবু কলম চারা (Kagzi Lemon Plant) | অরণ্যক নার্সারি"}',
+  '{"en":"All-Season Seedless Kagzi Lemon Live Plant | Aronyok Plant Nursery","bn":"বারোমাসি কাগজি লেবু কলম চারা (Kagzi Lemon Plant) | আরণ্যক নার্সারি"}',
   '{"en":"Fragrant, highly juicy thin-skinned Kagzi lemon plant. Yields constant clusters of refreshing citrus fruit in home containers.","bn":"প্রচুর রস ও তীব্র সুগন্ধযুক্ত বারোমাসি কাগজি লেবুর চারা। টবে প্রচুর লেবু ধরে যা ভিটামিন সি এর প্রতিদিনের জোগান দেয়।"}'
 ),
 (
@@ -670,7 +670,7 @@ VALUES
   'plants',
   true,
   false,
-  '{"en":"Natural Henna (Lawsonia Inermis / Mehendi) Live Shrub | Aronyok Plant Nursery","bn":"গাঢ় রঙের দেশি মেহেদি গাছের চারা (Mehendi / Henna Plant) | অরণ্যক নার্সারি"}',
+  '{"en":"Natural Henna (Lawsonia Inermis / Mehendi) Live Shrub | Aronyok Plant Nursery","bn":"গাঢ় রঙের দেশি মেহেদি গাছের চারা (Mehendi / Henna Plant) | আরণ্যক নার্সারি"}',
   '{"en":"Authentic Lawsonia inermis (Henna) seedling. Fresh leaves yield dark, organic natural dye for skin ornamentation and scalp conditioning.","bn":"হাত রাঙানো এবং চুলের ভেষজ যত্নের খাঁটি মেহেদি চারা। রাসায়নিকমুক্ত তাজা পাতার প্রাকৃতিক রঙ ও ঠান্ডা অনুভূতি দেয়।"}'
 ),
 (
@@ -684,7 +684,7 @@ VALUES
   'plants',
   true,
   false,
-  '{"en":"Shatavari (Asparagus Racemosus) Vitality Herb Plant | Aronyok Plant Nursery","bn":"ভেষজ শতমূলী ঔষধি চারা (Shatavari / Satamool Plant) | অরণ্যক নার্সারি"}',
+  '{"en":"Shatavari (Asparagus Racemosus) Vitality Herb Plant | Aronyok Plant Nursery","bn":"ভেষজ শতমূলী ঔষধি চারা (Shatavari / Satamool Plant) | আরণ্যক নার্সারি"}',
   '{"en":"Premier Ayurvedic adaptogenic climbing herb (Asparagus racemosus). Revered for hormonal balance, vitality, and cooling rejuvenation.","bn":"আয়ুর্বেদের অন্যতম প্রধান বলবর্ধক ও হরমোন সমতাকারী শতমূলের চারা। সুন্দর কাঁটাযুক্ত পাতা ও শিকড় ভেষজ ওষুধে ব্যবহৃত হয়।"}'
 ),
 (
@@ -698,7 +698,7 @@ VALUES
   'plants',
   true,
   false,
-  '{"en":"Areca Palm (Supari / Betel Nut) Slender Seedling | Aronyok Plant Nursery","bn":"উন্নত জাতের সুপারি গাছের চারা (Betel Nut / Supari Palm) | অরণ্যক নার্সারি"}',
+  '{"en":"Areca Palm (Supari / Betel Nut) Slender Seedling | Aronyok Plant Nursery","bn":"উন্নত জাতের সুপারি গাছের চারা (Betel Nut / Supari Palm) | আরণ্যক নার্সারি"}',
   '{"en":"Graceful Areca catechu (Betel Nut Palm) sapling. Adds elegant tropical symmetry while bearing traditional betel nuts.","bn":"ঐতিহ্যবাহী দেশি গোল সুপারি গাছের চারা। বাগানের সীমানায় বা ছাদবাগানে সবুজ পাম গাছের চমৎকার সৌন্দর্য তৈরি করে।"}'
 ),
 (
@@ -712,7 +712,7 @@ VALUES
   'plants',
   true,
   false,
-  '{"en":"Black Musli (Curculigo Orchioides / Talmool) Medicinal Plant | Aronyok Plant Nursery","bn":"মূল্যবান ঔষধি তালমূল চারা (Talmool / Black Musli) | অরণ্যক নার্সারি"}',
+  '{"en":"Black Musli (Curculigo Orchioides / Talmool) Medicinal Plant | Aronyok Plant Nursery","bn":"মূল্যবান ঔষধি তালমূল চারা (Talmool / Black Musli) | আরণ্যক নার্সারি"}',
   '{"en":"Rare Ayurvedic restorative herb (Curculigo orchioides / Kali Musli). Known for stamina tonics, palm-like fronds, and golden blossoms.","bn":"শারীরিক দুর্বলতা ও স্নায়ুর শক্তিবর্ধক বিরল ভেষজ তালমূলের চারা। পামের মতো পাতা ও হলুদ তারা আকৃতির সুন্দর ফুল ফোটে।"}'
 );
 
@@ -747,18 +747,18 @@ VALUES
 (
   '{"en": "About Aronyok", "bn": "আমাদের সম্পর্কে"}',
   'about-us',
-  '{"en": "### Welcome to Aronyok (অরণ্যক)\n\nRooted in the ancient riverbeds and verdant forests of Bengal, Aronyok was born out of a desire to rekindle humanity''s sacred bond with mother earth. We curate wild, pesticide-free harvest directly from indigenous forest harvesters and organic village artisans.\n\n#### Our Guiding Tenets:\n- **Authenticity:** Zero chemical adulteration, direct farm-to-table sourcing.\n- **Ecological Stewardship:** Biodegradable packaging and carbon-conscious delivery.\n- **Empowerment:** Fair living wages for forest honey hunters and local clay craftspeople.", "bn": "### অরণ্যকে আপনাকে স্বাগতম\n\nবাংলার চিরসবুজ প্রকৃতির স্নিগ্ধতা ও ভেষজ ঐতিহ্যের প্রতি গভীর শ্রদ্ধা থেকে অরণ্যকের জন্ম। আমাদের লক্ষ্য রাসায়নিকমুক্ত প্রাকৃতিক জীবনধারাকে সবার নাগালে পৌঁছে দেওয়া।\n\n#### আমাদের মূল দর্শন:\n- **বিশুদ্ধতা:** কোনো কৃত্রিম উপাদান ছাড়া সরাসরি বনাঞ্চল ও কৃষকের থেকে সংগৃহীত।\n- **পরিবেশবান্ধব:** প্লাস্টিকবিহীন প্যাকেজিং ও টেকসই উৎপাদন পদ্ধতি।\n- **সামাজিক দায়বদ্ধতা:** সুন্দরবনের মৌয়াল এবং প্রান্তিক মৃৎশিল্পীদের ন্যায্য অধিকার নিশ্চিতকরণ।" }',
+  '{"en": "### Welcome to Aronyok (আরণ্যক)\n\nRooted in the ancient riverbeds and verdant forests of Bengal, Aronyok was born out of a desire to rekindle humanity''s sacred bond with mother earth. We curate wild, pesticide-free harvest directly from indigenous forest harvesters and organic village artisans.\n\n#### Our Guiding Tenets:\n- **Authenticity:** Zero chemical adulteration, direct farm-to-table sourcing.\n- **Ecological Stewardship:** Biodegradable packaging and carbon-conscious delivery.\n- **Empowerment:** Fair living wages for forest honey hunters and local clay craftspeople.", "bn": "### আরণ্যকে আপনাকে স্বাগতম\n\nবাংলার চিরসবুজ প্রকৃতির স্নিগ্ধতা ও ভেষজ ঐতিহ্যের প্রতি গভীর শ্রদ্ধা থেকে আরণ্যকের জন্ম। আমাদের লক্ষ্য রাসায়নিকমুক্ত প্রাকৃতিক জীবনধারাকে সবার নাগালে পৌঁছে দেওয়া।\n\n#### আমাদের মূল দর্শন:\n- **বিশুদ্ধতা:** কোনো কৃত্রিম উপাদান ছাড়া সরাসরি বনাঞ্চল ও কৃষকের থেকে সংগৃহীত।\n- **পরিবেশবান্ধব:** প্লাস্টিকবিহীন প্যাকেজিং ও টেকসই উৎপাদন পদ্ধতি।\n- **সামাজিক দায়বদ্ধতা:** সুন্দরবনের মৌয়াল এবং প্রান্তিক মৃৎশিল্পীদের ন্যায্য অধিকার নিশ্চিতকরণ।" }',
   true,
-  '{"en": "About Aronyok | Nature, Herbs & Sustainability", "bn": "অরণ্যক পরিচিতি | প্রকৃতি ও টেকসই জীবনধারা"}',
-  '{"en": "Learn the story behind Aronyok and our dedication to organic living.", "bn": "জানুন অরণ্যকের পেছনের গল্প এবং বিশুদ্ধ প্রকৃতির প্রতি আমাদের অঙ্গীকার।"}'
+  '{"en": "About Aronyok | Nature, Herbs & Sustainability", "bn": "আরণ্যক পরিচিতি | প্রকৃতি ও টেকসই জীবনধারা"}',
+  '{"en": "Learn the story behind Aronyok and our dedication to organic living.", "bn": "জানুন আরণ্যকের পেছনের গল্প এবং বিশুদ্ধ প্রকৃতির প্রতি আমাদের অঙ্গীকার।"}'
 ),
 (
   '{"en": "Sustainability Pledge", "bn": "আমাদের টেকসই অঙ্গীকার"}',
   'sustainability',
-  '{"en": "### Our Eco-Commitment\n\nAt Aronyok, every package sent out uses recycled paper padding, jute twine strings, and terracotta containers wherever possible. We plant 1 native tree seedling for every 10 orders completed.", "bn": "### পরিবেশের প্রতি দায়বদ্ধতা\n\nঅরণ্যকের প্রতিটি অর্ডারে আমরা ব্যবহার করি পুনর্ব্যবহারযোগ্য কাগজের বক্স, পাটের সুতলি এবং মাটির পাত্র। এছাড়া প্রতি ১০টি সফল অর্ডারের বিপরীতে আমরা একটি দেশীয় বনজ বা ওষধি চারা রোপণ করি।" }',
+  '{"en": "### Our Eco-Commitment\n\nAt Aronyok, every package sent out uses recycled paper padding, jute twine strings, and terracotta containers wherever possible. We plant 1 native tree seedling for every 10 orders completed.", "bn": "### পরিবেশের প্রতি দায়বদ্ধতা\n\nআরণ্যকের প্রতিটি অর্ডারে আমরা ব্যবহার করি পুনর্ব্যবহারযোগ্য কাগজের বক্স, পাটের সুতলি এবং মাটির পাত্র। এছাড়া প্রতি ১০টি সফল অর্ডারের বিপরীতে আমরা একটি দেশীয় বনজ বা ওষধি চারা রোপণ করি।" }',
   true,
-  '{"en": "Our Sustainability Pledge | Aronyok Eco Mission", "bn": "আমাদের টেকসই অঙ্গীকার | অরণ্যক"}',
-  '{"en": "How Aronyok ensures zero-waste, eco-friendly sourcing and packaging.", "bn": "কীভাবে অরণ্যক পরিবেশের ভারসাম্য বজায় রেখে কাজ করে।"}'
+  '{"en": "Our Sustainability Pledge | Aronyok Eco Mission", "bn": "আমাদের টেকসই অঙ্গীকার | আরণ্যক"}',
+  '{"en": "How Aronyok ensures zero-waste, eco-friendly sourcing and packaging.", "bn": "কীভাবে আরণ্যক পরিবেশের ভারসাম্য বজায় রেখে কাজ করে।"}'
 );
 
 -- 5. TOOLS & MICRO-APPS
