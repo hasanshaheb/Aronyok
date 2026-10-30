@@ -114,28 +114,70 @@ export async function POST(req: NextRequest) {
     // 1. PRODUCTS
     if (entity === "products") {
       let isSynced = false;
+      const productId = body.id;
+      const existingProduct = productId
+        ? runtimeStore.getProducts().find((p) => p.id === productId || (body.slug && p.slug === body.slug))
+        : null;
+
+      // Clean Supabase payload without UI metadata keys (sync_git, git_message)
       if (supabase) {
         try {
-          if (body.id && !body.id.startsWith("prod-")) {
-            const { error } = await supabase.from("products").update(body).eq("id", body.id);
-            if (!error) isSynced = true;
-          } else {
-            const { error } = await supabase.from("products").insert(body);
+          const dbPayload: any = {};
+          if (body.image_url !== undefined) dbPayload.image_url = body.image_url;
+          if (body.name !== undefined) dbPayload.name = body.name;
+          if (body.slug !== undefined) dbPayload.slug = body.slug;
+          if (body.description !== undefined) dbPayload.description = body.description;
+          if (body.price !== undefined) dbPayload.price = Number(body.price);
+          if (body.compare_at_price !== undefined) dbPayload.compare_at_price = body.compare_at_price ? Number(body.compare_at_price) : null;
+          if (body.stock !== undefined) dbPayload.stock = Number(body.stock);
+          if (body.category !== undefined) dbPayload.category = body.category;
+          if (body.is_active !== undefined) dbPayload.is_active = body.is_active;
+          if (body.is_featured !== undefined) dbPayload.is_featured = body.is_featured;
+          if (body.seo_title !== undefined) dbPayload.seo_title = body.seo_title;
+          if (body.seo_description !== undefined) dbPayload.seo_description = body.seo_description;
+          dbPayload.updated_at = new Date().toISOString();
+
+          const targetSlug = body.slug || existingProduct?.slug;
+          if (targetSlug) {
+            const { data, error } = await supabase
+              .from("products")
+              .update(dbPayload)
+              .eq("slug", targetSlug)
+              .select("id");
+            if (!error && data && data.length > 0) {
+              isSynced = true;
+            }
+          }
+
+          if (!isSynced && productId && !productId.startsWith("prod-")) {
+            const { error } = await supabase.from("products").update(dbPayload).eq("id", productId);
             if (!error) isSynced = true;
           }
-        } catch {}
+
+          if (!isSynced && !productId && dbPayload.name && dbPayload.slug) {
+            const { error } = await supabase.from("products").insert(dbPayload);
+            if (!error) isSynced = true;
+          }
+        } catch (dbErr) {
+          console.warn("Supabase product update notice:", dbErr);
+        }
       }
 
-      if (body.id) {
-        runtimeStore.updateProduct(body.id, body);
+      const { sync_git, git_message, ...cleanProduct } = body;
+      if (productId) {
+        runtimeStore.updateProduct(productId, cleanProduct);
       } else {
-        const newProduct = { ...body, id: `prod-${Date.now()}` };
+        const newProduct = { ...cleanProduct, id: `prod-${Date.now()}` };
         runtimeStore.addProduct(newProduct);
       }
 
       let gitSyncResult = null;
-      if (body.sync_git) {
-        gitSyncResult = await gitCommitAndPush(body.git_message || `Update product: ${body.name?.en || body.id}`);
+      if (body.sync_git || (action === "change_image" && body.sync_git !== false)) {
+        const prodName = body.name?.en || existingProduct?.name?.en || body.id || "product";
+        const defaultCommit = action === "change_image"
+          ? `Admin CMS: Update picture for "${prodName}"`
+          : `Admin CMS: Update product "${prodName}"`;
+        gitSyncResult = await gitCommitAndPush(body.git_message || defaultCommit);
       }
 
       return NextResponse.json({
@@ -161,10 +203,11 @@ export async function POST(req: NextRequest) {
         } catch {}
       }
 
-      if (body.id) {
-        runtimeStore.updateBlog(body.id, body);
+      const { sync_git, git_message, ...cleanBlog } = body;
+      if (cleanBlog.id) {
+        runtimeStore.updateBlog(cleanBlog.id, cleanBlog);
       } else {
-        const newBlog = { ...body, id: `blog-${Date.now()}` };
+        const newBlog = { ...cleanBlog, id: `blog-${Date.now()}` };
         runtimeStore.addBlog(newBlog);
       }
 
@@ -196,10 +239,11 @@ export async function POST(req: NextRequest) {
         } catch {}
       }
 
-      if (body.id) {
-        runtimeStore.updatePage(body.id, body);
+      const { sync_git, git_message, ...cleanPage } = body;
+      if (cleanPage.id) {
+        runtimeStore.updatePage(cleanPage.id, cleanPage);
       } else {
-        const newPage = { ...body, id: `page-${Date.now()}` };
+        const newPage = { ...cleanPage, id: `page-${Date.now()}` };
         runtimeStore.addPage(newPage);
       }
 

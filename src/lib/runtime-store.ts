@@ -172,7 +172,7 @@ export const runtimeStore = {
   },
   updateProduct: (id: string, updated: Partial<Product>) => {
     memoryProducts = memoryProducts.map((p) =>
-      p.id === id ? { ...p, ...updated } : p
+      p.id === id || (updated.slug && p.slug === updated.slug) ? { ...p, ...updated } : p
     );
     persistToCodebase();
   },

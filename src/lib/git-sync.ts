@@ -20,8 +20,16 @@ export interface GitSyncResult {
 export async function gitCommitAndPush(customMessage?: string): Promise<GitSyncResult> {
   const cwd = process.cwd();
   try {
-    // 1. Stage the fallback code, order database, and public uploads (if exists)
-    const pathsToStage = ["src/lib/supabase/fallback-data.ts", "data/orders.json"];
+    // Clean up any stale git lock file if present on Windows
+    const lockFile = path.join(cwd, ".git", "index.lock");
+    if (fs.existsSync(lockFile)) {
+      try {
+        fs.unlinkSync(lockFile);
+      } catch {}
+    }
+
+    // 1. Stage the fallback code, order database, seed script, and public uploads (if exists)
+    const pathsToStage = ["src/lib/supabase/fallback-data.ts", "data/orders.json", "supabase/seed.sql"];
     const uploadsDir = path.join(cwd, "public", "uploads");
     if (fs.existsSync(uploadsDir)) {
       pathsToStage.push("public/uploads");

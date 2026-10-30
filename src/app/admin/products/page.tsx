@@ -2,9 +2,21 @@
 
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
-import { Plus, Edit2, Trash2, Search, CheckCircle, RefreshCw, CloudUpload, GitBranch } from "lucide-react";
+import {
+  Plus,
+  Edit2,
+  Trash2,
+  Search,
+  CheckCircle,
+  RefreshCw,
+  CloudUpload,
+  GitBranch,
+  Camera,
+  Image as ImageIcon,
+} from "lucide-react";
 import DualLangInput from "../../../components/admin/DualLangInput";
 import ProductImagePicker from "../../../components/admin/ProductImagePicker";
+import QuickImageModal from "../../../components/admin/QuickImageModal";
 import { fallbackProducts } from "../../../lib/supabase/fallback-data";
 import { Product } from "../../../lib/types";
 import { slugify } from "../../../lib/utils";
@@ -18,6 +30,13 @@ export default function AdminProductsPage() {
   const [notification, setNotification] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [syncToGit, setSyncToGit] = useState(true);
+  const [selectedProductForImage, setSelectedProductForImage] = useState<Product | null>(null);
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false);
+
+  const openQuickImageModal = (product: Product) => {
+    setSelectedProductForImage(product);
+    setIsImageModalOpen(true);
+  };
 
   const [form, setForm] = useState({
     name: { en: "", bn: "" },
@@ -258,14 +277,22 @@ export default function AdminProductsPage() {
               {filtered.map((product) => (
                 <tr key={product.id} className="hover:bg-cream-50/50 transition-colors">
                   <td className="py-3 px-5">
-                    <div className="relative w-12 h-12 rounded-xl overflow-hidden bg-stone-100">
+                    <button
+                      type="button"
+                      onClick={() => openQuickImageModal(product)}
+                      className="group relative w-12 h-12 rounded-xl overflow-hidden bg-stone-100 block border border-forest-100 hover:border-emerald-500 shadow-xs transition-all cursor-pointer text-left"
+                      title="Click to quick-change picture & deploy"
+                    >
                       <Image
                         src={product.image_url}
                         alt={product.name.en}
                         fill
-                        className="object-cover"
+                        className="object-cover group-hover:scale-105 transition-transform"
                       />
-                    </div>
+                      <div className="absolute inset-0 bg-forest-950/45 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                        <Camera className="w-4 h-4 text-white drop-shadow" />
+                      </div>
+                    </button>
                   </td>
                   <td className="py-3 px-5">
                     <p className="font-bold text-forest-950">{product.name.en}</p>
@@ -290,17 +317,24 @@ export default function AdminProductsPage() {
                       {product.is_active ? "Active" : "Inactive"}
                     </button>
                   </td>
-                  <td className="py-3 px-5 text-right space-x-2">
+                  <td className="py-3 px-5 text-right space-x-1 sm:space-x-2">
+                    <button
+                      onClick={() => openQuickImageModal(product)}
+                      className="p-1.5 rounded-lg text-emerald-700 hover:bg-emerald-100 transition-colors inline-flex items-center cursor-pointer"
+                      title="Quick Change Picture & Deploy"
+                    >
+                      <Camera className="w-4 h-4" />
+                    </button>
                     <button
                       onClick={() => openEditModal(product)}
-                      className="p-1.5 rounded-lg text-forest-700 hover:bg-forest-100 transition-colors"
-                      title="Edit"
+                      className="p-1.5 rounded-lg text-forest-700 hover:bg-forest-100 transition-colors cursor-pointer"
+                      title="Edit Product Details"
                     >
                       <Edit2 className="w-4 h-4" />
                     </button>
                     <button
                       onClick={() => handleDelete(product.id)}
-                      className="p-1.5 rounded-lg text-red-600 hover:bg-red-50 transition-colors"
+                      className="p-1.5 rounded-lg text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
                       title="Delete"
                     >
                       <Trash2 className="w-4 h-4" />
@@ -481,6 +515,21 @@ export default function AdminProductsPage() {
           </div>
         </div>
       )}
+      {/* Quick Image Change Modal with GitHub & Vercel Sync */}
+      <QuickImageModal
+        product={selectedProductForImage}
+        isOpen={isImageModalOpen}
+        onClose={() => setIsImageModalOpen(false)}
+        onProductUpdated={(updatedProducts, message) => {
+          if (updatedProducts && updatedProducts.length > 0) {
+            setProducts(updatedProducts);
+          } else {
+            loadProducts();
+          }
+          setNotification(message);
+          setTimeout(() => setNotification(""), 5500);
+        }}
+      />
     </div>
   );
 }

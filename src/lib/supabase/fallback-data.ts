@@ -205,9 +205,7 @@ export const fallbackProducts: Product[] = [
     "seo_description": {
       "en": "Aromatic and therapeutic live cinnamon tree seedling. Its bark and leaves yield aromatic spice and herbal infusions. Ideal for terrace pots or home orchards.",
       "bn": "সুগন্ধি ও ঔষধি গুণসম্পন্ন সতেজ দারুচিনি গাছের চারা। এর ছাল ও পাতা মসলা এবং ভেষজ চা তৈরিতে ব্যবহৃত হয়। টবে বা বাগানে সহজেই চাষযোগ্য।"
-    },
-    "sync_git": true,
-    "git_message": "Update product \"Cinnamon (Daruchini) Live Spice Seedling\""
+    }
   },
   {
     "id": "prod-8",
@@ -396,9 +394,7 @@ export const fallbackProducts: Product[] = [
     "seo_description": {
       "en": "Sturdy native black plum (Syzygium cumini) tree sapling. Prized for its antioxidant-rich purple berries and medicinal benefits.",
       "bn": "আমাদের দেশীয় মিষ্টি কালো জামের স্বাস্থ্যবান চারা। ছায়া প্রদানকারী বৃক্ষ এবং ডায়াবেটিস ও পেটের সমস্যায় অত্যন্ত উপকারী।"
-    },
-    "sync_git": true,
-    "git_message": "Update product \"Native Black Plum (Jamun) Live Tree Seedling\""
+    }
   },
   {
     "id": "prod-15",
