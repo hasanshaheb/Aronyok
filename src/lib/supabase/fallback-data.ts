@@ -383,7 +383,7 @@ export const fallbackProducts: Product[] = [
     "price": 200,
     "compare_at_price": 250,
     "stock": 47,
-    "image_url": "https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=800&q=80",
+    "image_url": "https://kmxrcebqozxnyoopdhnr.supabase.co/storage/v1/object/public/products/product-1793393663285-images__6_.jpg",
     "category": "plants",
     "is_active": true,
     "is_featured": false,
@@ -394,7 +394,9 @@ export const fallbackProducts: Product[] = [
     "seo_description": {
       "en": "Sturdy native black plum (Syzygium cumini) tree sapling. Prized for its antioxidant-rich purple berries and medicinal benefits.",
       "bn": "আমাদের দেশীয় মিষ্টি কালো জামের স্বাস্থ্যবান চারা। ছায়া প্রদানকারী বৃক্ষ এবং ডায়াবেটিস ও পেটের সমস্যায় অত্যন্ত উপকারী।"
-    }
+    },
+    "sync_git": true,
+    "git_message": "Update product \"Native Black Plum (Jamun) Live Tree Seedling\""
   },
   {
     "id": "prod-15",
