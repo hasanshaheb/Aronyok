@@ -68,22 +68,30 @@ export default function ShopPage() {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-8">
       {/* Header Banner */}
       <div className="text-center max-w-2xl mx-auto space-y-3">
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-forest-100 text-forest-800 text-xs font-bold uppercase tracking-wider">
-          <Leaf className="w-3.5 h-3.5 text-forest-600" />
-          <span>{language === "bn" ? "প্রাকৃতিক বাজার" : "Organic Catalog"}</span>
+        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-forest-200 text-forest-900 text-xs font-bold uppercase tracking-wider shadow-soft-sm">
+          <Leaf className="w-3.5 h-3.5 text-terracotta-500" />
+          <span>{language === "bn" ? "প্রাকৃতিক বাজার ও নার্সারি" : "Organic Nursery & Earth Catalog"}</span>
         </div>
-        <h1 className="text-3xl sm:text-4xl font-extrabold text-forest-950 tracking-tight">
-          {language === "bn" ? "আরণ্যক প্রকৃতি সম্ভার" : "Aronyok Earth Goods"}
+        <h1 className="text-3xl sm:text-5xl font-extrabold text-forest-950 tracking-tight leading-tight">
+          {language === "bn" ? (
+            <>
+              আরণ্যক <span className="text-terracotta-600 underline decoration-terracotta-300 decoration-wavy decoration-2">প্রকৃতি সম্ভার</span>
+            </>
+          ) : (
+            <>
+              Aronyok <span className="text-terracotta-600 underline decoration-terracotta-300 decoration-wavy decoration-2">Earth Goods</span>
+            </>
+          )}
         </h1>
-        <p className="text-sm text-forest-700/80">
+        <p className="text-sm text-charcoal-600 max-w-xl mx-auto">
           {language === "bn"
-            ? "বিশুদ্ধ চাকভাঙা মধু, ঘানির তেল, ঔষধি গাছ এবং মৃৎশিল্পের বিশ্বস্ত সংগ্রহ।"
+            ? "রোগমুক্ত সুস্থ কলম চারা, সুন্দরবনের খাঁটি চাকভাঙা মধু, ঘানির তেল এবং নান্দনিক মৃৎশিল্পের নির্ভরযোগ্য সংগ্রহ।"
             : "Hand-harvested mangrove honey, live therapeutic plants, cold-pressed oils, and terracotta planters."}
         </p>
       </div>
 
       {/* Search & Sort Controls */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-cream-50/80 p-4 rounded-2xl border border-forest-100">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-cream-100/70 p-4 rounded-3xl border border-forest-200 shadow-soft-sm">
         {/* Search */}
         <div className="relative w-full sm:w-80">
           <Search className="w-4 h-4 absolute left-3.5 top-3 text-forest-400" />

@@ -54,7 +54,7 @@ export default function Navbar() {
   return (
     <>
       {/* 1. Top Luxury Micro-Bar with Vibrant Terracotta & Forest Contrast */}
-      <div className="bg-forest-950 text-cream-100 text-[11px] py-1.5 px-4 border-b border-forest-900/80">
+      <div className="bg-forest-900 text-cream-100 text-[11px] py-1.5 px-4 border-b border-forest-800/80">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="px-2 py-0.5 rounded-full bg-terracotta-500 text-white font-bold text-[9px] uppercase tracking-wider shadow-xs">

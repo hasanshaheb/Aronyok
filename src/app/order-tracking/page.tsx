@@ -162,7 +162,7 @@ export default function OrderTrackingPage() {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full py-2.5 bg-forest-800 hover:bg-forest-900 text-white font-bold text-xs rounded-xl transition shadow-sm flex items-center justify-center gap-1.5"
+                className="w-full py-2.5 bg-gradient-to-r from-terracotta-500 to-terracotta-600 hover:from-terracotta-600 hover:to-terracotta-700 text-white font-extrabold text-xs rounded-xl transition shadow-terracotta-sm flex items-center justify-center gap-1.5 active:scale-95"
               >
                 <Search className="w-3.5 h-3.5" />
                 <span>
