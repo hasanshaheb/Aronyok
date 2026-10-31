@@ -697,7 +697,7 @@ export default function CartCheckoutPage() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full py-3.5 px-6 rounded-2xl bg-forest-700 hover:bg-forest-800 disabled:bg-stone-300 text-white font-bold text-sm shadow-md transition-all duration-200"
+                className="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-terracotta-600 via-terracotta-500 to-[#d46d3e] hover:from-terracotta-700 hover:to-terracotta-600 disabled:bg-stone-300 text-white font-extrabold text-sm shadow-terracotta-md hover:shadow-terracotta-lg active:scale-95 transition-all duration-200"
               >
                 {isSubmitting ? t.checkout.processing : t.checkout.placeOrder}
               </button>

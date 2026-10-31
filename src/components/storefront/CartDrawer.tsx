@@ -11,7 +11,6 @@ import {
   ShoppingBag,
   ArrowRight,
   Truck,
-  Sparkles,
   ShieldCheck,
 } from "lucide-react";
 import { useCart } from "../../context/CartContext";
@@ -44,27 +43,27 @@ export default function CartDrawer() {
     <div className="fixed inset-0 z-50 overflow-hidden transition-opacity">
       {/* Dimmed backdrop */}
       <div
-        className="fixed inset-0 bg-forest-950/50 backdrop-blur-xs transition-opacity"
+        className="fixed inset-0 bg-forest-950/60 backdrop-blur-xs transition-opacity"
         onClick={() => setIsCartOpen(false)}
       />
 
       <div className="fixed inset-y-0 right-0 max-w-full flex pl-6 sm:pl-10">
-        <div className="w-screen max-w-md bg-[#fdfbf7] shadow-2xl border-l border-forest-100 flex flex-col">
+        <div className="w-screen max-w-md bg-[#FDFBF7] shadow-2xl border-l border-forest-200 flex flex-col">
           {/* Header */}
-          <div className="p-5 sm:p-6 border-b border-forest-100 flex items-center justify-between bg-cream-50">
+          <div className="p-5 sm:p-6 border-b border-forest-100 flex items-center justify-between bg-cream-100/70">
             <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-xl bg-forest-100 flex items-center justify-center text-forest-800">
-                <ShoppingBag className="w-5 h-5 text-forest-700" />
+              <div className="w-10 h-10 rounded-2xl bg-forest-850 flex items-center justify-center text-cream-100 shadow-soft-sm">
+                <ShoppingBag className="w-5 h-5 text-amber-300" />
               </div>
               <div>
                 <h2 className="text-base sm:text-lg font-bold text-forest-950 leading-tight">
                   {t.cart.title}
                 </h2>
-                <p className="text-[11px] text-forest-600">
+                <p className="text-[11px] text-charcoal-500">
                   {items.length > 0
                     ? isBn
-                      ? `${toBengaliNumerals(items.length)}টি ভিন্ন পণ্য যুক্ত`
-                      : `${items.length} items in your basket`
+                      ? `${toBengaliNumerals(items.length)}টি পণ্য যুক্ত আছে`
+                      : `${items.length} unique items in basket`
                     : isBn
                     ? "ঝুড়ি খালি"
                     : "Basket is empty"}
@@ -73,41 +72,43 @@ export default function CartDrawer() {
             </div>
             <button
               onClick={() => setIsCartOpen(false)}
-              className="p-2 text-forest-600 hover:text-forest-900 rounded-xl hover:bg-forest-100/60 transition-colors"
+              className="p-2 text-charcoal-500 hover:text-forest-950 rounded-xl hover:bg-forest-100/60 transition-colors"
               aria-label="Close cart"
             >
               <X className="w-5 h-5" />
             </button>
           </div>
 
-          {/* Free Shipping Progress Meter */}
+          {/* Free Shipping Progress Meter with Vibrant Terracotta Gradient */}
           {items.length > 0 && (
-            <div className="px-6 py-3.5 bg-forest-50/70 border-b border-forest-100">
-              <div className="flex items-center justify-between text-xs font-semibold text-forest-900 mb-1.5">
+            <div className="px-6 py-3.5 bg-forest-50/80 border-b border-forest-100">
+              <div className="flex items-center justify-between text-xs font-semibold text-forest-950 mb-1.5">
                 <span className="flex items-center gap-1.5">
-                  <Truck className="w-4 h-4 text-forest-600" />
+                  <Truck className="w-4 h-4 text-terracotta-600" />
                   {isFreeShipping ? (
                     <span className="text-emerald-700 font-bold">
                       {isBn
-                        ? "অভিনন্দন! আপনার অর্ডারে ফ্রি ডেলিভারি প্রযোজ্য!"
+                        ? "🎉 অভিনন্দন! অর্ডারে ফ্রি ডেলিভারি আনলক হয়েছে!"
                         : "🎉 Free Eco Delivery Unlocked!"}
                     </span>
                   ) : (
                     <span>
                       {isBn
                         ? `আর মাত্র ${formatCurrency(amountNeeded, language)} যোগ করলেই ফ্রি ডেলিভারি!`
-                        : `Add ${formatCurrency(amountNeeded, language)} more for Free Delivery!`}
+                        : `Add ${formatCurrency(amountNeeded, language)} more for Free Shipping!`}
                     </span>
                   )}
                 </span>
-                <span className="text-[11px] font-bold text-forest-700">
+                <span className="text-[11px] font-bold text-forest-800">
                   {isBn ? `${toBengaliNumerals(progressPercent)}%` : `${progressPercent}%`}
                 </span>
               </div>
               <div className="w-full h-2 rounded-full bg-forest-200/60 overflow-hidden">
                 <div
                   className={`h-full transition-all duration-500 rounded-full ${
-                    isFreeShipping ? "bg-emerald-600" : "bg-forest-600"
+                    isFreeShipping
+                      ? "bg-emerald-600"
+                      : "bg-gradient-to-r from-terracotta-500 to-amber-500"
                   }`}
                   style={{ width: `${progressPercent}%` }}
                 />
@@ -119,20 +120,20 @@ export default function CartDrawer() {
           <div className="flex-1 overflow-y-auto p-5 sm:p-6 space-y-3.5">
             {items.length === 0 ? (
               <div className="h-full flex flex-col items-center justify-center text-center py-12 text-forest-700/60">
-                <div className="w-16 h-16 rounded-3xl bg-forest-50 border border-forest-200/50 flex items-center justify-center mb-4">
-                  <ShoppingBag className="w-8 h-8 text-forest-400" />
+                <div className="w-16 h-16 rounded-3xl bg-forest-100/60 border border-forest-200 flex items-center justify-center mb-4 shadow-soft-sm">
+                  <ShoppingBag className="w-8 h-8 text-forest-600" />
                 </div>
                 <p className="text-base font-bold text-forest-950 mb-1">
                   {t.cart.emptyMessage}
                 </p>
-                <p className="text-xs text-forest-600 mb-6 max-w-xs leading-relaxed">
+                <p className="text-xs text-charcoal-500 mb-6 max-w-xs leading-relaxed">
                   {isBn
                     ? "আমাদের ফলদ ও ভেষজ চারা, সুন্দরবনের মধু এবং অর্গানিক সম্ভার থেকে পণ্য বেছে নিন।"
                     : "Add natural herbs, organic honey, and living plants to your basket."}
                 </p>
                 <button
                   onClick={() => setIsCartOpen(false)}
-                  className="px-6 py-2.5 rounded-2xl bg-forest-800 hover:bg-forest-900 text-white text-xs font-bold shadow-soft-sm transition-all"
+                  className="px-6 py-3 rounded-2xl bg-forest-850 hover:bg-forest-900 text-white text-xs font-bold shadow-soft-sm transition-all"
                 >
                   {t.cart.continueShopping}
                 </button>
@@ -165,7 +166,7 @@ export default function CartDrawer() {
                         <Link
                           href={`/shop/${item.product.slug}`}
                           onClick={() => setIsCartOpen(false)}
-                          className="text-xs sm:text-sm font-bold text-forest-950 hover:text-forest-700 line-clamp-1 transition-colors"
+                          className="text-xs sm:text-sm font-bold text-forest-950 hover:text-terracotta-600 line-clamp-1 transition-colors"
                         >
                           {localize(item.product.name)}
                         </Link>
@@ -184,12 +185,12 @@ export default function CartDrawer() {
 
                     {/* Quantity Stepper & Subtotal */}
                     <div className="flex items-center justify-between pt-1">
-                      <div className="flex items-center border border-forest-200 rounded-lg bg-cream-50/80">
+                      <div className="flex items-center border border-forest-200 rounded-lg bg-cream-50">
                         <button
                           onClick={() =>
                             updateQuantity(item.product.id, item.quantity - 1)
                           }
-                          className="p-1 text-forest-700 hover:bg-forest-100 rounded-l-lg transition-colors"
+                          className="p-1 text-forest-800 hover:bg-forest-100 rounded-l-lg transition-colors"
                           aria-label="Decrease quantity"
                         >
                           <Minus className="w-3 h-3" />
@@ -203,14 +204,14 @@ export default function CartDrawer() {
                           onClick={() =>
                             updateQuantity(item.product.id, item.quantity + 1)
                           }
-                          className="p-1 text-forest-700 hover:bg-forest-100 rounded-r-lg transition-colors"
+                          className="p-1 text-forest-800 hover:bg-forest-100 rounded-r-lg transition-colors"
                           aria-label="Increase quantity"
                         >
                           <Plus className="w-3 h-3" />
                         </button>
                       </div>
 
-                      <span className="text-xs font-extrabold text-forest-900">
+                      <span className="text-xs font-extrabold text-forest-950">
                         {formatCurrency(
                           item.product.price * item.quantity,
                           language
@@ -226,10 +227,10 @@ export default function CartDrawer() {
           {/* Footer Checkout Summary */}
           {items.length > 0 && (
             <div className="p-5 sm:p-6 border-t border-forest-100 bg-cream-50 space-y-3">
-              <div className="space-y-1.5 text-xs text-forest-850">
+              <div className="space-y-1.5 text-xs text-charcoal-700">
                 <div className="flex justify-between">
                   <span>{t.cart.subtotal}</span>
-                  <span className="font-bold">
+                  <span className="font-bold text-forest-950">
                     {formatCurrency(subtotal, language)}
                   </span>
                 </div>
@@ -242,39 +243,41 @@ export default function CartDrawer() {
                         {isBn ? "বিনামূল্যে (Free)" : "Free"}
                       </span>
                     ) : (
-                      <span className="font-semibold">{formatCurrency(deliveryFee, language)}</span>
+                      <span className="font-semibold text-forest-950">
+                        {formatCurrency(deliveryFee, language)}
+                      </span>
                     )}
                   </span>
                 </div>
 
-                <div className="border-t border-forest-200/70 pt-2 flex justify-between text-sm sm:text-base font-extrabold text-forest-950">
+                <div className="border-t border-forest-200/80 pt-2 flex justify-between text-sm sm:text-base font-extrabold text-forest-950">
                   <span>{t.cart.total}</span>
-                  <span>{formatCurrency(grandTotal, language)}</span>
+                  <span className="text-forest-950">{formatCurrency(grandTotal, language)}</span>
                 </div>
               </div>
 
-              {/* Action Buttons */}
+              {/* Action Buttons: Vibrant Terracotta Conversion Star */}
               <div className="space-y-2 pt-1">
-                <Link
-                  href="/checkout"
-                  onClick={() => setIsCartOpen(false)}
-                  className="w-full flex items-center justify-center gap-2 py-3.5 px-4 rounded-2xl bg-forest-800 hover:bg-forest-900 text-white font-bold text-sm shadow-soft-md transition-all duration-200 hover:shadow-soft-lg"
-                >
-                  <span>{isBn ? "সরাসরি চেকআউট করুন" : "Proceed to Checkout"}</span>
-                  <ArrowRight className="w-4 h-4" />
-                </Link>
-
                 <Link
                   href="/cart"
                   onClick={() => setIsCartOpen(false)}
-                  className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-2xl bg-white hover:bg-cream-100 text-forest-800 font-semibold text-xs border border-forest-200/80 transition-colors"
+                  className="w-full flex items-center justify-center gap-2 py-3.5 px-4 rounded-2xl bg-gradient-to-r from-terracotta-600 via-terracotta-500 to-[#d46d3e] hover:from-terracotta-700 hover:to-terracotta-600 text-white font-extrabold text-sm shadow-terracotta-md hover:shadow-terracotta-lg active:scale-95 transition-all duration-200"
                 >
-                  <span>{isBn ? "ঝুড়ির বিস্তারিত দেখুন" : "View Full Cart"}</span>
+                  <span>{isBn ? "অর্ডার সম্পন্ন করুন (চেকআউট)" : "Proceed to Checkout"}</span>
+                  <ArrowRight className="w-4 h-4 text-cream-100" />
+                </Link>
+
+                <Link
+                  href="/shop"
+                  onClick={() => setIsCartOpen(false)}
+                  className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-2xl bg-white hover:bg-cream-100 text-forest-900 font-bold text-xs border border-forest-200 transition-colors"
+                >
+                  <span>{isBn ? "আরো চারা ও পণ্য যোগ করুন" : "Add More Plants & Goods"}</span>
                 </Link>
               </div>
 
-              <div className="flex items-center justify-center gap-1.5 text-[11px] text-forest-600 pt-1">
-                <ShieldCheck className="w-3.5 h-3.5 text-forest-600" />
+              <div className="flex items-center justify-center gap-1.5 text-[11px] text-charcoal-500 pt-1">
+                <ShieldCheck className="w-3.5 h-3.5 text-forest-700" />
                 <span>{isBn ? "ক্যাশ অন ডেলিভারি ও নিরাপদ পেমেন্ট" : "Cash on Delivery & Secure Payments"}</span>
               </div>
             </div>

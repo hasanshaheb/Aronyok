@@ -272,20 +272,20 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                 type="button"
                 disabled={isOutOfStock}
                 onClick={handleAddToCart}
-                className={`flex-1 flex items-center justify-center gap-2.5 py-3.5 px-6 rounded-2xl font-bold text-sm shadow-soft-sm transition-all cursor-pointer ${
+                className={`flex-1 flex items-center justify-center gap-2.5 py-4 px-6 rounded-2xl font-extrabold text-sm shadow-soft-sm transition-all cursor-pointer ${
                   isAdded
-                    ? "bg-emerald-600 text-white"
-                    : "bg-forest-800 hover:bg-forest-900 text-white"
+                    ? "bg-emerald-600 text-white shadow-soft-md"
+                    : "bg-forest-850 hover:bg-forest-950 text-white hover:shadow-soft-md active:scale-95"
                 } disabled:opacity-50`}
               >
                 {isAdded ? (
                   <>
-                    <CheckCircle2 className="w-4 h-4" />
+                    <CheckCircle2 className="w-4 h-4 text-emerald-200" />
                     <span>{language === "bn" ? "কার্টে যোগ করা হয়েছে!" : "Added to Cart!"}</span>
                   </>
                 ) : (
                   <>
-                    <ShoppingBag className="w-4 h-4" />
+                    <ShoppingBag className="w-4 h-4 text-cream-100" />
                     <span>{t.storefront.addToCart}</span>
                   </>
                 )}
@@ -295,7 +295,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                 type="button"
                 disabled={isOutOfStock}
                 onClick={handleBuyNow}
-                className="flex-1 flex items-center justify-center gap-2 py-3.5 px-6 rounded-2xl bg-terracotta-600 hover:bg-terracotta-700 text-white font-bold text-sm shadow-md transition-all cursor-pointer disabled:opacity-50"
+                className="flex-1 flex items-center justify-center gap-2 py-4 px-6 rounded-2xl bg-gradient-to-r from-terracotta-600 via-terracotta-500 to-[#d46d3e] hover:from-terracotta-700 hover:to-terracotta-600 text-white font-extrabold text-sm shadow-terracotta-md hover:shadow-terracotta-lg active:scale-95 transition-all cursor-pointer disabled:opacity-50"
               >
                 <span>{language === "bn" ? "সরাসরি অর্ডার করুন" : "Buy It Now"}</span>
               </button>

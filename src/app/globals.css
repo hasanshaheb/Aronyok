@@ -5,25 +5,26 @@
 @tailwind utilities;
 
 :root {
-  --background: #fdfbf7;
-  --foreground: #1c241e;
-  --card: #ffffff;
-  --card-foreground: #1c241e;
-  --popover: #ffffff;
-  --popover-foreground: #1c241e;
-  --primary: #2d6a4f;
-  --primary-foreground: #ffffff;
-  --secondary: #ede7d8;
-  --secondary-foreground: #1c241e;
-  --muted: #f4f1ea;
-  --muted-foreground: #5e6b62;
-  --accent: #40916c;
-  --accent-foreground: #ffffff;
-  --destructive: #dc2626;
-  --destructive-foreground: #ffffff;
-  --border: #e6dfd1;
-  --input: #e6dfd1;
-  --ring: #2d6a4f;
+  /* Aronyok Official Botanical Palette */
+  --background: #FDFBF7;
+  --foreground: #292C27; /* Charcoal */
+  --card: #FFFFFF;
+  --card-foreground: #292C27;
+  --popover: #FFFFFF;
+  --popover-foreground: #292C27;
+  --primary: #234B36; /* Forest Green */
+  --primary-foreground: #FFFFFF;
+  --secondary: #F5F1E7; /* Warm Cream */
+  --secondary-foreground: #234B36;
+  --muted: #EBF0E8; /* Sage wash */
+  --muted-foreground: #555751;
+  --accent: #C47D5A; /* Terracotta Vibrant Opposite */
+  --accent-foreground: #FFFFFF;
+  --destructive: #B91C1C;
+  --destructive-foreground: #FFFFFF;
+  --border: #E8E2D5;
+  --input: #E8E2D5;
+  --ring: #234B36;
   --radius: 1rem;
 }
 
@@ -32,29 +33,31 @@ body {
   color: var(--foreground);
   font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
   overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 .font-bengali {
   font-family: 'Hind Siliguri', 'Plus Jakarta Sans', system-ui, sans-serif;
 }
 
-/* Custom Scrollbars */
+/* Custom Scrollbars in Warm Earth */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: #f4f1ea;
+  background: #F5F1E7;
 }
 ::-webkit-scrollbar-thumb {
-  background: #c7a57a;
+  background: #9EAF91;
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #936639;
+  background: #234B36;
 }
 
-/* Hide scrollbar for category bars */
+/* Hide scrollbars for horizontal carousels */
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }

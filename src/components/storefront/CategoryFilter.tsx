@@ -20,7 +20,7 @@ export default function CategoryFilter({
   selectedCategory,
   onSelectCategory,
 }: CategoryFilterProps) {
-  const { language, t } = useLanguage();
+  const { language } = useLanguage();
   const isBn = language === "bn";
 
   const categories = [
@@ -51,7 +51,7 @@ export default function CategoryFilter({
     },
     {
       id: "gardening",
-      label: isBn ? "মাটির শিল্প ও পাত্র" : "Gardening & Pots",
+      label: isBn ? "মাটির পাত্র ও উপকরণ" : "Pottery & Soil",
       icon: Flower2,
     },
   ];
@@ -65,15 +65,15 @@ export default function CategoryFilter({
           <button
             key={cat.id}
             onClick={() => onSelectCategory(cat.id)}
-            className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all duration-200 border ${
+            className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-bold whitespace-nowrap transition-all duration-200 border ${
               isActive
-                ? "bg-forest-800 text-white border-forest-800 shadow-soft-sm scale-[1.02]"
-                : "bg-white text-forest-900/85 border-forest-100 hover:bg-cream-100/70 hover:border-forest-200"
+                ? "bg-forest-900 text-cream-50 border-forest-900 shadow-soft-md scale-[1.02] ring-2 ring-terracotta-500/40"
+                : "bg-cream-100/90 text-charcoal-800 border-forest-200/90 hover:bg-white hover:border-terracotta-400 hover:text-terracotta-700 shadow-xs"
             }`}
           >
             <Icon
-              className={`w-4 h-4 ${
-                isActive ? "text-emerald-300" : "text-forest-600"
+              className={`w-4 h-4 transition-colors ${
+                isActive ? "text-amber-400" : "text-forest-700"
               }`}
             />
             <span>{cat.label}</span>

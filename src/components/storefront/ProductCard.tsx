@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Plus, Check, Sprout, AlertCircle } from "lucide-react";
+import { Plus, Check, Sprout, AlertCircle, Droplets, Leaf } from "lucide-react";
 import { Product } from "../../lib/types";
 import { useLanguage } from "../../context/LanguageContext";
 import { useCart } from "../../context/CartContext";
@@ -51,25 +51,13 @@ export default function ProductCard({ product }: { product: Product }) {
         )
       : 0;
 
-  // Botanical badge label
-  const botanicalBadge =
-    product.propagation_method ||
-    (product.category === "plants"
-      ? isBn
-        ? "কলম চারা"
-        : "Live Sapling"
-      : product.category === "honey"
-      ? isBn
-        ? "সুন্দরবনের খাঁটি মধু"
-        : "Wild Mangrove Honey"
-      : product.category === "herbs"
-      ? isBn
-        ? "ভেষজ উপাদান"
-        : "Therapeutic Herb"
-      : product.category);
+  // Custom Category & Attribute Badges
+  const isPlant = product.category === "plants";
+  const isHoney = product.category === "honey";
+  const isHerbs = product.category === "herbs";
 
   return (
-    <div className="group flex flex-col bg-white rounded-3xl border border-forest-100/90 overflow-hidden shadow-soft-sm hover:shadow-soft-lg hover:-translate-y-1 transition-all duration-300">
+    <div className="group flex flex-col bg-white rounded-3xl border border-forest-100/90 hover:border-forest-200 overflow-hidden shadow-soft-sm hover:shadow-soft-lg hover:-translate-y-1 transition-all duration-300">
       {/* Product Image Frame */}
       <Link
         href={`/shop/${product.slug}`}
@@ -89,28 +77,53 @@ export default function ProductCard({ product }: { product: Product }) {
           }
         />
 
-        {/* Botanical / Category Pill */}
-        <span className="absolute top-3 left-3 px-3 py-1 rounded-full bg-forest-900/80 backdrop-blur-md text-white text-[10px] font-bold uppercase tracking-wider shadow-sm flex items-center gap-1">
-          {product.category === "plants" && <Sprout className="w-3 h-3 text-emerald-300" />}
-          <span>{botanicalBadge}</span>
+        {/* Botanical / Category Pill with Rich Contrast */}
+        <span
+          className={`absolute top-3 left-3 px-3 py-1 rounded-full text-white text-[10px] font-bold uppercase tracking-wider shadow-sm flex items-center gap-1 backdrop-blur-md ${
+            isHoney
+              ? "bg-amber-700/90"
+              : isPlant
+              ? "bg-forest-900/90"
+              : "bg-forest-800/90"
+          }`}
+        >
+          {isPlant && <Sprout className="w-3 h-3 text-emerald-300" />}
+          {isHoney && <Droplets className="w-3 h-3 text-amber-300" />}
+          {isHerbs && <Leaf className="w-3 h-3 text-sage-200" />}
+          <span>
+            {product.propagation_method ||
+              (isPlant
+                ? isBn
+                  ? "কলম চারা"
+                  : "Live Sapling"
+                : isHoney
+                ? isBn
+                  ? "সুন্দরবনের মধু"
+                  : "Wild Honey"
+                : isHerbs
+                ? isBn
+                  ? "ভেষজ উপাদান"
+                  : "Herbal"
+                : product.category)}
+          </span>
         </span>
 
-        {/* Discount Badge */}
+        {/* Vibrant Terracotta Discount Badge */}
         {discountPercent > 0 && (
-          <span className="absolute top-3 right-3 px-2.5 py-1 rounded-full bg-terracotta-600 text-white text-[10px] font-extrabold shadow-sm">
+          <span className="absolute top-3 right-3 px-2.5 py-1 rounded-full bg-terracotta-600 text-white text-[10px] font-extrabold shadow-terracotta-sm">
             -{discountPercent}%
           </span>
         )}
 
         {/* Stock Alert Overlay */}
         {isOutOfStock ? (
-          <div className="absolute inset-0 bg-stone-900/60 backdrop-blur-xs flex items-center justify-center">
-            <span className="px-3.5 py-1.5 rounded-xl bg-white text-forest-950 font-bold text-xs shadow-md">
-              {isBn ? "স্টক শেষ" : "Out of Stock"}
+          <div className="absolute inset-0 bg-stone-900/65 backdrop-blur-xs flex items-center justify-center">
+            <span className="px-4 py-2 rounded-xl bg-white text-forest-950 font-bold text-xs shadow-md">
+              {isBn ? "স্টক শেষ (Out of Stock)" : "Out of Stock"}
             </span>
           </div>
         ) : isLowStock ? (
-          <span className="absolute bottom-3 left-3 px-2.5 py-1 rounded-full bg-amber-500/90 backdrop-blur-sm text-white text-[10px] font-bold flex items-center gap-1 shadow-sm">
+          <span className="absolute bottom-3 left-3 px-2.5 py-1 rounded-full bg-amber-600/95 backdrop-blur-sm text-white text-[10px] font-bold flex items-center gap-1 shadow-sm">
             <AlertCircle className="w-3 h-3" />
             <span>
               {isBn
@@ -119,7 +132,7 @@ export default function ProductCard({ product }: { product: Product }) {
             </span>
           </span>
         ) : (
-          <span className="absolute bottom-3 left-3 px-2 py-0.5 rounded-full bg-white/90 backdrop-blur-sm text-forest-800 text-[10px] font-semibold flex items-center gap-1 shadow-xs">
+          <span className="absolute bottom-3 left-3 px-2.5 py-0.5 rounded-full bg-cream-50/95 backdrop-blur-sm text-forest-900 text-[10px] font-bold flex items-center gap-1.5 shadow-xs border border-forest-100">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
             <span>{isBn ? "সতেজ মজুদ" : "In Stock"}</span>
           </span>
@@ -129,20 +142,20 @@ export default function ProductCard({ product }: { product: Product }) {
       {/* Product Content Details */}
       <div className="p-5 flex-1 flex flex-col justify-between space-y-3.5">
         <div>
-          {/* Scientific Name (if plant) */}
+          {/* Scientific Name (if plant) in Sage Green */}
           {product.scientific_name && (
-            <p className="text-[11px] text-forest-600/80 italic font-serif">
+            <p className="text-[11px] text-sage-600 italic font-serif">
               {product.scientific_name}
             </p>
           )}
 
           <Link href={`/shop/${product.slug}`} className="block mt-0.5">
-            <h3 className="font-bold text-forest-950 text-base group-hover:text-forest-700 transition-colors line-clamp-2 leading-snug">
+            <h3 className="font-bold text-charcoal-900 text-base group-hover:text-forest-750 transition-colors line-clamp-2 leading-snug">
               {localize(product.name)}
             </h3>
           </Link>
 
-          <p className="text-xs text-forest-800/70 mt-1.5 line-clamp-2 leading-relaxed">
+          <p className="text-xs text-charcoal-500 mt-1.5 line-clamp-2 leading-relaxed font-normal">
             {localize(product.description)}
           </p>
 
@@ -150,17 +163,17 @@ export default function ProductCard({ product }: { product: Product }) {
           {(product.plant_height || product.pot_size || product.variety) && (
             <div className="flex flex-wrap gap-1.5 mt-2.5">
               {product.variety && (
-                <span className="text-[10px] px-2 py-0.5 rounded-md bg-forest-50 text-forest-700 border border-forest-100 font-medium">
+                <span className="text-[10px] px-2 py-0.5 rounded-md bg-forest-50 text-forest-800 border border-forest-100 font-semibold">
                   {product.variety}
                 </span>
               )}
               {product.plant_height && (
-                <span className="text-[10px] px-2 py-0.5 rounded-md bg-sage-50 text-forest-800 border border-sage-200 font-medium">
+                <span className="text-[10px] px-2 py-0.5 rounded-md bg-cream-100 text-earth-800 border border-cream-200 font-semibold">
                   📏 {product.plant_height}
                 </span>
               )}
               {product.pot_size && (
-                <span className="text-[10px] px-2 py-0.5 rounded-md bg-cream-100 text-earth-800 border border-earth-200 font-medium">
+                <span className="text-[10px] px-2 py-0.5 rounded-md bg-terracotta-50 text-terracotta-800 border border-terracotta-200 font-semibold">
                   🪴 {product.pot_size}
                 </span>
               )}
@@ -168,10 +181,10 @@ export default function ProductCard({ product }: { product: Product }) {
           )}
         </div>
 
-        {/* Price & Action */}
-        <div className="pt-3 border-t border-forest-100/60 flex items-center justify-between">
+        {/* Price & Action: Vibrant Morph Button */}
+        <div className="pt-3 border-t border-forest-100/70 flex items-center justify-between">
           <div className="flex flex-col">
-            <span className="text-base font-extrabold text-forest-900 tracking-tight">
+            <span className="text-base font-extrabold text-forest-950 tracking-tight">
               {formatCurrency(product.price, language)}
             </span>
             {product.compare_at_price && product.compare_at_price > product.price && (
@@ -184,12 +197,12 @@ export default function ProductCard({ product }: { product: Product }) {
           <button
             onClick={handleAddToCart}
             disabled={isOutOfStock}
-            className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-all duration-200 shadow-sm ${
+            className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold transition-all duration-200 shadow-sm ${
               isOutOfStock
                 ? "bg-stone-200 text-stone-400 cursor-not-allowed"
                 : isAdded
-                ? "bg-emerald-600 text-white"
-                : "bg-forest-700 hover:bg-forest-800 text-white hover:shadow-soft-md active:scale-95"
+                ? "bg-emerald-600 text-white shadow-soft-sm"
+                : "bg-forest-850 hover:bg-terracotta-600 text-white hover:shadow-terracotta-sm active:scale-95"
             }`}
           >
             {isAdded ? (
