@@ -92,6 +92,99 @@ export async function GET(req: NextRequest) {
     return NextResponse.json(runtimeStore.getOrders());
   }
 
+  if (entity === "customers") {
+    return NextResponse.json(runtimeStore.getCustomers());
+  }
+
+  if (entity === "leads") {
+    return NextResponse.json(runtimeStore.getLeads());
+  }
+
+  if (entity === "suppliers") {
+    return NextResponse.json(runtimeStore.getSuppliers());
+  }
+
+  if (entity === "purchases") {
+    return NextResponse.json(runtimeStore.getPurchases());
+  }
+
+  if (entity === "shipments") {
+    return NextResponse.json(runtimeStore.getShipments());
+  }
+
+  if (entity === "returns") {
+    return NextResponse.json(runtimeStore.getReturns());
+  }
+
+  if (entity === "reports") {
+    const orders = runtimeStore.getOrders();
+    const products = runtimeStore.getProducts();
+    const customers = runtimeStore.getCustomers();
+    const shipments = runtimeStore.getShipments();
+
+    const nonArchivedOrders = orders.filter((o) => !o.is_archived);
+    const completedOrders = nonArchivedOrders.filter(
+      (o) => o.order_status === "delivered" || o.payment_status === "paid"
+    );
+
+    const totalGMV = nonArchivedOrders.reduce((sum, o) => sum + (o.total_amount || 0), 0);
+    const completedRevenue = completedOrders.reduce((sum, o) => sum + (o.total_amount || 0), 0);
+    const averageOrderValue =
+      nonArchivedOrders.length > 0 ? Math.round(totalGMV / nonArchivedOrders.length) : 0;
+
+    let totalEstimatedCOGS = 0;
+    nonArchivedOrders.forEach((o) => {
+      (o.items || []).forEach((item) => {
+        const prod = products.find((p) => p.id === item.product_id);
+        const unitCost = prod?.cost_price || Math.round((item.price || 0) * 0.55);
+        totalEstimatedCOGS += unitCost * (item.quantity || 1);
+      });
+    });
+
+    const estimatedGrossProfit = Math.max(0, totalGMV - totalEstimatedCOGS);
+    const grossMarginPercent =
+      totalGMV > 0 ? Math.round((estimatedGrossProfit / totalGMV) * 100) : 0;
+
+    const categoryCounts: Record<string, number> = {};
+    nonArchivedOrders.forEach((o) => {
+      (o.items || []).forEach((item) => {
+        const prod = products.find((p) => p.id === item.product_id);
+        const cat = prod?.category || "plants";
+        categoryCounts[cat] = (categoryCounts[cat] || 0) + (item.quantity || 1);
+      });
+    });
+
+    const deliverySuccessRate =
+      shipments.length > 0
+        ? Math.round(
+            (shipments.filter((s) => s.courier_status === "delivered").length /
+              shipments.length) *
+              100
+          )
+        : 100;
+
+    return NextResponse.json({
+      totalOrders: nonArchivedOrders.length,
+      totalGMV,
+      completedRevenue,
+      averageOrderValue,
+      totalEstimatedCOGS,
+      estimatedGrossProfit,
+      grossMarginPercent,
+      categoryCounts,
+      totalCustomers: customers.length,
+      repeatCustomerRate:
+        customers.length > 0
+          ? Math.round(
+              (customers.filter((c) => c.total_orders > 1).length / customers.length) * 100
+            )
+          : 0,
+      deliverySuccessRate,
+      activeProductsCount: products.filter((p) => p.is_active).length,
+      lowStockCount: products.filter((p) => p.stock <= 5).length,
+    });
+  }
+
   if (entity === "settings") {
     if (supabase) {
       try {
@@ -136,7 +229,6 @@ export async function POST(req: NextRequest) {
         ? runtimeStore.getProducts().find((p) => p.id === productId || (body.slug && p.slug === body.slug))
         : null;
 
-      // Clean Supabase payload without UI metadata keys (sync_git, git_message)
       if (supabase) {
         try {
           const dbPayload: any = {};
@@ -191,9 +283,10 @@ export async function POST(req: NextRequest) {
       let gitSyncResult = null;
       if (body.sync_git || (action === "change_image" && body.sync_git !== false)) {
         const prodName = body.name?.en || existingProduct?.name?.en || body.id || "product";
-        const defaultCommit = action === "change_image"
-          ? `Admin CMS: Update picture for "${prodName}"`
-          : `Admin CMS: Update product "${prodName}"`;
+        const defaultCommit =
+          action === "change_image"
+            ? `Admin CMS: Update picture for "${prodName}"`
+            : `Admin CMS: Update product "${prodName}"`;
         gitSyncResult = await gitCommitAndPush(body.git_message || defaultCommit);
       }
 
@@ -301,7 +394,7 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // 5. ORDERS (With Archive, Unarchive, and Batch Operations)
+    // 5. ORDERS
     if (entity === "orders") {
       if (action === "archive") {
         const ids: string[] = body.ids || (body.id ? [body.id] : []);
@@ -328,13 +421,13 @@ export async function POST(req: NextRequest) {
         }
         return NextResponse.json({
           success: true,
-          message: `Restored ${ids.length} order(s) from archive`,
+          message: `Unarchived ${ids.length} order(s)`,
           items: runtimeStore.getOrders(),
         });
       }
 
       if (action === "delete_batch") {
-        const ids: string[] = body.ids || (body.id ? [body.id] : []);
+        const ids: string[] = body.ids || [];
         runtimeStore.deleteOrders(ids);
         if (supabase) {
           try {
@@ -348,35 +441,220 @@ export async function POST(req: NextRequest) {
         });
       }
 
-      // Single order status / payment status update
-      let isSynced = false;
-      if (supabase && body.id) {
-        try {
-          const updateData: any = {};
-          if (body.order_status) updateData.order_status = body.order_status;
-          if (body.payment_status) updateData.payment_status = body.payment_status;
-          const { error } = await supabase.from("orders").update(updateData).eq("id", body.id);
-          if (!error) isSynced = true;
-        } catch {}
+      if (action === "update_status") {
+        runtimeStore.updateOrderStatus(body.id, body.status);
+        if (supabase) {
+          try {
+            await supabase.from("orders").update({ order_status: body.status }).eq("id", body.id);
+          } catch {}
+        }
+        return NextResponse.json({
+          success: true,
+          items: runtimeStore.getOrders(),
+        });
       }
-      if (body.order_status) runtimeStore.updateOrderStatus(body.id, body.order_status);
-      if (body.payment_status) runtimeStore.updatePaymentStatus(body.id, body.payment_status);
-      return NextResponse.json({ success: true, synced: isSynced, items: runtimeStore.getOrders() });
+
+      if (action === "update_payment") {
+        runtimeStore.updatePaymentStatus(body.id, body.status);
+        if (supabase) {
+          try {
+            await supabase.from("orders").update({ payment_status: body.status }).eq("id", body.id);
+          } catch {}
+        }
+        return NextResponse.json({
+          success: true,
+          items: runtimeStore.getOrders(),
+        });
+      }
+
+      return NextResponse.json({ error: "Invalid order action" }, { status: 400 });
     }
 
-    // 6. SETTINGS
+    // 6. CRM: CUSTOMERS
+    if (entity === "customers") {
+      if (action === "export_csv") {
+        const customers = runtimeStore.getCustomers();
+        const headers = ["ID", "Name", "Phone", "Email", "City", "Address", "Total Orders", "Total Spent (BDT)", "Tags", "Last Order Date"];
+        const rows = customers.map((c) => [
+          c.id,
+          `"${(c.full_name || "").replace(/"/g, '""')}"`,
+          `"${c.phone}"`,
+          `"${c.email || ""}"`,
+          `"${c.city || ""}"`,
+          `"${(c.address || "").replace(/"/g, '""')}"`,
+          c.total_orders,
+          c.total_spent,
+          `"${(c.customer_tags || []).join(", ")}"`,
+          c.last_order_date || "",
+        ]);
+
+        const csvContent = [headers.join(","), ...rows.map((r) => r.join(","))].join("\n");
+        return new NextResponse(csvContent, {
+          headers: {
+            "Content-Type": "text/csv; charset=utf-8",
+            "Content-Disposition": `attachment; filename="aronyok_customers_${Date.now()}.csv"`,
+          },
+        });
+      }
+
+      if (body.id) {
+        runtimeStore.updateCustomer(body.id, body);
+      } else {
+        const newCustomer = {
+          ...body,
+          id: `cust-${Date.now()}`,
+          total_orders: Number(body.total_orders) || 0,
+          total_spent: Number(body.total_spent) || 0,
+          customer_tags: body.customer_tags || ["Standard"],
+          created_at: new Date().toISOString(),
+        };
+        runtimeStore.addCustomer(newCustomer);
+      }
+      return NextResponse.json({ success: true, items: runtimeStore.getCustomers() });
+    }
+
+    // 7. CRM: LEADS
+    if (entity === "leads") {
+      if (body.id) {
+        runtimeStore.updateLead(body.id, body);
+      } else {
+        const newLead = {
+          ...body,
+          id: `lead-${Date.now()}`,
+          created_at: new Date().toISOString(),
+        };
+        runtimeStore.addLead(newLead);
+      }
+      return NextResponse.json({ success: true, items: runtimeStore.getLeads() });
+    }
+
+    // 8. PROCUREMENT: SUPPLIERS
+    if (entity === "suppliers") {
+      if (body.id) {
+        runtimeStore.updateSupplier(body.id, body);
+      } else {
+        const newSupplier = {
+          ...body,
+          id: `sup-${Date.now()}`,
+          created_at: new Date().toISOString(),
+        };
+        runtimeStore.addSupplier(newSupplier);
+      }
+      return NextResponse.json({ success: true, items: runtimeStore.getSuppliers() });
+    }
+
+    // 9. PROCUREMENT: PURCHASES (PURCHASE ORDERS)
+    if (entity === "purchases") {
+      if (action === "update_status") {
+        runtimeStore.updatePurchaseStatus(body.id, body.status);
+        return NextResponse.json({
+          success: true,
+          message: `Purchase status updated to ${body.status}.`,
+          items: runtimeStore.getPurchases(),
+        });
+      }
+
+      const poNumber = `PO-${new Date().getFullYear()}-${Math.floor(100 + Math.random() * 900)}`;
+      const totalCost = (body.items || []).reduce(
+        (sum: number, it: any) => sum + (Number(it.unit_cost) || 0) * (Number(it.quantity) || 0),
+        0
+      );
+
+      const newPurchase = {
+        id: `po-${Date.now()}`,
+        po_number: body.po_number || poNumber,
+        supplier_id: body.supplier_id,
+        supplier_name: body.supplier_name,
+        total_cost: totalCost,
+        status: body.status || "ordered",
+        invoice_reference: body.invoice_reference,
+        received_date: body.status === "received" ? new Date().toISOString() : undefined,
+        items: body.items || [],
+        notes: body.notes,
+        created_at: new Date().toISOString(),
+      };
+
+      runtimeStore.addPurchase(newPurchase);
+      return NextResponse.json({ success: true, items: runtimeStore.getPurchases() });
+    }
+
+    // 10. LOGISTICS: SHIPMENTS
+    if (entity === "shipments") {
+      if (action === "update_status") {
+        runtimeStore.updateShipmentStatus(body.id, body.courier_status);
+        return NextResponse.json({
+          success: true,
+          items: runtimeStore.getShipments(),
+        });
+      }
+
+      const trackingCode = `TRK-${(body.courier_partner || "EXP").slice(0, 3).toUpperCase()}-${Math.floor(1000 + Math.random() * 9000)}`;
+      const newShipment = {
+        id: `ship-${Date.now()}`,
+        order_id: body.order_id,
+        order_number: body.order_number,
+        recipient_name: body.recipient_name,
+        recipient_phone: body.recipient_phone,
+        shipping_address: body.shipping_address,
+        city: body.city,
+        courier_partner: body.courier_partner || "steadfast",
+        consignment_id: body.consignment_id || `CN-${Date.now().toString().slice(-6)}`,
+        tracking_code: body.tracking_code || trackingCode,
+        courier_status: "manifested" as const,
+        cod_amount: Number(body.cod_amount) || 0,
+        courier_charge: Number(body.courier_charge) || 70,
+        dispatched_at: new Date().toISOString(),
+        created_at: new Date().toISOString(),
+      };
+
+      runtimeStore.createShipment(newShipment);
+      return NextResponse.json({ success: true, items: runtimeStore.getShipments() });
+    }
+
+    // 11. RETURNS & REFUNDS
+    if (entity === "returns") {
+      if (action === "update_status") {
+        runtimeStore.updateReturnStatus(body.id, body.status);
+        return NextResponse.json({ success: true, items: runtimeStore.getReturns() });
+      }
+
+      const newReturn = {
+        id: `ret-${Date.now()}`,
+        order_id: body.order_id,
+        order_number: body.order_number,
+        customer_name: body.customer_name,
+        customer_phone: body.customer_phone,
+        reason: body.reason || "damaged_in_transit",
+        refund_amount: Number(body.refund_amount) || 0,
+        status: "pending" as const,
+        notes: body.notes,
+        created_at: new Date().toISOString(),
+      };
+
+      runtimeStore.addReturn(newReturn);
+      return NextResponse.json({ success: true, items: runtimeStore.getReturns() });
+    }
+
+    // 12. SETTINGS
     if (entity === "settings") {
       let isSynced = false;
       if (supabase) {
         try {
           const { error } = await supabase.from("settings").upsert({
             id: body.id || "00000000-0000-0000-0000-000000000001",
-            ...body,
+            global_seo_title: body.global_seo_title,
+            global_seo_description: body.global_seo_description,
+            analytics_script: body.analytics_script,
+            ad_banner_top_html: body.ad_banner_top_html,
+            ai_system_prompt: body.ai_system_prompt,
+            contact_email: body.contact_email,
+            contact_phone: body.contact_phone,
             updated_at: new Date().toISOString(),
           });
           if (!error) isSynced = true;
         } catch {}
       }
+
       const updated = runtimeStore.updateSettings(body);
 
       let gitSyncResult = null;
@@ -401,6 +679,14 @@ export async function POST(req: NextRequest) {
 
 export async function DELETE(req: NextRequest) {
   try {
+    const staff = await verifyAdminSession(req);
+    if (!staff) {
+      return NextResponse.json(
+        { error: "Unauthorized: Administrator access required." },
+        { status: 401 }
+      );
+    }
+
     const { searchParams } = new URL(req.url);
     const entity = searchParams.get("entity");
     const id = searchParams.get("id");
@@ -442,9 +728,23 @@ export async function DELETE(req: NextRequest) {
       return NextResponse.json({ success: true, items: runtimeStore.getOrders() });
     }
 
-    return NextResponse.json({ error: "Invalid entity" }, { status: 400 });
+    if (entity === "customers") {
+      runtimeStore.deleteCustomer(id);
+      return NextResponse.json({ success: true, items: runtimeStore.getCustomers() });
+    }
+
+    if (entity === "leads") {
+      runtimeStore.deleteLead(id);
+      return NextResponse.json({ success: true, items: runtimeStore.getLeads() });
+    }
+
+    if (entity === "suppliers") {
+      runtimeStore.deleteSupplier(id);
+      return NextResponse.json({ success: true, items: runtimeStore.getSuppliers() });
+    }
+
+    return NextResponse.json({ error: "Invalid entity for deletion" }, { status: 400 });
   } catch (error: any) {
-    console.error("Admin POST error:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

@@ -55,18 +55,18 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
+                <Link href="/order-tracking" className="hover:text-white transition-colors">
+                  {language === "bn" ? "অর্ডার ট্র্যাকিং" : "Track Order"}
+                </Link>
+              </li>
+              <li>
+                <Link href="/contact" className="hover:text-white transition-colors">
+                  {language === "bn" ? "যোগাযোগ ও নার্সারি" : "Contact & Nursery"}
+                </Link>
+              </li>
+              <li>
                 <Link href="/tools" className="hover:text-white transition-colors">
                   {t.nav.tools}
-                </Link>
-              </li>
-              <li>
-                <Link href="/about-us" className="hover:text-white transition-colors">
-                  {t.nav.pages}
-                </Link>
-              </li>
-              <li>
-                <Link href="/cart" className="hover:text-white transition-colors">
-                  {t.nav.cart}
                 </Link>
               </li>
             </ul>
@@ -84,18 +84,23 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/sustainability" className="hover:text-white transition-colors">
-                  {language === "bn" ? "টেকসই অঙ্গীকার" : "Sustainability Pledge"}
+                <Link href="/shipping-and-returns" className="hover:text-white transition-colors">
+                  {language === "bn" ? "শিপিং ও রিটার্ন পলিসি" : "Shipping & Returns"}
                 </Link>
               </li>
               <li>
-                <Link href="/tools/herbal-remedy-finder" className="hover:text-white transition-colors">
-                  {language === "bn" ? "ভেষজ নির্দেশক টুল" : "Herbal Remedy Tool"}
+                <Link href="/privacy-policy" className="hover:text-white transition-colors">
+                  {language === "bn" ? "গোপনীয়তা নীতি" : "Privacy Policy"}
+                </Link>
+              </li>
+              <li>
+                <Link href="/terms" className="hover:text-white transition-colors">
+                  {language === "bn" ? "শর্তাবলী" : "Terms & Conditions"}
                 </Link>
               </li>
               <li>
                 <Link href="/admin" className="hover:text-white transition-colors">
-                  {language === "bn" ? "অ্যাডমিন প্রবেশদ্বার" : "Admin Portal"}
+                  {language === "bn" ? "অ্যাডমিন পোর্টাল" : "Admin Portal"}
                 </Link>
               </li>
             </ul>

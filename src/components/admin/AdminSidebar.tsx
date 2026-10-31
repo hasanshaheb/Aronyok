@@ -14,7 +14,12 @@ import {
   Store,
   LogOut,
   Sprout,
-  ShieldCheck,
+  Users,
+  Target,
+  Building2,
+  ClipboardList,
+  Truck,
+  TrendingUp,
 } from "lucide-react";
 import { isSupabaseConfigured, supabase } from "../../lib/supabase/client";
 import AdminSyncWidget from "./AdminSyncWidget";
@@ -28,14 +33,40 @@ export default function AdminSidebar() {
     return null;
   }
 
-  const menuItems = [
-    { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
-    { href: "/admin/products", label: "Products", icon: Package },
-    { href: "/admin/blog", label: "Blog Posts", icon: BookOpen },
-    { href: "/admin/pages", label: "Dynamic Pages", icon: FileText },
-    { href: "/admin/tools", label: "Tools & Apps", icon: Wrench },
-    { href: "/admin/orders", label: "Orders & MFS", icon: ShoppingBag },
-    { href: "/admin/settings", label: "SEO & AI Setup", icon: Settings },
+  const navSections = [
+    {
+      title: "Operations & Sales",
+      items: [
+        { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
+        { href: "/admin/orders", label: "Orders & MFS", icon: ShoppingBag },
+        { href: "/admin/shipments", label: "Shipments & Logistics", icon: Truck },
+        { href: "/admin/customers", label: "Customers & CRM", icon: Users },
+        { href: "/admin/leads", label: "Leads Pipeline", icon: Target },
+      ],
+    },
+    {
+      title: "Catalog & Procurement",
+      items: [
+        { href: "/admin/products", label: "Product Catalog", icon: Package },
+        { href: "/admin/suppliers", label: "Suppliers & Nurseries", icon: Building2 },
+        { href: "/admin/purchases", label: "Purchases & Restock", icon: ClipboardList },
+      ],
+    },
+    {
+      title: "Content & Intelligence",
+      items: [
+        { href: "/admin/reports", label: "Business Reports", icon: TrendingUp },
+        { href: "/admin/blog", label: "Blog & Journal", icon: BookOpen },
+        { href: "/admin/pages", label: "Dynamic Pages", icon: FileText },
+      ],
+    },
+    {
+      title: "Configuration",
+      items: [
+        { href: "/admin/settings", label: "SEO & AI Setup", icon: Settings },
+        { href: "/admin/tools", label: "Botanical Tools", icon: Wrench },
+      ],
+    },
   ];
 
   const handleLogout = async () => {
@@ -65,32 +96,39 @@ export default function AdminSidebar() {
               Aronyok Admin
             </h2>
             <p className="text-[10px] text-forest-300 font-medium uppercase tracking-wider">
-              Nature CMS v1.0
+              Enterprise v2.0
             </p>
           </div>
         </Link>
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 p-4 space-y-1.5 overflow-y-auto">
-        {menuItems.map((item) => {
-          const isActive = pathname === item.href;
-          const Icon = item.icon;
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all duration-200 ${
-                isActive
-                  ? "bg-forest-800 text-white shadow-soft-sm font-bold"
-                  : "text-forest-200/80 hover:bg-forest-900 hover:text-white"
-              }`}
-            >
-              <Icon className="w-4 h-4 text-forest-300" />
-              <span>{item.label}</span>
-            </Link>
-          );
-        })}
+      <nav className="flex-1 p-4 space-y-5 overflow-y-auto">
+        {navSections.map((sec, sIdx) => (
+          <div key={sIdx} className="space-y-1">
+            <div className="px-3 text-[10px] font-bold uppercase tracking-wider text-forest-400/80 mb-1.5">
+              {sec.title}
+            </div>
+            {sec.items.map((item) => {
+              const isActive = pathname === item.href;
+              const Icon = item.icon;
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold transition-all duration-200 ${
+                    isActive
+                      ? "bg-forest-800 text-white shadow-soft-sm font-bold"
+                      : "text-forest-200/80 hover:bg-forest-900 hover:text-white"
+                  }`}
+                >
+                  <Icon className="w-4 h-4 text-forest-300 flex-shrink-0" />
+                  <span className="truncate">{item.label}</span>
+                </Link>
+              );
+            })}
+          </div>
+        ))}
       </nav>
 
       {/* Bottom Shortcuts & Code Sync */}

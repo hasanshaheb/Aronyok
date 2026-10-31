@@ -29,6 +29,7 @@ export interface Product {
   sunlight?: string;
   watering?: string;
   plant_height?: string;
+  plant_age?: string;
   season?: string;
   care_instructions?: LocalizedString;
 
@@ -101,6 +102,8 @@ export interface OrderItem {
   product_name: string;
   price: number;
   quantity: number;
+  title?: string;
+  image_url?: string;
 }
 
 export interface Order {
@@ -111,7 +114,10 @@ export interface Order {
   customer_phone: string;
   shipping_address: string;
   city: string;
+  district?: string;
   total_amount: number;
+  total_price?: number;
+  delivery_charge?: number;
   payment_method: 'cod' | 'bkash' | 'nagad' | 'sslcommerz' | 'stripe';
   payment_status: 'pending' | 'paid' | 'failed' | 'refunded';
   order_status: 'processing' | 'confirmed' | 'shipped' | 'delivered' | 'cancelled';
@@ -127,4 +133,117 @@ export interface ChatMessage {
   role: 'user' | 'assistant' | 'system';
   content: string;
   timestamp: string;
+}
+
+// -------------------------------------------------------------
+// PHASE 2 EXTENSIONS: CRM, LOGISTICS, PROCUREMENT & GOVERNANCE
+// -------------------------------------------------------------
+
+export interface Customer {
+  id: string;
+  full_name: string;
+  phone: string;
+  email?: string;
+  city?: string;
+  address?: string;
+  total_orders: number;
+  total_spent: number;
+  customer_tags: string[];
+  notes?: string;
+  last_order_date?: string;
+  created_at: string;
+}
+
+export interface Lead {
+  id: string;
+  customer_name: string;
+  name?: string;
+  phone: string;
+  email?: string;
+  source: 'website' | 'whatsapp' | 'facebook' | 'phone' | 'nursery_visit' | 'walk_in' | 'referral';
+  status: 'new' | 'contacted' | 'negotiating' | 'converted' | 'lost';
+  interest_category: string;
+  interested_in?: string;
+  estimated_value?: number;
+  notes?: string;
+  follow_up_date?: string;
+  created_at: string;
+}
+
+export interface Supplier {
+  id: string;
+  company_name: string;
+  name?: string;
+  contact_person: string;
+  phone: string;
+  email?: string;
+  address: string;
+  categories: string[];
+  payment_terms?: string;
+  notes?: string;
+  status?: 'active' | 'inactive';
+  is_active: boolean;
+  created_at: string;
+}
+
+export interface PurchaseItem {
+  id?: string;
+  product_id: string;
+  product_name: string;
+  quantity: number;
+  unit_cost: number;
+  total_cost: number;
+}
+
+export interface Purchase {
+  id: string;
+  po_number: string;
+  invoice_number?: string;
+  supplier_id: string;
+  supplier_name: string;
+  total_cost: number;
+  total_amount?: number;
+  status: 'ordered' | 'received' | 'cancelled' | 'draft';
+  invoice_reference?: string;
+  expected_delivery_date?: string;
+  received_date?: string;
+  items: PurchaseItem[];
+  notes?: string;
+  created_at: string;
+}
+
+export interface Shipment {
+  id: string;
+  order_id: string;
+  order_number?: string;
+  recipient_name?: string;
+  recipient_phone?: string;
+  shipping_address?: string;
+  city?: string;
+  courier_partner?: 'steadfast' | 'pathao' | 'redx' | 'self_delivery';
+  courier_name?: string;
+  consignment_id?: string;
+  tracking_code?: string;
+  courier_status: 'manifested' | 'picked_up' | 'in_transit' | 'delivered' | 'returned' | 'cancelled' | 'pending';
+  cod_amount?: number;
+  courier_charge?: number;
+  shipping_fee?: number;
+  estimated_delivery?: string;
+  notes?: string;
+  dispatched_at?: string;
+  delivered_at?: string;
+  created_at: string;
+}
+
+export interface ReturnRefund {
+  id: string;
+  order_id: string;
+  order_number: string;
+  customer_name: string;
+  customer_phone: string;
+  reason: 'damaged_in_transit' | 'wrong_variety' | 'wilted_seedling' | 'customer_request';
+  refund_amount: number;
+  status: 'pending' | 'approved' | 'rejected' | 'processed';
+  notes?: string;
+  created_at: string;
 }
