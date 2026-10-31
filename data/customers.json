@@ -1,0 +1,68 @@
+[
+  {
+    "id": "cust-1793482038928",
+    "full_name": "Test Customer",
+    "phone": "01799881122",
+    "email": "test@example.com",
+    "address": "House 1, Road 2, Gulshan-2, Dhaka",
+    "city": "Dhaka",
+    "total_orders": 1,
+    "total_spent": 1217,
+    "customer_tags": [
+      "New Buyer"
+    ],
+    "last_order_date": "2026-10-31T21:27:18.928Z",
+    "created_at": "2026-10-31T21:27:18.928Z"
+  },
+  {
+    "id": "cust-1",
+    "full_name": "Farhan Ahmed",
+    "phone": "01712345678",
+    "email": "farhan@example.com",
+    "city": "Dhaka",
+    "address": "House 14, Road 5, Dhanmondi",
+    "total_orders": 4,
+    "total_spent": 3450,
+    "customer_tags": [
+      "VIP",
+      "Repeat",
+      "Balcony Gardener"
+    ],
+    "notes": "Prefers fruit plants and rooftop garden consultation.",
+    "last_order_date": "2026-10-30T21:27:18.702Z",
+    "created_at": "2026-09-15T10:00:00Z"
+  },
+  {
+    "id": "cust-2",
+    "full_name": "Tahmina Sultana",
+    "phone": "01819445566",
+    "email": "tahmina@example.com",
+    "city": "Dhaka",
+    "address": "Plot 8, Block C, Banani",
+    "total_orders": 2,
+    "total_spent": 1850,
+    "customer_tags": [
+      "Repeat",
+      "Organic Living"
+    ],
+    "notes": "Regular buyer of pure mangrove honey and neem oil.",
+    "last_order_date": "2026-10-28T21:27:18.702Z",
+    "created_at": "2026-10-01T14:30:00Z"
+  },
+  {
+    "id": "cust-3",
+    "full_name": "Kazi Nabil",
+    "phone": "01911223344",
+    "email": "kazi@example.com",
+    "city": "Chittagong",
+    "address": "GEC Circle, Nasirabad",
+    "total_orders": 1,
+    "total_spent": 420,
+    "customer_tags": [
+      "Herbal Wellness"
+    ],
+    "notes": "Requested special terracotta packaging.",
+    "last_order_date": "2026-10-24T09:27:18.702Z",
+    "created_at": "2026-10-20T11:20:00Z"
+  }
+]

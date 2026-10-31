@@ -1,0 +1,52 @@
+[
+  {
+    "id": "cpn-1",
+    "code": "ARONYOKGREEN",
+    "discount_type": "percentage",
+    "discount_value": 15,
+    "min_order_amount": 1000,
+    "max_discount": 500,
+    "expiry_date": "2027-12-31T23:59:59Z",
+    "usage_limit": 1000,
+    "usage_count": 19,
+    "is_active": true,
+    "description": {
+      "en": "15% off medicinal herbs & live fruit plants on orders over ৳1000",
+      "bn": "১০০০ টাকার বেশি অর্ডারে ঔষধি গাছ ও চারায় ১৫% ছাড়"
+    },
+    "created_at": "2026-03-01T00:00:00Z"
+  },
+  {
+    "id": "cpn-2",
+    "code": "NATURE100",
+    "discount_type": "fixed",
+    "discount_value": 100,
+    "min_order_amount": 800,
+    "expiry_date": "2027-12-31T23:59:59Z",
+    "usage_limit": 500,
+    "usage_count": 34,
+    "is_active": true,
+    "description": {
+      "en": "৳100 flat discount on nursery and eco products over ৳800",
+      "bn": "৮০০ টাকার অর্ডারে ১০০ টাকা ফ্ল্যাট ছাড়"
+    },
+    "created_at": "2026-03-15T00:00:00Z"
+  },
+  {
+    "id": "cpn-3",
+    "code": "WELCOME10",
+    "discount_type": "percentage",
+    "discount_value": 10,
+    "min_order_amount": 500,
+    "max_discount": 300,
+    "expiry_date": "2027-12-31T23:59:59Z",
+    "usage_limit": 2000,
+    "usage_count": 62,
+    "is_active": true,
+    "description": {
+      "en": "10% off welcome gift for new botanical lovers",
+      "bn": "নতুন গ্রাহকদের জন্য ১০% স্বাগতম ছাড়"
+    },
+    "created_at": "2026-01-01T00:00:00Z"
+  }
+]
