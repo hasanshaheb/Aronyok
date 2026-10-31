@@ -116,6 +116,14 @@ export async function GET(req: NextRequest) {
     return NextResponse.json(runtimeStore.getReturns());
   }
 
+  if (entity === "coupons") {
+    return NextResponse.json(runtimeStore.getCoupons());
+  }
+
+  if (entity === "campaigns") {
+    return NextResponse.json(runtimeStore.getCampaigns());
+  }
+
   if (entity === "reports") {
     const orders = runtimeStore.getOrders();
     const products = runtimeStore.getProducts();
@@ -635,7 +643,53 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: true, items: runtimeStore.getReturns() });
     }
 
-    // 12. SETTINGS
+    // 12. COUPONS & PROMOTIONAL DISCOUNTS
+    if (entity === "coupons") {
+      if (body.id) {
+        runtimeStore.updateCoupon(body.id, body);
+      } else {
+        const newCoupon = {
+          id: `cpn-${Date.now()}`,
+          code: (body.code || "").trim().toUpperCase(),
+          discount_type: body.discount_type || "percentage",
+          discount_value: Number(body.discount_value) || 0,
+          min_order_amount: body.min_order_amount ? Number(body.min_order_amount) : undefined,
+          max_discount: body.max_discount ? Number(body.max_discount) : undefined,
+          expiry_date: body.expiry_date || undefined,
+          usage_limit: body.usage_limit ? Number(body.usage_limit) : undefined,
+          usage_count: Number(body.usage_count) || 0,
+          is_active: body.is_active !== undefined ? Boolean(body.is_active) : true,
+          description: body.description || undefined,
+          created_at: new Date().toISOString(),
+        };
+        runtimeStore.addCoupon(newCoupon);
+      }
+      return NextResponse.json({ success: true, items: runtimeStore.getCoupons() });
+    }
+
+    // 13. CAMPAIGNS & ANNOUNCEMENT BANNERS
+    if (entity === "campaigns") {
+      if (body.id) {
+        runtimeStore.updateCampaign(body.id, body);
+      } else {
+        const newCampaign = {
+          id: `camp-${Date.now()}`,
+          title: body.title || "Promotional Campaign",
+          type: body.type || "announcement_bar",
+          content: body.content || { en: "", bn: "" },
+          badge_text: body.badge_text || undefined,
+          link_url: body.link_url || "/shop",
+          is_active: body.is_active !== undefined ? Boolean(body.is_active) : true,
+          start_date: body.start_date || undefined,
+          end_date: body.end_date || undefined,
+          created_at: new Date().toISOString(),
+        };
+        runtimeStore.addCampaign(newCampaign);
+      }
+      return NextResponse.json({ success: true, items: runtimeStore.getCampaigns() });
+    }
+
+    // 14. SETTINGS
     if (entity === "settings") {
       let isSynced = false;
       if (supabase) {
@@ -649,6 +703,13 @@ export async function POST(req: NextRequest) {
             ai_system_prompt: body.ai_system_prompt,
             contact_email: body.contact_email,
             contact_phone: body.contact_phone,
+            meta_pixel_id: body.meta_pixel_id,
+            meta_capi_token: body.meta_capi_token,
+            ga4_measurement_id: body.ga4_measurement_id,
+            google_site_verification: body.google_site_verification,
+            announcement_bar_enabled: body.announcement_bar_enabled,
+            announcement_bar_text: body.announcement_bar_text,
+            announcement_bar_link: body.announcement_bar_link,
             updated_at: new Date().toISOString(),
           });
           if (!error) isSynced = true;
@@ -741,6 +802,16 @@ export async function DELETE(req: NextRequest) {
     if (entity === "suppliers") {
       runtimeStore.deleteSupplier(id);
       return NextResponse.json({ success: true, items: runtimeStore.getSuppliers() });
+    }
+
+    if (entity === "coupons") {
+      runtimeStore.deleteCoupon(id);
+      return NextResponse.json({ success: true, items: runtimeStore.getCoupons() });
+    }
+
+    if (entity === "campaigns") {
+      runtimeStore.deleteCampaign(id);
+      return NextResponse.json({ success: true, items: runtimeStore.getCampaigns() });
     }
 
     return NextResponse.json({ error: "Invalid entity for deletion" }, { status: 400 });

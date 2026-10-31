@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { CartItem, Product } from "../lib/types";
+import { trackEvent } from "../lib/analytics/events";
 
 interface CartContextType {
   items: CartItem[];
@@ -59,6 +60,17 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       return [...prev, { product, quantity }];
     });
     setIsCartOpen(true);
+
+    try {
+      trackEvent("AddToCart", {
+        content_name: product.name.en || product.name.bn,
+        content_category: product.category,
+        content_ids: [product.id],
+        value: product.price * quantity,
+        num_items: quantity,
+        currency: "BDT",
+      });
+    } catch {}
   };
 
   const removeFromCart = (productId: string) => {

@@ -181,7 +181,100 @@ export default function AdminSettingsPage() {
           />
         </div>
 
-        {/* Section 3: Ad Banner & Analytics Scripts */}
+        {/* Section 3: Marketing & Analytics Engines (Meta Pixel, CAPI & Google Analytics 4) */}
+        <div className="p-6 sm:p-8 bg-white rounded-3xl border border-forest-100 shadow-soft-sm space-y-4">
+          <div className="flex items-center gap-2.5 border-b border-forest-100 pb-3">
+            <div className="w-9 h-9 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center">
+              <Sparkles className="w-5 h-5" />
+            </div>
+            <div>
+              <h2 className="text-base font-bold text-forest-950">
+                Marketing & Analytics Engines (Meta Pixel, CAPI & GA4)
+              </h2>
+              <p className="text-xs text-forest-600">
+                Configure your server-side Conversions API and client tracking IDs with automatic deduplication
+              </p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-bold text-forest-900 mb-1">
+                Meta Pixel ID
+              </label>
+              <input
+                type="text"
+                value={settings.meta_pixel_id || ""}
+                onChange={(e) =>
+                  setSettings({ ...settings, meta_pixel_id: e.target.value.trim() })
+                }
+                placeholder="e.g. 182938491827364"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-cream-50 border border-forest-200 text-xs font-mono text-forest-950 focus:outline-none focus:ring-2 focus:ring-forest-600"
+              />
+              <p className="text-[10px] text-stone-400 mt-1">
+                Dispatches ViewContent, AddToCart, InitiateCheckout &amp; Purchase
+              </p>
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-forest-900 mb-1">
+                Google Analytics 4 (Measurement ID)
+              </label>
+              <input
+                type="text"
+                value={settings.ga4_measurement_id || ""}
+                onChange={(e) =>
+                  setSettings({ ...settings, ga4_measurement_id: e.target.value.trim() })
+                }
+                placeholder="e.g. G-XXXXXXXXXX"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-cream-50 border border-forest-200 text-xs font-mono text-forest-950 focus:outline-none focus:ring-2 focus:ring-forest-600"
+              />
+              <p className="text-[10px] text-stone-400 mt-1">
+                Injects official gtag.js tracking script automatically
+              </p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
+            <div>
+              <label className="block text-xs font-bold text-forest-900 mb-1">
+                Meta Conversions API (CAPI) System User Token
+              </label>
+              <input
+                type="password"
+                value={settings.meta_capi_token || ""}
+                onChange={(e) =>
+                  setSettings({ ...settings, meta_capi_token: e.target.value.trim() })
+                }
+                placeholder="EAAB..."
+                className="w-full px-3.5 py-2.5 rounded-xl bg-cream-50 border border-forest-200 text-xs font-mono text-forest-950 focus:outline-none focus:ring-2 focus:ring-forest-600"
+              />
+              <p className="text-[10px] text-stone-400 mt-1">
+                Generates SHA-256 hashed server-to-server events to bypass ad blockers
+              </p>
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-forest-900 mb-1">
+                Google Search Console Verification Token
+              </label>
+              <input
+                type="text"
+                value={settings.google_site_verification || ""}
+                onChange={(e) =>
+                  setSettings({ ...settings, google_site_verification: e.target.value.trim() })
+                }
+                placeholder="e.g. abcd_1234_xyz"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-cream-50 border border-forest-200 text-xs font-mono text-forest-950 focus:outline-none focus:ring-2 focus:ring-forest-600"
+              />
+              <p className="text-[10px] text-stone-400 mt-1">
+                Injected into &lt;meta name=&quot;google-site-verification&quot;&gt;
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Section 4: Ad Banner & Analytics Scripts */}
         <div className="p-6 sm:p-8 bg-white rounded-3xl border border-forest-100 shadow-soft-sm space-y-4">
           <div className="flex items-center gap-2.5 border-b border-forest-100 pb-3">
             <div className="w-9 h-9 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center">

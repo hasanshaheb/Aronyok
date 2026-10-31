@@ -20,6 +20,8 @@ import {
   ClipboardList,
   Truck,
   TrendingUp,
+  Tag,
+  Megaphone,
 } from "lucide-react";
 import { isSupabaseConfigured, supabase } from "../../lib/supabase/client";
 import AdminSyncWidget from "./AdminSyncWidget";
@@ -50,6 +52,13 @@ export default function AdminSidebar() {
         { href: "/admin/products", label: "Product Catalog", icon: Package },
         { href: "/admin/suppliers", label: "Suppliers & Nurseries", icon: Building2 },
         { href: "/admin/purchases", label: "Purchases & Restock", icon: ClipboardList },
+      ],
+    },
+    {
+      title: "Marketing & Growth",
+      items: [
+        { href: "/admin/coupons", label: "Coupons & Discounts", icon: Tag },
+        { href: "/admin/campaigns", label: "Campaigns & Banners", icon: Megaphone },
       ],
     },
     {

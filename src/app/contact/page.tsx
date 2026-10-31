@@ -14,6 +14,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
+import { trackEvent } from "@/lib/analytics/events";
 
 export default function ContactPage() {
   const { language } = useLanguage();
@@ -46,6 +47,19 @@ export default function ContactPage() {
           status: "new",
         }),
       });
+
+      // Dispatch marketing analytics Lead event (Pixel, GA4, CAPI)
+      trackEvent(
+        "Lead",
+        {
+          content_name: formData.subject || "Contact Inquiry",
+        },
+        {
+          email: formData.email,
+          phone: formData.phone,
+          firstName: formData.name,
+        }
+      );
     } catch {}
 
     setIsLoading(false);

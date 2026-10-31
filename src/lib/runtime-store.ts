@@ -20,6 +20,8 @@ import {
   Purchase,
   Shipment,
   ReturnRefund,
+  Coupon,
+  CampaignBanner,
 } from "./types";
 
 const DATA_DIR = path.join(process.cwd(), "data");
@@ -30,6 +32,8 @@ const SUPPLIERS_FILE_PATH = path.join(DATA_DIR, "suppliers.json");
 const PURCHASES_FILE_PATH = path.join(DATA_DIR, "purchases.json");
 const SHIPMENTS_FILE_PATH = path.join(DATA_DIR, "shipments.json");
 const RETURNS_FILE_PATH = path.join(DATA_DIR, "returns.json");
+const COUPONS_FILE_PATH = path.join(DATA_DIR, "coupons.json");
+const CAMPAIGNS_FILE_PATH = path.join(DATA_DIR, "campaigns.json");
 const FALLBACK_CODE_PATH = path.join(process.cwd(), "src", "lib", "supabase", "fallback-data.ts");
 
 // Ensure data directory exists
@@ -239,6 +243,78 @@ const initialShipments: Shipment[] = [
 
 const initialReturns: ReturnRefund[] = [];
 
+const initialCoupons: Coupon[] = [
+  {
+    id: "cpn-1",
+    code: "ARONYOKGREEN",
+    discount_type: "percentage",
+    discount_value: 15,
+    min_order_amount: 1000,
+    max_discount: 500,
+    expiry_date: "2027-12-31T23:59:59Z",
+    usage_limit: 1000,
+    usage_count: 18,
+    is_active: true,
+    description: {
+      en: "15% off medicinal herbs & live fruit plants on orders over ৳1000",
+      bn: "১০০০ টাকার বেশি অর্ডারে ঔষধি গাছ ও চারায় ১৫% ছাড়",
+    },
+    created_at: "2026-03-01T00:00:00Z",
+  },
+  {
+    id: "cpn-2",
+    code: "NATURE100",
+    discount_type: "fixed",
+    discount_value: 100,
+    min_order_amount: 800,
+    expiry_date: "2027-12-31T23:59:59Z",
+    usage_limit: 500,
+    usage_count: 34,
+    is_active: true,
+    description: {
+      en: "৳100 flat discount on nursery and eco products over ৳800",
+      bn: "৮০০ টাকার অর্ডারে ১০০ টাকা ফ্ল্যাট ছাড়",
+    },
+    created_at: "2026-03-15T00:00:00Z",
+  },
+  {
+    id: "cpn-3",
+    code: "WELCOME10",
+    discount_type: "percentage",
+    discount_value: 10,
+    min_order_amount: 500,
+    max_discount: 300,
+    expiry_date: "2027-12-31T23:59:59Z",
+    usage_limit: 2000,
+    usage_count: 62,
+    is_active: true,
+    description: {
+      en: "10% off welcome gift for new botanical lovers",
+      bn: "নতুন গ্রাহকদের জন্য ১০% স্বাগতম ছাড়",
+    },
+    created_at: "2026-01-01T00:00:00Z",
+  },
+];
+
+const initialCampaigns: CampaignBanner[] = [
+  {
+    id: "camp-1",
+    title: "Spring Eco Planting Special",
+    type: "announcement_bar",
+    content: {
+      en: "Enjoy 15% off all medicinal herbs and living plants with code ARONYOKGREEN 🌱",
+      bn: "কুপন কোড ARONYOKGREEN দিয়ে ঔষধি গাছ ও চারায় পাচ্ছেন ১৫% বিশেষ ছাড়! 🌱",
+    },
+    badge_text: {
+      en: "Spring Eco Special",
+      bn: "বসন্ত সবুজ অফার",
+    },
+    link_url: "/shop",
+    is_active: true,
+    created_at: "2026-03-01T00:00:00Z",
+  },
+];
+
 // In-memory stores
 let memoryProducts: Product[] = [...fallbackProducts];
 let memoryBlogPosts: BlogPost[] = [...fallbackBlogPosts];
@@ -252,6 +328,8 @@ let memorySuppliers: Supplier[] = safeReadJson<Supplier[]>(SUPPLIERS_FILE_PATH, 
 let memoryPurchases: Purchase[] = safeReadJson<Purchase[]>(PURCHASES_FILE_PATH, initialPurchases);
 let memoryShipments: Shipment[] = safeReadJson<Shipment[]>(SHIPMENTS_FILE_PATH, initialShipments);
 let memoryReturns: ReturnRefund[] = safeReadJson<ReturnRefund[]>(RETURNS_FILE_PATH, initialReturns);
+let memoryCoupons: Coupon[] = safeReadJson<Coupon[]>(COUPONS_FILE_PATH, initialCoupons);
+let memoryCampaigns: CampaignBanner[] = safeReadJson<CampaignBanner[]>(CAMPAIGNS_FILE_PATH, initialCampaigns);
 
 // Codebase Fallback Persistence
 export function persistToCodebase() {
@@ -557,5 +635,107 @@ export const runtimeStore = {
       r.id === id ? { ...r, status } : r
     );
     safeWriteJson(RETURNS_FILE_PATH, memoryReturns);
+  },
+
+  // PHASE 3: MARKETING, COUPONS & PROMOTIONAL CAMPAIGNS
+  getCoupons: () => memoryCoupons,
+  addCoupon: (c: Coupon) => {
+    memoryCoupons = [c, ...memoryCoupons];
+    safeWriteJson(COUPONS_FILE_PATH, memoryCoupons);
+  },
+  updateCoupon: (id: string, updated: Partial<Coupon>) => {
+    memoryCoupons = memoryCoupons.map((c) =>
+      c.id === id ? { ...c, ...updated } : c
+    );
+    safeWriteJson(COUPONS_FILE_PATH, memoryCoupons);
+  },
+  deleteCoupon: (id: string) => {
+    memoryCoupons = memoryCoupons.filter((c) => c.id !== id);
+    safeWriteJson(COUPONS_FILE_PATH, memoryCoupons);
+  },
+  validateCoupon: (code: string, subtotal: number): {
+    valid: boolean;
+    discount: number;
+    message: string;
+    coupon?: Coupon;
+  } => {
+    const normalizedCode = (code || "").trim().toUpperCase();
+    if (!normalizedCode) {
+      return { valid: false, discount: 0, message: "Please provide a valid coupon code." };
+    }
+
+    const coupon = memoryCoupons.find(
+      (c) => c.code.trim().toUpperCase() === normalizedCode
+    );
+
+    if (!coupon) {
+      return { valid: false, discount: 0, message: `Coupon code "${normalizedCode}" does not exist.` };
+    }
+
+    if (!coupon.is_active) {
+      return { valid: false, discount: 0, message: `Coupon "${normalizedCode}" is currently inactive.` };
+    }
+
+    if (coupon.expiry_date && new Date(coupon.expiry_date) < new Date()) {
+      return { valid: false, discount: 0, message: `Coupon "${normalizedCode}" has expired.` };
+    }
+
+    if (coupon.usage_limit && coupon.usage_count >= coupon.usage_limit) {
+      return { valid: false, discount: 0, message: `Coupon "${normalizedCode}" usage limit has been reached.` };
+    }
+
+    if (coupon.min_order_amount && subtotal < coupon.min_order_amount) {
+      return {
+        valid: false,
+        discount: 0,
+        message: `Minimum order amount of ৳${coupon.min_order_amount} required to use "${normalizedCode}".`,
+      };
+    }
+
+    let discount = 0;
+    if (coupon.discount_type === "percentage") {
+      discount = Math.round((subtotal * coupon.discount_value) / 100);
+      if (coupon.max_discount && discount > coupon.max_discount) {
+        discount = coupon.max_discount;
+      }
+    } else {
+      discount = coupon.discount_value;
+    }
+
+    // Discount cannot exceed cart subtotal
+    discount = Math.min(discount, subtotal);
+
+    return {
+      valid: true,
+      discount,
+      message: `Coupon "${coupon.code}" applied! You saved ৳${discount}.`,
+      coupon,
+    };
+  },
+  incrementCouponUsage: (code: string) => {
+    const normalizedCode = (code || "").trim().toUpperCase();
+    memoryCoupons = memoryCoupons.map((c) =>
+      c.code.trim().toUpperCase() === normalizedCode
+        ? { ...c, usage_count: (c.usage_count || 0) + 1 }
+        : c
+    );
+    safeWriteJson(COUPONS_FILE_PATH, memoryCoupons);
+  },
+
+  // CAMPAIGNS & ANNOUNCEMENT BANNERS
+  getCampaigns: () => memoryCampaigns,
+  addCampaign: (c: CampaignBanner) => {
+    memoryCampaigns = [c, ...memoryCampaigns];
+    safeWriteJson(CAMPAIGNS_FILE_PATH, memoryCampaigns);
+  },
+  updateCampaign: (id: string, updated: Partial<CampaignBanner>) => {
+    memoryCampaigns = memoryCampaigns.map((c) =>
+      c.id === id ? { ...c, ...updated } : c
+    );
+    safeWriteJson(CAMPAIGNS_FILE_PATH, memoryCampaigns);
+  },
+  deleteCampaign: (id: string) => {
+    memoryCampaigns = memoryCampaigns.filter((c) => c.id !== id);
+    safeWriteJson(CAMPAIGNS_FILE_PATH, memoryCampaigns);
   },
 };

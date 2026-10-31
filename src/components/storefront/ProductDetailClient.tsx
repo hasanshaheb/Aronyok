@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -23,6 +23,7 @@ import { useLanguage } from "../../context/LanguageContext";
 import { useCart } from "../../context/CartContext";
 import { Product } from "../../lib/types";
 import { formatCurrency, toBengaliNumerals } from "../../lib/utils";
+import { trackEvent } from "../../lib/analytics/events";
 
 interface ProductDetailClientProps {
   product: Product;
@@ -47,16 +48,42 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
     ...(product.gallery_images || []),
   ].filter(Boolean);
 
+  useEffect(() => {
+    trackEvent("ViewContent", {
+      content_name: product.name.en || product.name.bn,
+      content_category: product.category,
+      content_ids: [product.id],
+      value: product.price,
+      currency: "BDT",
+    });
+  }, [product.id, product.name, product.category, product.price]);
+
   const handleAddToCart = () => {
     if (isOutOfStock) return;
     addToCart(product, quantity);
     setIsAdded(true);
+    trackEvent("AddToCart", {
+      content_name: product.name.en || product.name.bn,
+      content_category: product.category,
+      content_ids: [product.id],
+      value: product.price * quantity,
+      num_items: quantity,
+      currency: "BDT",
+    });
     setTimeout(() => setIsAdded(false), 2200);
   };
 
   const handleBuyNow = () => {
     if (isOutOfStock) return;
     addToCart(product, quantity);
+    trackEvent("AddToCart", {
+      content_name: product.name.en || product.name.bn,
+      content_category: product.category,
+      content_ids: [product.id],
+      value: product.price * quantity,
+      num_items: quantity,
+      currency: "BDT",
+    });
     router.push("/cart");
   };
 

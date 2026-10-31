@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSupabase } from "@/lib/supabase/server";
 import { runtimeStore } from "@/lib/runtime-store";
 import { checkRateLimit } from "@/lib/rate-limiter";
+import { sendMetaCapiEvent } from "@/lib/analytics/capi";
 
 export const dynamic = "force-dynamic";
 
@@ -33,6 +34,7 @@ export async function POST(req: NextRequest) {
       payment_method,
       items,
       notes,
+      coupon_code,
     } = body;
 
     // 2. Validate mandatory customer contact details
@@ -105,7 +107,7 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // 4. SERVER-SIDE DELIVERY CHARGE CALCULATION
+    // 4. SERVER-SIDE DELIVERY CHARGE & COUPON CALCULATION
     const targetCity = (city || division || "Dhaka").trim().toLowerCase();
     const isInsideDhaka = targetCity.includes("dhaka");
     const deliveryCharge =
@@ -115,7 +117,19 @@ export async function POST(req: NextRequest) {
         ? 70
         : 130;
 
-    const serverTotalAmount = serverSubtotal + deliveryCharge;
+    let discountAmount = 0;
+    let appliedCouponCode: string | undefined = undefined;
+
+    if (coupon_code && typeof coupon_code === "string" && coupon_code.trim()) {
+      const couponResult = runtimeStore.validateCoupon(coupon_code, serverSubtotal);
+      if (couponResult.valid) {
+        discountAmount = couponResult.discount;
+        appliedCouponCode = couponResult.coupon?.code || coupon_code.trim().toUpperCase();
+        runtimeStore.incrementCouponUsage(appliedCouponCode);
+      }
+    }
+
+    const serverTotalAmount = Math.max(0, serverSubtotal - discountAmount) + deliveryCharge;
 
     const orderNumber = `ARN-${Date.now().toString().slice(-6)}-${Math.floor(100 + Math.random() * 900)}`;
     const supabase = getServerSupabase();
@@ -144,8 +158,6 @@ export async function POST(req: NextRequest) {
             shipping_address: `${shipping_address.trim()}${thana ? `, ${thana}` : ""}`,
             city: city || division || "Dhaka",
             total_amount: serverTotalAmount,
-
-
             payment_method: payment_method || "cod",
             payment_status: "pending",
             order_status: "processing",
@@ -182,8 +194,8 @@ export async function POST(req: NextRequest) {
       shipping_address: `${shipping_address.trim()}${thana ? `, ${thana}` : ""}`,
       city: city || division || "Dhaka",
       total_amount: serverTotalAmount,
-
-
+      coupon_code: appliedCouponCode,
+      discount_amount: discountAmount > 0 ? discountAmount : undefined,
       payment_method: payment_method || "cod",
       payment_status: "pending",
       order_status: "processing",
@@ -198,7 +210,46 @@ export async function POST(req: NextRequest) {
       created_at: new Date().toISOString(),
     });
 
-    // 8. PAYMENT INSTRUCTIONS
+    // 8. DISPATCH SERVER-SIDE META CONVERSIONS API (CAPI) PURCHASE EVENT
+    // Uses identical orderNumber as event_id so Meta deduplicates with browser Pixel!
+    try {
+      const forwarded = req.headers.get("x-forwarded-for");
+      const clientIp = forwarded ? forwarded.split(",")[0].trim() : req.headers.get("x-real-ip") || undefined;
+      const userAgent = req.headers.get("user-agent") || undefined;
+
+      sendMetaCapiEvent({
+        event_name: "Purchase",
+        event_id: orderNumber,
+        event_time: Math.floor(Date.now() / 1000),
+        action_source: "website",
+        event_source_url: "https://aronyok.vercel.app/cart",
+        user_data: {
+          em: customer_email,
+          ph: customer_phone,
+          fn: customer_name,
+          ct: city || division,
+          country: "bd",
+          client_ip_address: clientIp,
+          client_user_agent: userAgent,
+        },
+        custom_data: {
+          value: serverTotalAmount,
+          currency: "BDT",
+          order_id: orderNumber,
+          num_items: verifiedOrderItems.length,
+          content_ids: verifiedOrderItems.map((i) => i.product_id),
+          contents: verifiedOrderItems.map((i) => ({
+            id: i.product_id,
+            quantity: i.quantity,
+            item_price: i.price,
+          })),
+        },
+      }).catch((err) => {
+        console.warn("Server CAPI Purchase dispatch error:", err);
+      });
+    } catch {}
+
+    // 9. PAYMENT INSTRUCTIONS
     let paymentInstructions = null;
     if (payment_method === "bkash" || payment_method === "nagad") {
       paymentInstructions = {
@@ -216,9 +267,9 @@ export async function POST(req: NextRequest) {
       orderId,
       subtotal: serverSubtotal,
       deliveryCharge,
+      discount: discountAmount,
+      coupon_code: appliedCouponCode,
       total_amount: serverTotalAmount,
-
-
       payment_method: payment_method || "cod",
       paymentInstructions,
       itemsCount: verifiedOrderItems.reduce((acc, i) => acc + i.quantity, 0),

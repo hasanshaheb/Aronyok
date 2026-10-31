@@ -8,6 +8,7 @@ import { useLanguage } from "../../context/LanguageContext";
 import { fallbackProducts } from "../../lib/supabase/fallback-data";
 import { isSupabaseConfigured, supabase } from "../../lib/supabase/client";
 import { Product } from "../../lib/types";
+import { trackEvent } from "../../lib/analytics/events";
 
 export default function ShopPage() {
   const { language, t, localize } = useLanguage();
@@ -32,6 +33,19 @@ export default function ShopPage() {
     }
     loadProducts();
   }, []);
+
+  // Track search query with debounce
+  useEffect(() => {
+    const trimmed = searchQuery.trim();
+    if (trimmed.length >= 3) {
+      const timer = setTimeout(() => {
+        trackEvent("Search", {
+          search_string: trimmed,
+        });
+      }, 700);
+      return () => clearTimeout(timer);
+    }
+  }, [searchQuery]);
 
   // Filter & Search
   const filtered = products.filter((p) => {

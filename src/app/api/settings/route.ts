@@ -20,7 +20,11 @@ export async function GET() {
       // Use runtimeStore
     }
   }
-  return NextResponse.json(runtimeStore.getSettings());
+  const activeCampaign = runtimeStore.getCampaigns().find((c) => c.is_active);
+  return NextResponse.json({
+    ...runtimeStore.getSettings(),
+    active_campaign: activeCampaign,
+  });
 }
 
 export async function POST(req: NextRequest) {
@@ -42,6 +46,11 @@ export async function POST(req: NextRequest) {
           ai_system_prompt: currentSettings.ai_system_prompt,
           contact_email: currentSettings.contact_email,
           contact_phone: currentSettings.contact_phone,
+          meta_pixel_id: currentSettings.meta_pixel_id,
+          meta_capi_token: currentSettings.meta_capi_token,
+          ga4_measurement_id: currentSettings.ga4_measurement_id,
+          google_site_verification: currentSettings.google_site_verification,
+          announcement_bar_enabled: currentSettings.announcement_bar_enabled,
           updated_at: new Date().toISOString(),
         });
         if (!error) {

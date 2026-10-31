@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -14,10 +14,14 @@ import {
   ShieldCheck,
   CheckCircle2,
   ArrowRight,
+  Tag,
+  X,
+  Sparkles,
 } from "lucide-react";
 import { useCart } from "../../context/CartContext";
 import { useLanguage } from "../../context/LanguageContext";
 import { formatCurrency, toBengaliNumerals } from "../../lib/utils";
+import { trackEvent } from "../../lib/analytics/events";
 
 export default function CartCheckoutPage() {
   const { items, removeFromCart, updateQuantity, clearCart, subtotal } = useCart();
@@ -36,14 +40,72 @@ export default function CartCheckoutPage() {
     mfsTrxId: "",
   });
 
+  const [couponInput, setCouponInput] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState<{
+    code: string;
+    discount: number;
+    message: string;
+  } | null>(null);
+  const [couponLoading, setCouponLoading] = useState(false);
+  const [couponError, setCouponError] = useState("");
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [completedOrder, setCompletedOrder] = useState<any>(null);
+
+  // Trigger InitiateCheckout when cart with items is visited
+  useEffect(() => {
+    if (items.length > 0) {
+      trackEvent("InitiateCheckout", {
+        value: subtotal,
+        currency: "BDT",
+        num_items: items.reduce((acc, i) => acc + i.quantity, 0),
+        content_ids: items.map((i) => i.product.id),
+      });
+    }
+  }, [items, subtotal]);
 
   const isDhaka =
     (formData.city || "").toLowerCase().includes("dhaka") ||
     (formData.division || "").toLowerCase().includes("dhaka");
   const deliveryFee = subtotal >= 1500 || subtotal === 0 ? 0 : isDhaka ? 70 : 130;
-  const grandTotal = subtotal + deliveryFee;
+  const discountAmount = appliedCoupon ? appliedCoupon.discount : 0;
+  const grandTotal = Math.max(0, subtotal - discountAmount) + deliveryFee;
+
+  const handleApplyCoupon = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setCouponError("");
+    const trimmed = couponInput.trim();
+    if (!trimmed) return;
+
+    setCouponLoading(true);
+    try {
+      const res = await fetch("/api/coupons/validate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: trimmed, subtotal }),
+      });
+      const data = await res.json();
+      if (res.ok && data.valid) {
+        setAppliedCoupon({
+          code: data.code || trimmed.toUpperCase(),
+          discount: data.discount,
+          message: data.message,
+        });
+        setCouponInput("");
+      } else {
+        setCouponError(data.message || (language === "bn" ? "কুপন কোডটি সঠিক নয়।" : "Invalid coupon code."));
+      }
+    } catch {
+      setCouponError(language === "bn" ? "যাচাই করতে ব্যর্থ হয়েছে।" : "Failed to validate coupon.");
+    } finally {
+      setCouponLoading(false);
+    }
+  };
+
+  const handleRemoveCoupon = () => {
+    setAppliedCoupon(null);
+    setCouponError("");
+  };
 
   const handleSubmitOrder = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -66,6 +128,7 @@ export default function CartCheckoutPage() {
             formData.mfsTrxId ? ` [MFS TrxID: ${formData.mfsTrxId}]` : ""
           }`,
           payment_method: formData.paymentMethod,
+          coupon_code: appliedCoupon?.code,
           items: items.map((i) => ({
             product_id: i.product.id,
             slug: i.product.slug,
@@ -77,6 +140,27 @@ export default function CartCheckoutPage() {
       const data = await res.json();
       if (res.ok && data.success) {
         setCompletedOrder(data);
+
+        // Client Meta Pixel & GA4 Purchase tracking with shared event_id for deduplication
+        trackEvent(
+          "Purchase",
+          {
+            content_type: "product",
+            content_ids: items.map((i) => i.product.id),
+            value: data.total_amount,
+            currency: "BDT",
+            num_items: items.reduce((acc, i) => acc + i.quantity, 0),
+            order_id: data.orderNumber,
+          },
+          {
+            email: formData.email,
+            phone: formData.phone,
+            firstName: formData.name,
+            city: formData.city,
+          },
+          data.orderNumber // Deduplication event_id matches server CAPI exactly!
+        );
+
         clearCart();
       } else {
         alert(data.error || "Failed to submit order. Please check inputs.");
@@ -116,6 +200,14 @@ export default function CartCheckoutPage() {
                 : formatCurrency(completedOrder.deliveryCharge, language)}
             </span>
           </div>
+          {completedOrder.discount > 0 && (
+            <div className="flex justify-between text-xs text-emerald-700 font-bold">
+              <span>
+                {language === "bn" ? "কুপন ছাড়" : "Discount"} ({completedOrder.coupon_code}):
+              </span>
+              <span>-{formatCurrency(completedOrder.discount, language)}</span>
+            </div>
+          )}
           <div className="flex justify-between text-sm pt-2 border-t border-forest-100 font-bold text-forest-950">
             <span>{t.cart.total}:</span>
             <span className="text-base text-emerald-800">
@@ -508,6 +600,67 @@ export default function CartCheckoutPage() {
                 ))}
               </div>
 
+              {/* Promo Coupon Section */}
+              <div className="border-t border-forest-100 pt-3">
+                {appliedCoupon ? (
+                  <div className="p-3 rounded-2xl bg-emerald-50 border border-emerald-200 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className="w-7 h-7 rounded-lg bg-emerald-600 text-white flex items-center justify-center">
+                        <Tag className="w-3.5 h-3.5" />
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-1.5">
+                          <span className="font-mono font-extrabold text-xs text-emerald-900 tracking-wider">
+                            {appliedCoupon.code}
+                          </span>
+                          <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-200/80 text-emerald-800 font-bold">
+                            Applied
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-emerald-700">
+                          {language === "bn" ? `৳${appliedCoupon.discount} ছাড় প্রযোজ্য হয়েছে` : `Saved ${formatCurrency(appliedCoupon.discount, language)}`}
+                        </p>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleRemoveCoupon}
+                      className="p-1 rounded-lg text-emerald-700 hover:bg-emerald-100 transition-colors"
+                      title="Remove coupon"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                ) : (
+                  <div className="space-y-1.5">
+                    <div className="flex gap-2">
+                      <div className="relative flex-1">
+                        <input
+                          type="text"
+                          value={couponInput}
+                          onChange={(e) => setCouponInput(e.target.value.toUpperCase())}
+                          placeholder={language === "bn" ? "কুপন কোড দিন (যেমন: ARONYOKGREEN)" : "Promo code (e.g. ARONYOKGREEN)"}
+                          className="w-full pl-3 pr-2 py-2 rounded-xl bg-cream-50/80 border border-forest-200 text-xs font-mono uppercase text-forest-950 placeholder:text-stone-400 placeholder:normal-case focus:outline-none focus:ring-2 focus:ring-forest-600"
+                        />
+                      </div>
+                      <button
+                        type="button"
+                        onClick={handleApplyCoupon}
+                        disabled={couponLoading || !couponInput.trim()}
+                        className="px-3.5 py-2 rounded-xl bg-forest-900 hover:bg-forest-950 disabled:bg-stone-300 text-white font-bold text-xs transition-colors flex items-center gap-1"
+                      >
+                        {couponLoading ? "..." : (language === "bn" ? "প্রয়োগ" : "Apply")}
+                      </button>
+                    </div>
+                    {couponError && (
+                      <p className="text-[11px] text-rose-600 font-medium px-1">
+                        {couponError}
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
+
               {/* Pricing totals */}
               <div className="border-t border-forest-100 pt-3 space-y-2 text-xs text-forest-800">
                 <div className="flex justify-between">
@@ -516,6 +669,15 @@ export default function CartCheckoutPage() {
                     {formatCurrency(subtotal, language)}
                   </span>
                 </div>
+                {discountAmount > 0 && (
+                  <div className="flex justify-between text-emerald-700 font-bold">
+                    <span className="flex items-center gap-1">
+                      <Sparkles className="w-3.5 h-3.5" />
+                      <span>{language === "bn" ? "কুপন ছাড়" : "Promo Discount"} ({appliedCoupon?.code}):</span>
+                    </span>
+                    <span>-{formatCurrency(discountAmount, language)}</span>
+                  </div>
+                )}
                 <div className="flex justify-between">
                   <span>{t.cart.shipping}</span>
                   <span className="font-semibold">

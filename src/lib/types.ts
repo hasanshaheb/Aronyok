@@ -88,6 +88,13 @@ export interface SiteSettings {
   ai_system_prompt: string;
   contact_email?: string;
   contact_phone?: string;
+  meta_pixel_id?: string;
+  meta_capi_token?: string;
+  ga4_measurement_id?: string;
+  google_site_verification?: string;
+  announcement_bar_enabled?: boolean;
+  announcement_bar_text?: LocalizedString;
+  announcement_bar_link?: string;
 }
 
 export interface CartItem {
@@ -125,6 +132,8 @@ export interface Order {
   notes?: string;
   is_archived?: boolean;
   items?: OrderItem[];
+  coupon_code?: string;
+  discount_amount?: number;
   created_at?: string;
 }
 
@@ -245,5 +254,37 @@ export interface ReturnRefund {
   refund_amount: number;
   status: 'pending' | 'approved' | 'rejected' | 'processed';
   notes?: string;
+  created_at: string;
+}
+
+// -------------------------------------------------------------
+// PHASE 3 EXTENSIONS: MARKETING, CAMPAIGNS & PROMOTIONAL ENGINE
+// -------------------------------------------------------------
+
+export interface Coupon {
+  id: string;
+  code: string;
+  discount_type: 'percentage' | 'fixed';
+  discount_value: number;
+  min_order_amount?: number;
+  max_discount?: number;
+  expiry_date?: string;
+  usage_limit?: number;
+  usage_count: number;
+  is_active: boolean;
+  description?: LocalizedString;
+  created_at: string;
+}
+
+export interface CampaignBanner {
+  id: string;
+  title: string;
+  type: 'announcement_bar' | 'popup_modal' | 'banner';
+  content: LocalizedString;
+  badge_text?: LocalizedString;
+  link_url?: string;
+  is_active: boolean;
+  start_date?: string;
+  end_date?: string;
   created_at: string;
 }
