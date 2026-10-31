@@ -12,11 +12,26 @@ export interface Product {
   description: LocalizedString;
   price: number;
   compare_at_price?: number | null;
+  cost_price?: number;
   stock: number;
+  sku?: string;
   image_url: string;
+  gallery_images?: string[];
   category: string;
   is_active: boolean;
   is_featured?: boolean;
+  
+  // Specialized Botanical & Plant Care Attributes
+  scientific_name?: string;
+  variety?: string;
+  propagation_method?: string;
+  pot_size?: string;
+  sunlight?: string;
+  watering?: string;
+  plant_height?: string;
+  season?: string;
+  care_instructions?: LocalizedString;
+
   seo_title?: LocalizedString;
   seo_description?: LocalizedString;
   created_at?: string;

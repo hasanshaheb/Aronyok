@@ -193,7 +193,7 @@ export const fallbackProducts: Product[] = [
     },
     "price": 250,
     "compare_at_price": 300,
-    "stock": 40,
+    "stock": 29,
     "image_url": "https://kmxrcebqozxnyoopdhnr.supabase.co/storage/v1/object/public/products/product-1793394420837-________-_____-____-___-2.jpg",
     "category": "plants",
     "is_active": true,

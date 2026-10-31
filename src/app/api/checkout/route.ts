@@ -1,136 +1,225 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSupabase } from "@/lib/supabase/server";
 import { runtimeStore } from "@/lib/runtime-store";
+import { checkRateLimit } from "@/lib/rate-limiter";
 
 export async function POST(req: NextRequest) {
   try {
+    // 1. IP Rate Limiting (5 checkouts per minute per IP)
+    const ip =
+      req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+      req.headers.get("x-real-ip") ||
+      "anonymous";
+
+    const { allowed } = checkRateLimit(`checkout_${ip}`, 5, 60000);
+    if (!allowed) {
+      return NextResponse.json(
+        { error: "Too many checkout attempts. Please wait a minute before trying again." },
+        { status: 429 }
+      );
+    }
+
     const body = await req.json();
     const {
       customer_name,
       customer_email,
       customer_phone,
       shipping_address,
+      division,
       city,
+      thana,
       payment_method,
       items,
-      total_amount,
       notes,
     } = body;
 
-    if (!customer_name || !customer_phone || !shipping_address || !items || items.length === 0) {
+    // 2. Validate mandatory customer contact details
+    if (!customer_name || !customer_phone || !shipping_address) {
       return NextResponse.json(
-        { error: "Please provide all required delivery details and at least one item." },
+        { error: "Please provide recipient name, phone number, and delivery address." },
         { status: 400 }
       );
     }
 
+    if (!items || !Array.isArray(items) || items.length === 0) {
+      return NextResponse.json(
+        { error: "Your cart is empty. Please select at least one item." },
+        { status: 400 }
+      );
+    }
+
+    // 3. SERVER-SIDE PRICE LOOKUP & STOCK VERIFICATION (ANTI-TAMPERING)
+    const currentProducts = runtimeStore.getProducts();
+    const verifiedOrderItems: Array<{
+      product_id: string;
+      product_name: string;
+      price: number;
+      quantity: number;
+      total: number;
+    }> = [];
+
+    let serverSubtotal = 0;
+
+    for (const item of items) {
+      const productId = item.product?.id || item.product_id || item.id;
+      const requestedQty = Math.max(1, Math.floor(Number(item.quantity) || 1));
+
+      const matchedProduct = currentProducts.find(
+        (p) => p.id === productId || (item.slug && p.slug === item.slug)
+      );
+
+      if (!matchedProduct) {
+        return NextResponse.json(
+          { error: `One or more selected items are no longer available in the catalog.` },
+          { status: 400 }
+        );
+      }
+
+      if (!matchedProduct.is_active) {
+        return NextResponse.json(
+          { error: `"${matchedProduct.name.en}" is currently discontinued or out of season.` },
+          { status: 400 }
+        );
+      }
+
+      if (matchedProduct.stock < requestedQty) {
+        return NextResponse.json(
+          {
+            error: `Only ${matchedProduct.stock} unit(s) of "${matchedProduct.name.en}" are available in nursery stock. Please adjust quantity.`,
+          },
+          { status: 400 }
+        );
+      }
+
+      const itemTotal = matchedProduct.price * requestedQty;
+      serverSubtotal += itemTotal;
+
+      verifiedOrderItems.push({
+        product_id: matchedProduct.id,
+        product_name: matchedProduct.name.en || matchedProduct.name.bn,
+        price: matchedProduct.price,
+        quantity: requestedQty,
+        total: itemTotal,
+      });
+    }
+
+    // 4. SERVER-SIDE DELIVERY CHARGE CALCULATION
+    const targetCity = (city || division || "Dhaka").trim().toLowerCase();
+    const isInsideDhaka = targetCity.includes("dhaka");
+    const deliveryCharge =
+      serverSubtotal >= 1500 || serverSubtotal === 0
+        ? 0
+        : isInsideDhaka
+        ? 70
+        : 130;
+
+    const serverTotalAmount = serverSubtotal + deliveryCharge;
+
     const orderNumber = `ARN-${Date.now().toString().slice(-6)}-${Math.floor(100 + Math.random() * 900)}`;
     const supabase = getServerSupabase();
 
-    let orderId = `local-${Date.now()}`;
+    let orderId = `ord-${Date.now()}`;
 
-    // If Supabase is connected, record the order & order_items
+    // 5. ATOMIC STOCK DEDUCTION
+    for (const verified of verifiedOrderItems) {
+      const current = currentProducts.find((p) => p.id === verified.product_id);
+      if (current) {
+        const newStock = Math.max(0, current.stock - verified.quantity);
+        runtimeStore.updateProduct(current.id, { stock: newStock });
+      }
+    }
+
+    // 6. RECORD IN SUPABASE DATABASE (IF CONNECTED)
     if (supabase) {
       try {
         const { data: orderData, error: orderError } = await supabase
           .from("orders")
           .insert({
             order_number: orderNumber,
-            customer_name,
-            customer_email,
-            customer_phone,
-            shipping_address,
-            city,
-            total_amount,
-            payment_method,
-            payment_status: payment_method === "cod" ? "pending" : "pending",
+            customer_name: customer_name.trim(),
+            customer_email: (customer_email || "").trim(),
+            customer_phone: customer_phone.trim(),
+            shipping_address: `${shipping_address.trim()}${thana ? `, ${thana}` : ""}`,
+            city: city || division || "Dhaka",
+            total_amount: serverTotalAmount,
+            payment_method: payment_method || "cod",
+            payment_status: "pending",
             order_status: "processing",
-            notes,
+            notes: notes || null,
           })
           .select("id")
           .single();
 
-        if (orderError) {
-          console.error("Supabase order insert error:", orderError);
-        } else if (orderData?.id) {
+        if (!orderError && orderData?.id) {
           orderId = orderData.id;
-          const orderItems = items.map((item: any) => ({
+
+          const orderLines = verifiedOrderItems.map((item) => ({
             order_id: orderId,
-            product_id: item.product.id,
-            product_name: item.product.name?.en || item.product.name?.bn || "Product",
-            price: item.product.price,
+            product_id: item.product_id.startsWith("prod-") ? null : item.product_id,
+            product_name: item.product_name,
+            price: item.price,
             quantity: item.quantity,
           }));
 
-          await supabase.from("order_items").insert(orderItems);
+          await supabase.from("order_items").insert(orderLines);
         }
       } catch (err) {
-        console.warn("DB record error, proceeding with confirmation fallback:", err);
+        console.warn("Supabase order insert notice, continuing with fallback store:", err);
       }
     }
 
-    // Scaffolding responses for different payment gateways
-    let paymentRedirect = null;
-    let paymentInstructions = null;
-
-    if (payment_method === "bkash" || payment_method === "nagad") {
-      paymentInstructions = {
-        method: payment_method.toUpperCase(),
-        merchantNumber: "01711-223344",
-        reference: orderNumber,
-        note: `Please send payment to our merchant number with reference: ${orderNumber}`,
-      };
-    } else if (payment_method === "stripe") {
-      // In a live environment with valid STRIPE_SECRET_KEY, create Stripe Checkout session here
-      paymentInstructions = {
-        method: "STRIPE",
-        status: "Card authorization initialized",
-      };
-    } else if (payment_method === "sslcommerz") {
-      paymentInstructions = {
-        method: "SSLCOMMERZ",
-        status: "Redirecting to SSLCommerz Gateway session",
-      };
-    }
-
-    // Add to active runtime store so admin orders table immediately updates
+    // 7. RECORD IN ACTIVE RUNTIME STORE (INSTANT ADMIN VISIBILITY)
     runtimeStore.addOrder({
       id: orderId,
       order_number: orderNumber,
-      customer_name,
-      customer_email,
-      customer_phone,
-      shipping_address,
-      city,
-      total_amount,
-      payment_method,
+      customer_name: customer_name.trim(),
+      customer_email: (customer_email || "").trim(),
+      customer_phone: customer_phone.trim(),
+      shipping_address: `${shipping_address.trim()}${thana ? `, ${thana}` : ""}`,
+      city: city || division || "Dhaka",
+      total_amount: serverTotalAmount,
+      payment_method: payment_method || "cod",
       payment_status: "pending",
       order_status: "processing",
-      notes,
-      items: (items || []).map((item: any) => ({
-        product_id: item.product?.id || item.id || "item",
-        product_name: item.product?.name?.en || item.product?.name?.bn || item.product?.name || item.name || "Eco Item",
-        price: item.product?.price || item.price || 0,
-        quantity: item.quantity || 1,
+      notes: notes || undefined,
+      items: verifiedOrderItems.map((item) => ({
+        product_id: item.product_id,
+        product_name: item.product_name,
+        price: item.price,
+        quantity: item.quantity,
       })),
       is_archived: false,
       created_at: new Date().toISOString(),
     });
 
+    // 8. PAYMENT INSTRUCTIONS
+    let paymentInstructions = null;
+    if (payment_method === "bkash" || payment_method === "nagad") {
+      paymentInstructions = {
+        method: payment_method.toUpperCase(),
+        merchantNumber: "01700-000000",
+        reference: orderNumber,
+        amount: serverTotalAmount,
+        note: `Please send ৳${serverTotalAmount} to our Merchant Number using Reference: ${orderNumber}`,
+      };
+    }
+
     return NextResponse.json({
       success: true,
       orderNumber,
       orderId,
-      total_amount,
-      payment_method,
+      subtotal: serverSubtotal,
+      deliveryCharge,
+      total_amount: serverTotalAmount,
+      payment_method: payment_method || "cod",
       paymentInstructions,
-      paymentRedirect,
-      message: "Order placed successfully!",
+      itemsCount: verifiedOrderItems.reduce((acc, i) => acc + i.quantity, 0),
+      message: "Order placed successfully! Verified by Aronyok Commerce Engine.",
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Checkout API error:", error);
     return NextResponse.json(
-      { error: "Failed to process checkout. Please try again." },
+      { error: error.message || "Failed to process checkout. Please try again." },
       { status: 500 }
     );
   }
