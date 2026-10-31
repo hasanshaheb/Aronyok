@@ -19,7 +19,7 @@ export default function ShopPage() {
   useEffect(() => {
     async function loadProducts() {
       try {
-        const res = await fetch("/api/admin/data?entity=products");
+        const res = await fetch("/api/products");
         if (res.ok) {
           const data = await res.json();
           if (Array.isArray(data) && data.length > 0) {

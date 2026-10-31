@@ -18,15 +18,12 @@ export default function SingleBlogPostPage() {
   useEffect(() => {
     async function loadPost() {
       try {
-        const res = await fetch("/api/admin/data?entity=blogs");
+        const res = await fetch(`/api/blog?slug=${encodeURIComponent(slug)}`);
         if (res.ok) {
-          const blogs = await res.json();
-          if (Array.isArray(blogs)) {
-            const found = blogs.find((b: any) => b.slug === slug);
-            if (found) {
-              setPost(found);
-              return;
-            }
+          const found = await res.json();
+          if (found && found.slug === slug) {
+            setPost(found);
+            return;
           }
         }
       } catch {}

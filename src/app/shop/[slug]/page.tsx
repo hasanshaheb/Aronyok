@@ -36,16 +36,13 @@ export default function ProductDetailPage() {
   useEffect(() => {
     async function loadProduct() {
       try {
-        const res = await fetch("/api/admin/data?entity=products");
+        const res = await fetch(`/api/products?slug=${encodeURIComponent(slug)}`);
         if (res.ok) {
-          const prods = await res.json();
-          if (Array.isArray(prods)) {
-            const found = prods.find((p: any) => p.slug === slug);
-            if (found) {
-              setProduct(found);
-              setImgSrc(found.image_url || "https://images.unsplash.com/photo-1545241047-6083a3684587?auto=format&fit=crop&w=800&q=80");
-              return;
-            }
+          const found = await res.json();
+          if (found && found.slug === slug) {
+            setProduct(found);
+            setImgSrc(found.image_url || "https://images.unsplash.com/photo-1545241047-6083a3684587?auto=format&fit=crop&w=800&q=80");
+            return;
           }
         }
       } catch {}

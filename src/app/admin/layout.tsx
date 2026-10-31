@@ -3,7 +3,6 @@
 import React, { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import AdminSidebar from "../../components/admin/AdminSidebar";
-import { isSupabaseConfigured, supabase } from "../../lib/supabase/client";
 
 export default function AdminLayout({
   children,
@@ -23,37 +22,19 @@ export default function AdminLayout({
         return;
       }
 
-      // 1. Check local demo session
-      const localAdminSession = localStorage.getItem("aronyok_admin_auth");
-      if (localAdminSession === "true") {
-        setIsAuthenticated(true);
-        return;
-      }
-
-      // 2. Check Supabase auth session
-      if (isSupabaseConfigured && supabase) {
-        const {
-          data: { session },
-        } = await supabase.auth.getSession();
-
-        if (session) {
-          // Verify role is admin
-          const { data: profile } = await supabase
-            .from("profiles")
-            .select("role")
-            .eq("id", session.user.id)
-            .single();
-
-          if (profile?.role === "admin") {
+      try {
+        const res = await fetch("/api/admin/auth/me");
+        if (res.ok) {
+          const data = await res.json();
+          if (data.authenticated) {
             setIsAuthenticated(true);
             return;
           }
         }
-      }
+      } catch {}
 
-      // Not authenticated, redirect to login
       setIsAuthenticated(false);
-      router.push("/admin/login");
+      router.push(`/admin/login?redirect=${encodeURIComponent(pathname)}`);
     }
 
     checkAuth();
@@ -68,7 +49,7 @@ export default function AdminLayout({
       <div className="min-h-screen flex items-center justify-center bg-forest-950 text-cream-100">
         <div className="flex flex-col items-center gap-3">
           <div className="w-8 h-8 border-4 border-mint-400 border-t-transparent rounded-full animate-spin" />
-          <p className="text-xs text-forest-300">Verifying Admin Access...</p>
+          <p className="text-xs text-forest-300 font-medium">Verifying Staff Session...</p>
         </div>
       </div>
     );

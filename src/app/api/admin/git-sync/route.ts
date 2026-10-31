@@ -1,8 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import { gitCommitAndPush, getGitStatus } from "@/lib/git-sync";
 import { persistToCodebase } from "@/lib/runtime-store";
+import { verifyAdminSession } from "@/lib/auth/admin-guard";
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const staff = await verifyAdminSession(req);
+  if (!staff) {
+    return NextResponse.json(
+      { error: "Unauthorized: Administrator access required." },
+      { status: 401 }
+    );
+  }
+
   try {
     const status = await getGitStatus();
     return NextResponse.json({ success: true, ...status });
@@ -12,6 +21,14 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
+  const staff = await verifyAdminSession(req);
+  if (!staff) {
+    return NextResponse.json(
+      { error: "Unauthorized: Administrator access required." },
+      { status: 401 }
+    );
+  }
+
   try {
     let customMessage: string | undefined;
     try {

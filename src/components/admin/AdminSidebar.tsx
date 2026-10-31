@@ -39,11 +39,17 @@ export default function AdminSidebar() {
   ];
 
   const handleLogout = async () => {
+    try {
+      await fetch("/api/admin/auth/logout", { method: "POST" });
+    } catch {}
     if (isSupabaseConfigured && supabase) {
-      await supabase.auth.signOut();
+      try {
+        await supabase.auth.signOut();
+      } catch {}
     }
     localStorage.removeItem("aronyok_admin_auth");
     router.push("/admin/login");
+    router.refresh();
   };
 
   return (

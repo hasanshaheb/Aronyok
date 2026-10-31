@@ -2,8 +2,17 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSupabase } from "@/lib/supabase/server";
 import { runtimeStore, persistToCodebase } from "@/lib/runtime-store";
 import { gitCommitAndPush } from "@/lib/git-sync";
+import { verifyAdminSession } from "@/lib/auth/admin-guard";
 
 export async function GET(req: NextRequest) {
+  const staff = await verifyAdminSession(req);
+  if (!staff) {
+    return NextResponse.json(
+      { error: "Unauthorized: Administrator access required." },
+      { status: 401 }
+    );
+  }
+
   const { searchParams } = new URL(req.url);
   const entity = searchParams.get("entity");
   const supabase = getServerSupabase();
@@ -105,6 +114,14 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
+    const staff = await verifyAdminSession(req);
+    if (!staff) {
+      return NextResponse.json(
+        { error: "Unauthorized: Administrator access required." },
+        { status: 401 }
+      );
+    }
+
     const { searchParams } = new URL(req.url);
     const entity = searchParams.get("entity");
     const action = searchParams.get("action");

@@ -20,16 +20,13 @@ export default function DynamicPageRoute() {
     async function loadPage() {
       setIsLoading(true);
       try {
-        const res = await fetch("/api/admin/data?entity=pages");
+        const res = await fetch(`/api/pages?slug=${encodeURIComponent(slug)}`);
         if (res.ok) {
-          const pages = await res.json();
-          if (Array.isArray(pages)) {
-            const found = pages.find((p: any) => p.slug === slug && p.is_published);
-            if (found) {
-              setPage(found);
-              setIsLoading(false);
-              return;
-            }
+          const found = await res.json();
+          if (found && found.slug === slug && found.is_published) {
+            setPage(found);
+            setIsLoading(false);
+            return;
           }
         }
       } catch {}
