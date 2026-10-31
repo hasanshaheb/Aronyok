@@ -150,7 +150,7 @@ export default function ProductCard({ product }: { product: Product }) {
           )}
 
           <Link href={`/shop/${product.slug}`} className="block mt-0.5">
-            <h3 className="font-bold text-charcoal-900 text-base group-hover:text-forest-750 transition-colors line-clamp-2 leading-snug">
+            <h3 className="font-bold text-charcoal-900 text-base group-hover:text-forest-800 transition-colors line-clamp-2 leading-snug">
               {localize(product.name)}
             </h3>
           </Link>

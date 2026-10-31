@@ -144,8 +144,8 @@ const config: Config = {
         'terracotta-lg': '0 14px 30px -4px rgba(196, 125, 90, 0.45)',
       },
       fontFamily: {
-        sans: ['var(--font-inter)', 'system-ui', 'sans-serif'],
-        bengali: ['var(--font-hind-siliguri)', 'system-ui', 'sans-serif'],
+        sans: ['"Plus Jakarta Sans"', 'system-ui', '-apple-system', 'sans-serif'],
+        bengali: ['"Hind Siliguri"', '"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
       },
       keyframes: {
         'bounce-subtle': {

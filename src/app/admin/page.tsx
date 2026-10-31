@@ -326,7 +326,7 @@ export default function AdminDashboardPage() {
                 <tr key={order.id} className="hover:bg-cream-50/50 transition-colors">
                   <td className="py-3.5 px-5 font-bold">{order.number}</td>
                   <td className="py-3.5 px-5 font-medium">{order.customer}</td>
-                  <td className="py-3.5 px-5 text-forest-750 max-w-[200px] truncate">
+                  <td className="py-3.5 px-5 text-forest-800 max-w-[200px] truncate">
                     {order.items}
                   </td>
                   <td className="py-3.5 px-5 font-bold">৳{order.amount}</td>

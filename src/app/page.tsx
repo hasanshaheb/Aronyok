@@ -341,7 +341,7 @@ export default function HomePage() {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
           <div>
-            <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-earth-100 text-earth-850 text-xs font-bold uppercase tracking-wider mb-2">
+            <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-earth-100 text-earth-800 text-xs font-bold uppercase tracking-wider mb-2">
               <BookOpen className="w-3.5 h-3.5 text-earth-700" />
               <span>{t.blog.title}</span>
             </div>
