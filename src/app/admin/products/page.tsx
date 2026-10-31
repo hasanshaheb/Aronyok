@@ -13,6 +13,7 @@ import {
   GitBranch,
   Camera,
   Image as ImageIcon,
+  Sprout,
 } from "lucide-react";
 import DualLangInput from "../../../components/admin/DualLangInput";
 import ProductImagePicker from "../../../components/admin/ProductImagePicker";
@@ -41,6 +42,12 @@ export default function AdminProductsPage() {
   const [form, setForm] = useState({
     name: { en: "", bn: "" },
     slug: "",
+    sku: "",
+    scientific_name: "",
+    propagation_method: "Grafted",
+    sunlight: "Full Sun",
+    watering: "Daily",
+    pot_size: "10 Inch Pot",
     description: { en: "", bn: "" },
     price: 500,
     compare_at_price: 600,
@@ -78,12 +85,18 @@ export default function AdminProductsPage() {
     setForm({
       name: { en: "", bn: "" },
       slug: "",
+      sku: `ARN-PLN-${Date.now().toString().slice(-4)}`,
+      scientific_name: "",
+      propagation_method: "Grafted",
+      sunlight: "Full Sun",
+      watering: "Daily",
+      pot_size: "10 Inch Pot",
       description: { en: "", bn: "" },
       price: 500,
       compare_at_price: 600,
       stock: 50,
       image_url: "https://images.unsplash.com/photo-1587049352846-4a222e784d38?auto=format&fit=crop&w=800&q=80",
-      category: "herbs",
+      category: "plants",
       is_active: true,
       seo_title: { en: "", bn: "" },
       seo_description: { en: "", bn: "" },
@@ -96,6 +109,12 @@ export default function AdminProductsPage() {
     setForm({
       name: p.name,
       slug: p.slug,
+      sku: p.sku || `ARN-${p.id.slice(0, 6)}`,
+      scientific_name: p.scientific_name || "",
+      propagation_method: p.propagation_method || "Grafted",
+      sunlight: p.sunlight || "Full Sun",
+      watering: p.watering || "Daily",
+      pot_size: p.pot_size || "10 Inch Pot",
       description: p.description,
       price: p.price,
       compare_at_price: p.compare_at_price || 0,
@@ -125,6 +144,12 @@ export default function AdminProductsPage() {
       image_url: form.image_url,
       category: form.category,
       is_active: form.is_active,
+      sku: form.sku || undefined,
+      scientific_name: form.scientific_name || undefined,
+      propagation_method: form.propagation_method || undefined,
+      sunlight: form.sunlight || undefined,
+      watering: form.watering || undefined,
+      pot_size: form.pot_size || undefined,
       seo_title: form.seo_title,
       seo_description: form.seo_description,
       sync_git: shouldSync,
@@ -454,6 +479,79 @@ export default function AdminProductsPage() {
                     }
                     className="w-full px-3 py-2 rounded-xl bg-cream-50 border border-forest-200 text-xs focus:outline-none focus:ring-2 focus:ring-forest-600"
                   />
+                </div>
+              </div>
+
+              {/* Botanical & Plant Specifications */}
+              <div className="p-4 bg-forest-50/50 rounded-2xl border border-forest-100 space-y-3">
+                <p className="text-xs font-bold text-forest-950 flex items-center gap-1.5">
+                  <Sprout className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>Botanical & Nursery Specifications</span>
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div>
+                    <label className="block text-[10px] font-bold text-forest-800 mb-1">SKU Code</label>
+                    <input
+                      type="text"
+                      value={form.sku}
+                      onChange={(e) => setForm({ ...form, sku: e.target.value })}
+                      placeholder="ARN-PLN-001"
+                      className="w-full px-3 py-1.5 rounded-lg bg-white border border-forest-200 text-xs focus:ring-1 focus:ring-forest-600"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-bold text-forest-800 mb-1">Scientific Name</label>
+                    <input
+                      type="text"
+                      value={form.scientific_name}
+                      onChange={(e) => setForm({ ...form, scientific_name: e.target.value })}
+                      placeholder="e.g. Syzygium cumini"
+                      className="w-full px-3 py-1.5 rounded-lg bg-white border border-forest-200 text-xs italic focus:ring-1 focus:ring-forest-600"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-bold text-forest-800 mb-1">Propagation Method</label>
+                    <input
+                      type="text"
+                      value={form.propagation_method}
+                      onChange={(e) => setForm({ ...form, propagation_method: e.target.value })}
+                      placeholder="কলম চারা / Grafted"
+                      className="w-full px-3 py-1.5 rounded-lg bg-white border border-forest-200 text-xs focus:ring-1 focus:ring-forest-600"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div>
+                    <label className="block text-[10px] font-bold text-forest-800 mb-1">Sunlight Need</label>
+                    <input
+                      type="text"
+                      value={form.sunlight}
+                      onChange={(e) => setForm({ ...form, sunlight: e.target.value })}
+                      placeholder="পূর্ণ রোদ / Full Sun"
+                      className="w-full px-3 py-1.5 rounded-lg bg-white border border-forest-200 text-xs focus:ring-1 focus:ring-forest-600"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-bold text-forest-800 mb-1">Watering Schedule</label>
+                    <input
+                      type="text"
+                      value={form.watering}
+                      onChange={(e) => setForm({ ...form, watering: e.target.value })}
+                      placeholder="নিয়মিত / Daily"
+                      className="w-full px-3 py-1.5 rounded-lg bg-white border border-forest-200 text-xs focus:ring-1 focus:ring-forest-600"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-bold text-forest-800 mb-1">Pot Size / Height</label>
+                    <input
+                      type="text"
+                      value={form.pot_size}
+                      onChange={(e) => setForm({ ...form, pot_size: e.target.value })}
+                      placeholder="১০ ইঞ্চি টব / 10-inch Pot"
+                      className="w-full px-3 py-1.5 rounded-lg bg-white border border-forest-200 text-xs focus:ring-1 focus:ring-forest-600"
+                    />
+                  </div>
                 </div>
               </div>
 
