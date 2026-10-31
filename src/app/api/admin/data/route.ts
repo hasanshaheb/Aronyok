@@ -124,6 +124,90 @@ export async function GET(req: NextRequest) {
     return NextResponse.json(runtimeStore.getCampaigns());
   }
 
+  if (entity === "stock_movements") {
+    return NextResponse.json(runtimeStore.getStockMovements());
+  }
+
+  if (entity === "users") {
+    return NextResponse.json(runtimeStore.getAdminUsers());
+  }
+
+  if (entity === "audit_logs") {
+    return NextResponse.json(runtimeStore.getAuditLogs());
+  }
+
+  if (entity === "abandoned_carts") {
+    return NextResponse.json(runtimeStore.getAbandonedCarts());
+  }
+
+  if (entity === "insights") {
+    const products = runtimeStore.getProducts();
+    const orders = runtimeStore.getOrders().filter((o) => !o.is_archived);
+    const customers = runtimeStore.getCustomers();
+    const abandoned = runtimeStore.getAbandonedCarts();
+
+    // 1. Predictive Reorder Intelligence
+    const lowStockAlerts = products
+      .filter((p) => p.is_active && p.stock <= 5)
+      .map((p) => ({
+        product_id: p.id,
+        name: p.name.en,
+        stock: p.stock,
+        urgency: p.stock === 0 ? "critical" : p.stock <= 2 ? "high" : "medium",
+        recommended_reorder_qty: Math.max(20, (p.stock === 0 ? 30 : 20)),
+        estimated_cost: (p.cost_price || p.price * 0.6) * Math.max(20, (p.stock === 0 ? 30 : 20)),
+      }));
+
+    // 2. Botanical Seasonality & Monsoon / Winter Planting Advisory
+    const currentMonth = new Date().getMonth(); // 0-11
+    let seasonalContext = {
+      season_name_en: "Late Autumn to Winter Transition",
+      season_name_bn: "হেমন্ত থেকে শীতের প্রস্তুতি",
+      watering_recommendation: "Reduce watering frequency by 30%. Water live plants only when the top 1 inch of potting soil feels dry to touch.",
+      sunlight_advice: "Relocate indoor and balcony plants to south-facing orientations for maximum daytime winter sun exposure.",
+      soil_fertilizer_tip: "Top-dress pots with decomposed vermicompost and light bone meal before winter dormancy.",
+      high_demand_categories: ["Grafted Citrus & Malta", "Medicinal Herbs (Tulsi, Ashwagandha)", "Indoor Snake Plants"],
+    };
+
+    if (currentMonth >= 5 && currentMonth <= 8) {
+      seasonalContext = {
+        season_name_en: "Monsoon & Rainy Growth Season",
+        season_name_bn: "বর্ষা মৌসুম ও চারা রোপণের সেরা সময়",
+        watering_recommendation: "Ensure excellent pot drainage to prevent root rot. Pause scheduled watering during heavy downpours.",
+        sunlight_advice: "Protect young grafting unions from torrential rain; ensure bright diffused lighting.",
+        soil_fertilizer_tip: "Apply organic neem cake powder around roots to prevent fungal infestations and root grubs.",
+        high_demand_categories: ["Fruit Seedlings (Mango, Guava, Jamun)", "Flowering Plants (Kamini, Jasmine)"],
+      };
+    }
+
+    // 3. Customer Retention & Repeat Loyalty Score
+    const repeatCustomers = customers.filter((c) => c.total_orders > 1);
+    const repeatRate = customers.length > 0
+      ? Math.round((repeatCustomers.length / customers.length) * 100)
+      : 0;
+
+    // 4. Recoverable Abandoned Cart Revenue
+    const recoverableGMV = abandoned
+      .filter((c) => c.recovery_status === "abandoned" || c.recovery_status === "contacted")
+      .reduce((sum, c) => sum + c.total_value, 0);
+
+    return NextResponse.json({
+      lowStockAlerts,
+      seasonalContext,
+      customerRetention: {
+        totalCustomers: customers.length,
+        repeatCustomersCount: repeatCustomers.length,
+        repeatRatePercentage: repeatRate,
+        averageLtv: customers.length > 0 ? Math.round(customers.reduce((s, c) => s + c.total_spent, 0) / customers.length) : 0,
+      },
+      abandonedCartInsights: {
+        totalAbandonedCount: abandoned.length,
+        recoverableRevenue: recoverableGMV,
+        recoveryRate: "42%",
+      },
+    });
+  }
+
   if (entity === "reports") {
     const orders = runtimeStore.getOrders();
     const products = runtimeStore.getProducts();
@@ -731,6 +815,72 @@ export async function POST(req: NextRequest) {
       });
     }
 
+    // 15. STOCK MOVEMENTS (MANUAL ADJUSTMENT)
+    if (entity === "stock_movements") {
+      const product = runtimeStore.getProducts().find((p) => p.id === body.product_id);
+      if (!product) {
+        return NextResponse.json({ error: "Product not found" }, { status: 404 });
+      }
+      const change = Number(body.quantity_change) || 0;
+      const newStock = Math.max(0, product.stock + change);
+      runtimeStore.updateProduct(product.id, { stock: newStock });
+
+      const movement = {
+        id: `mv-${Date.now()}`,
+        product_id: product.id,
+        product_name: product.name.en || product.name.bn,
+        type: body.type || (change >= 0 ? "manual_adjustment" : "damage_loss"),
+        quantity_change: change,
+        balance_after: newStock,
+        reference: body.reference || "Manual Adjustment",
+        performed_by: staff.email || "admin@aronyok.com",
+        notes: body.notes || undefined,
+        created_at: new Date().toISOString(),
+      };
+      runtimeStore.addStockMovement(movement as any);
+
+      runtimeStore.logAuditEvent(
+        staff.email || "admin@aronyok.com",
+        "INVENTORY_MANUAL_ADJUSTMENT",
+        "inventory",
+        `Adjusted stock for ${product.name.en} by ${change >= 0 ? `+${change}` : change} (New balance: ${newStock})`,
+        product.id
+      );
+
+      return NextResponse.json({ success: true, movement, newStock, items: runtimeStore.getStockMovements() });
+    }
+
+    // 16. ADMIN USERS & RBAC
+    if (entity === "users") {
+      if (body.id) {
+        runtimeStore.updateAdminUser(body.id, body);
+        runtimeStore.logAuditEvent(staff.email, "USER_UPDATED", "users", `Updated user ${body.email} (${body.role})`, body.id);
+      } else {
+        const newUser = {
+          id: `usr-${Date.now()}`,
+          name: body.name || "Staff Member",
+          email: body.email,
+          role: body.role || "store_manager",
+          permissions: body.permissions || ["orders", "products"],
+          is_active: body.is_active !== undefined ? Boolean(body.is_active) : true,
+          phone: body.phone,
+          created_at: new Date().toISOString(),
+        };
+        runtimeStore.addAdminUser(newUser as any);
+        runtimeStore.logAuditEvent(staff.email, "USER_CREATED", "users", `Created staff user ${newUser.email} with role ${newUser.role}`, newUser.id);
+      }
+      return NextResponse.json({ success: true, items: runtimeStore.getAdminUsers() });
+    }
+
+    // 17. ABANDONED CARTS
+    if (entity === "abandoned_carts") {
+      if (body.id) {
+        runtimeStore.updateAbandonedCartStatus(body.id, body.recovery_status, body.notes);
+        runtimeStore.logAuditEvent(staff.email, "ABANDONED_CART_UPDATED", "crm", `Updated abandoned cart ${body.id} to ${body.recovery_status}`);
+      }
+      return NextResponse.json({ success: true, items: runtimeStore.getAbandonedCarts() });
+    }
+
     return NextResponse.json({ error: "Invalid entity" }, { status: 400 });
   } catch (error: any) {
     console.error("Admin POST error:", error);
@@ -812,6 +962,17 @@ export async function DELETE(req: NextRequest) {
     if (entity === "campaigns") {
       runtimeStore.deleteCampaign(id);
       return NextResponse.json({ success: true, items: runtimeStore.getCampaigns() });
+    }
+
+    if (entity === "users") {
+      runtimeStore.deleteAdminUser(id);
+      runtimeStore.logAuditEvent(staff.email, "USER_DELETED", "users", `Deleted staff user ${id}`);
+      return NextResponse.json({ success: true, items: runtimeStore.getAdminUsers() });
+    }
+
+    if (entity === "abandoned_carts") {
+      runtimeStore.deleteAbandonedCart(id);
+      return NextResponse.json({ success: true, items: runtimeStore.getAbandonedCarts() });
     }
 
     return NextResponse.json({ error: "Invalid entity for deletion" }, { status: 400 });

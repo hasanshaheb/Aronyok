@@ -22,6 +22,10 @@ import {
   ReturnRefund,
   Coupon,
   CampaignBanner,
+  StockMovement,
+  AdminUser,
+  AuditLog,
+  AbandonedCart,
 } from "./types";
 
 const DATA_DIR = path.join(process.cwd(), "data");
@@ -34,6 +38,10 @@ const SHIPMENTS_FILE_PATH = path.join(DATA_DIR, "shipments.json");
 const RETURNS_FILE_PATH = path.join(DATA_DIR, "returns.json");
 const COUPONS_FILE_PATH = path.join(DATA_DIR, "coupons.json");
 const CAMPAIGNS_FILE_PATH = path.join(DATA_DIR, "campaigns.json");
+const STOCK_MOVEMENTS_FILE_PATH = path.join(DATA_DIR, "stock_movements.json");
+const ADMIN_USERS_FILE_PATH = path.join(DATA_DIR, "admin_users.json");
+const AUDIT_LOGS_FILE_PATH = path.join(DATA_DIR, "audit_logs.json");
+const ABANDONED_CARTS_FILE_PATH = path.join(DATA_DIR, "abandoned_carts.json");
 const FALLBACK_CODE_PATH = path.join(process.cwd(), "src", "lib", "supabase", "fallback-data.ts");
 
 // Ensure data directory exists
@@ -315,6 +323,180 @@ const initialCampaigns: CampaignBanner[] = [
   },
 ];
 
+const initialStockMovements: StockMovement[] = [
+  {
+    id: "mv-1",
+    product_id: "prod-7",
+    product_name: "Cinnamon Seedling (দারুচিনি চারা)",
+    type: "po_receipt",
+    quantity_change: 30,
+    balance_after: 29,
+    reference: "PO-ARN-2026-001",
+    performed_by: "manager@aronyok.com",
+    notes: "Restocked from Bangladesh Agricultural Nursery",
+    created_at: "2026-10-25T11:00:00Z",
+  },
+  {
+    id: "mv-2",
+    product_id: "prod-8",
+    product_name: "Indian Jamun Grafted (ইন্ডিয়ান কালো জাম)",
+    type: "po_receipt",
+    quantity_change: 20,
+    balance_after: 41,
+    reference: "PO-ARN-2026-001",
+    performed_by: "manager@aronyok.com",
+    notes: "Restocked from Bangladesh Agricultural Nursery",
+    created_at: "2026-10-25T11:00:00Z",
+  },
+  {
+    id: "mv-3",
+    product_id: "prod-9",
+    product_name: "Vietnamese Malta (ভিয়েতনামি বারোমাসি মাল্টা)",
+    type: "po_receipt",
+    quantity_change: 20,
+    balance_after: 42,
+    reference: "PO-ARN-2026-001",
+    performed_by: "manager@aronyok.com",
+    notes: "Restocked from Bangladesh Agricultural Nursery",
+    created_at: "2026-10-25T11:00:00Z",
+  },
+  {
+    id: "mv-4",
+    product_id: "prod-1",
+    product_name: "Sundarbans Raw Honey (সুন্দরবনের প্রাকৃতিক মধু)",
+    type: "order_deduction",
+    quantity_change: -1,
+    balance_after: 60,
+    reference: "ARN-821942",
+    performed_by: "system_checkout",
+    notes: "Automated stock allocation for order ARN-821942",
+    created_at: "2026-10-26T14:30:00Z",
+  },
+];
+
+const initialAdminUsers: AdminUser[] = [
+  {
+    id: "usr-1",
+    name: "Aronyok Lead Administrator",
+    email: "admin@aronyok.com",
+    role: "super_admin",
+    permissions: ["*"],
+    is_active: true,
+    phone: "01700000000",
+    last_login: new Date().toISOString(),
+    created_at: "2026-01-01T00:00:00Z",
+  },
+  {
+    id: "usr-2",
+    name: "Nazmul Huda",
+    email: "manager@aronyok.com",
+    role: "store_manager",
+    permissions: ["orders", "products", "customers", "coupons", "purchases", "shipments"],
+    is_active: true,
+    phone: "01811223344",
+    last_login: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(),
+    created_at: "2026-02-15T00:00:00Z",
+  },
+  {
+    id: "usr-3",
+    name: "Dr. Afroza Begum",
+    email: "botanist@aronyok.com",
+    role: "botanist",
+    permissions: ["products", "tools", "blog", "pages"],
+    is_active: true,
+    phone: "01999887766",
+    last_login: new Date(Date.now() - 1000 * 60 * 60 * 12).toISOString(),
+    created_at: "2026-03-01T00:00:00Z",
+  },
+  {
+    id: "usr-4",
+    name: "Rashedul Karim",
+    email: "fulfillment@aronyok.com",
+    role: "fulfillment_agent",
+    permissions: ["orders", "shipments"],
+    is_active: true,
+    phone: "01655443322",
+    last_login: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(),
+    created_at: "2026-03-10T00:00:00Z",
+  },
+];
+
+const initialAuditLogs: AuditLog[] = [
+  {
+    id: "log-1",
+    staff_email: "admin@aronyok.com",
+    action: "SYSTEM_INITIALIZATION",
+    entity: "system",
+    details: "Initialized Aronyok Enterprise v2.0 Platform & DB stores",
+    ip_address: "127.0.0.1",
+    created_at: "2026-10-24T00:00:00Z",
+  },
+  {
+    id: "log-2",
+    staff_email: "manager@aronyok.com",
+    action: "PURCHASE_ORDER_RECEIVED",
+    entity: "purchases",
+    entity_id: "po-1",
+    details: "Restocked 70 live plants from Bangladesh Agricultural Nursery (PO-ARN-2026-001)",
+    ip_address: "103.145.12.8",
+    created_at: "2026-10-25T11:00:00Z",
+  },
+  {
+    id: "log-3",
+    staff_email: "system@aronyok.com",
+    action: "MARKETING_CAMPAIGN_ACTIVATED",
+    entity: "campaigns",
+    entity_id: "camp-1",
+    details: "Published Spring Eco Planting Special Announcement Bar",
+    ip_address: "127.0.0.1",
+    created_at: "2026-10-26T00:00:00Z",
+  },
+  {
+    id: "log-4",
+    staff_email: "admin@aronyok.com",
+    action: "ADMIN_LOGIN",
+    entity: "auth",
+    details: "Successful administrative sign-in",
+    ip_address: "127.0.0.1",
+    created_at: new Date(Date.now() - 1000 * 60 * 30).toISOString(),
+  },
+];
+
+const initialAbandonedCarts: AbandonedCart[] = [
+  {
+    id: "ab-1",
+    customer_name: "Mahmudul Hasan",
+    customer_phone: "01799887766",
+    customer_email: "mahmud@example.com",
+    items_count: 3,
+    total_value: 1250,
+    items: [
+      { product_id: "prod-7", product_name: "Cinnamon Seedling (দারুচিনি চারা)", price: 250, quantity: 1 },
+      { product_id: "prod-8", product_name: "Indian Jamun Grafted (ইন্ডিয়ান কালো জাম)", price: 280, quantity: 1 },
+      { product_id: "prod-1", product_name: "Sundarbans Raw Honey 500g", price: 850, quantity: 1 },
+    ],
+    recovery_status: "abandoned",
+    notes: "Customer dropped off at payment selection step.",
+    last_activity: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(),
+    created_at: new Date(Date.now() - 1000 * 60 * 60 * 3).toISOString(),
+  },
+  {
+    id: "ab-2",
+    customer_name: "Sabrina Yasmin",
+    customer_phone: "01833445522",
+    customer_email: "sabrina@example.com",
+    items_count: 1,
+    total_value: 850,
+    items: [
+      { product_id: "prod-1", product_name: "Sundarbans Raw Honey 500g", price: 850, quantity: 1 },
+    ],
+    recovery_status: "contacted",
+    notes: "Followed up via WhatsApp with 10% discount coupon.",
+    last_activity: new Date(Date.now() - 1000 * 60 * 60 * 6).toISOString(),
+    created_at: new Date(Date.now() - 1000 * 60 * 60 * 7).toISOString(),
+  },
+];
+
 // In-memory stores
 let memoryProducts: Product[] = [...fallbackProducts];
 let memoryBlogPosts: BlogPost[] = [...fallbackBlogPosts];
@@ -330,6 +512,10 @@ let memoryShipments: Shipment[] = safeReadJson<Shipment[]>(SHIPMENTS_FILE_PATH, 
 let memoryReturns: ReturnRefund[] = safeReadJson<ReturnRefund[]>(RETURNS_FILE_PATH, initialReturns);
 let memoryCoupons: Coupon[] = safeReadJson<Coupon[]>(COUPONS_FILE_PATH, initialCoupons);
 let memoryCampaigns: CampaignBanner[] = safeReadJson<CampaignBanner[]>(CAMPAIGNS_FILE_PATH, initialCampaigns);
+let memoryStockMovements: StockMovement[] = safeReadJson<StockMovement[]>(STOCK_MOVEMENTS_FILE_PATH, initialStockMovements);
+let memoryAdminUsers: AdminUser[] = safeReadJson<AdminUser[]>(ADMIN_USERS_FILE_PATH, initialAdminUsers);
+let memoryAuditLogs: AuditLog[] = safeReadJson<AuditLog[]>(AUDIT_LOGS_FILE_PATH, initialAuditLogs);
+let memoryAbandonedCarts: AbandonedCart[] = safeReadJson<AbandonedCart[]>(ABANDONED_CARTS_FILE_PATH, initialAbandonedCarts);
 
 // Codebase Fallback Persistence
 export function persistToCodebase() {
@@ -594,12 +780,32 @@ export const runtimeStore = {
     for (const item of p.items) {
       const product = memoryProducts.find((prod) => prod.id === item.product_id);
       if (product) {
+        const newStock = product.stock + item.quantity;
         runtimeStore.updateProduct(product.id, {
-          stock: product.stock + item.quantity,
+          stock: newStock,
           cost_price: item.unit_cost || product.cost_price,
+        });
+        runtimeStore.addStockMovement({
+          id: `mv-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+          product_id: product.id,
+          product_name: product.name.en || product.name.bn,
+          type: "po_receipt",
+          quantity_change: item.quantity,
+          balance_after: newStock,
+          reference: p.po_number,
+          performed_by: "manager@aronyok.com",
+          notes: `Stock restock received from ${p.supplier_name}`,
+          created_at: new Date().toISOString(),
         });
       }
     }
+    runtimeStore.logAuditEvent(
+      "manager@aronyok.com",
+      "PO_RESTOCK_RECEIVED",
+      "purchases",
+      `Received PO ${p.po_number} with ${p.items.length} items from ${p.supplier_name}`,
+      p.id
+    );
   },
 
   // LOGISTICS: SHIPMENTS & COURIER TRACKING
@@ -737,5 +943,64 @@ export const runtimeStore = {
   deleteCampaign: (id: string) => {
     memoryCampaigns = memoryCampaigns.filter((c) => c.id !== id);
     safeWriteJson(CAMPAIGNS_FILE_PATH, memoryCampaigns);
+  },
+
+  // PHASE 4: INVENTORY MOVEMENTS, AUDIT LOGS, RBAC & ABANDONED CARTS
+  getStockMovements: () => memoryStockMovements,
+  addStockMovement: (m: StockMovement) => {
+    memoryStockMovements = [m, ...memoryStockMovements];
+    safeWriteJson(STOCK_MOVEMENTS_FILE_PATH, memoryStockMovements);
+  },
+
+  getAdminUsers: () => memoryAdminUsers,
+  addAdminUser: (u: AdminUser) => {
+    memoryAdminUsers = [u, ...memoryAdminUsers];
+    safeWriteJson(ADMIN_USERS_FILE_PATH, memoryAdminUsers);
+  },
+  updateAdminUser: (id: string, updated: Partial<AdminUser>) => {
+    memoryAdminUsers = memoryAdminUsers.map((u) =>
+      u.id === id ? { ...u, ...updated } : u
+    );
+    safeWriteJson(ADMIN_USERS_FILE_PATH, memoryAdminUsers);
+  },
+  deleteAdminUser: (id: string) => {
+    memoryAdminUsers = memoryAdminUsers.filter((u) => u.id !== id);
+    safeWriteJson(ADMIN_USERS_FILE_PATH, memoryAdminUsers);
+  },
+
+  getAuditLogs: () => memoryAuditLogs,
+  logAuditEvent: (
+    staffEmail: string,
+    action: string,
+    entity: string,
+    details?: string,
+    entityId?: string,
+    ip?: string
+  ) => {
+    const entry: AuditLog = {
+      id: `log-${Date.now()}-${Math.floor(100 + Math.random() * 900)}`,
+      staff_email: staffEmail || "system@aronyok.com",
+      action,
+      entity,
+      entity_id: entityId,
+      details,
+      ip_address: ip || "127.0.0.1",
+      created_at: new Date().toISOString(),
+    };
+    memoryAuditLogs = [entry, ...memoryAuditLogs.slice(0, 999)]; // Keep latest 1000 logs
+    safeWriteJson(AUDIT_LOGS_FILE_PATH, memoryAuditLogs);
+    return entry;
+  },
+
+  getAbandonedCarts: () => memoryAbandonedCarts,
+  updateAbandonedCartStatus: (id: string, status: any, notes?: string) => {
+    memoryAbandonedCarts = memoryAbandonedCarts.map((c) =>
+      c.id === id ? { ...c, recovery_status: status, notes: notes || c.notes } : c
+    );
+    safeWriteJson(ABANDONED_CARTS_FILE_PATH, memoryAbandonedCarts);
+  },
+  deleteAbandonedCart: (id: string) => {
+    memoryAbandonedCarts = memoryAbandonedCarts.filter((c) => c.id !== id);
+    safeWriteJson(ABANDONED_CARTS_FILE_PATH, memoryAbandonedCarts);
   },
 };

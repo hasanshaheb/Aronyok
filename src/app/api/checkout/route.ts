@@ -136,12 +136,24 @@ export async function POST(req: NextRequest) {
 
     let orderId = `ord-${Date.now()}`;
 
-    // 5. ATOMIC STOCK DEDUCTION
+    // 5. ATOMIC STOCK DEDUCTION & STOCK MOVEMENTS AUDIT
     for (const verified of verifiedOrderItems) {
       const current = currentProducts.find((p) => p.id === verified.product_id);
       if (current) {
         const newStock = Math.max(0, current.stock - verified.quantity);
         runtimeStore.updateProduct(current.id, { stock: newStock });
+        runtimeStore.addStockMovement({
+          id: `mv-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+          product_id: current.id,
+          product_name: verified.product_name,
+          type: "order_deduction",
+          quantity_change: -verified.quantity,
+          balance_after: newStock,
+          reference: orderNumber,
+          performed_by: "system_checkout",
+          notes: `Customer Order ${orderNumber} (${customer_name})`,
+          created_at: new Date().toISOString(),
+        });
       }
     }
 
@@ -209,6 +221,15 @@ export async function POST(req: NextRequest) {
       is_archived: false,
       created_at: new Date().toISOString(),
     });
+
+    runtimeStore.logAuditEvent(
+      customer_email || "guest@checkout",
+      "CUSTOMER_ORDER_PLACED",
+      "orders",
+      `New order ${orderNumber} placed for ৳${serverTotalAmount} (${payment_method.toUpperCase()})`,
+      orderId,
+      ip
+    );
 
     // 8. DISPATCH SERVER-SIDE META CONVERSIONS API (CAPI) PURCHASE EVENT
     // Uses identical orderNumber as event_id so Meta deduplicates with browser Pixel!

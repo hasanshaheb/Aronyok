@@ -22,6 +22,10 @@ import {
   TrendingUp,
   Tag,
   Megaphone,
+  Boxes,
+  ShieldAlert,
+  UserCheck,
+  Sparkles,
 } from "lucide-react";
 import { isSupabaseConfigured, supabase } from "../../lib/supabase/client";
 import AdminSyncWidget from "./AdminSyncWidget";
@@ -50,6 +54,7 @@ export default function AdminSidebar() {
       title: "Catalog & Procurement",
       items: [
         { href: "/admin/products", label: "Product Catalog", icon: Package },
+        { href: "/admin/inventory", label: "Nursery Stock Ledger", icon: Boxes },
         { href: "/admin/suppliers", label: "Suppliers & Nurseries", icon: Building2 },
         { href: "/admin/purchases", label: "Purchases & Restock", icon: ClipboardList },
       ],
@@ -64,16 +69,19 @@ export default function AdminSidebar() {
     {
       title: "Content & Intelligence",
       items: [
+        { href: "/admin/insights", label: "AI Botanical Insights", icon: Sparkles },
         { href: "/admin/reports", label: "Business Reports", icon: TrendingUp },
         { href: "/admin/blog", label: "Blog & Journal", icon: BookOpen },
         { href: "/admin/pages", label: "Dynamic Pages", icon: FileText },
+        { href: "/admin/tools", label: "Botanical Tools", icon: Wrench },
       ],
     },
     {
-      title: "Configuration",
+      title: "Security & Governance",
       items: [
+        { href: "/admin/users", label: "Staff & Roles (RBAC)", icon: UserCheck },
+        { href: "/admin/audit-logs", label: "Security Audit Logs", icon: ShieldAlert },
         { href: "/admin/settings", label: "SEO & AI Setup", icon: Settings },
-        { href: "/admin/tools", label: "Botanical Tools", icon: Wrench },
       ],
     },
   ];

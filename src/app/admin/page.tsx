@@ -12,6 +12,9 @@ import {
   ArrowRight,
   TrendingUp,
   Plus,
+  Boxes,
+  ShieldAlert,
+  UserCheck,
 } from "lucide-react";
 import StatCard from "../../components/admin/StatCard";
 import {
@@ -193,7 +196,7 @@ export default function AdminDashboardPage() {
       </div>
 
       {/* Quick Navigation Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         <Link
           href="/admin/products"
           className="group p-5 rounded-2xl bg-white border border-forest-100 shadow-soft-sm hover:shadow-soft-md hover:-translate-y-0.5 transition-all"
@@ -236,6 +239,51 @@ export default function AdminDashboardPage() {
           </h3>
           <p className="text-xs text-forest-600 mt-1">
             Dynamically adjust the Nature Assistant prompt, ads banner, and SEO tags.
+          </p>
+        </Link>
+
+        <Link
+          href="/admin/inventory"
+          className="group p-5 rounded-2xl bg-white border border-forest-100 shadow-soft-sm hover:shadow-soft-md hover:-translate-y-0.5 transition-all"
+        >
+          <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-800 flex items-center justify-center mb-3">
+            <Boxes className="w-5 h-5" />
+          </div>
+          <h3 className="font-bold text-sm text-forest-950 group-hover:text-forest-700 transition-colors">
+            Nursery Stock Ledger
+          </h3>
+          <p className="text-xs text-forest-600 mt-1">
+            Real-time stock valuation, manual physical audit adjustments and PO restock log.
+          </p>
+        </Link>
+
+        <Link
+          href="/admin/insights"
+          className="group p-5 rounded-2xl bg-white border border-forest-100 shadow-soft-sm hover:shadow-soft-md hover:-translate-y-0.5 transition-all"
+        >
+          <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-800 flex items-center justify-center mb-3">
+            <Sparkles className="w-5 h-5" />
+          </div>
+          <h3 className="font-bold text-sm text-forest-950 group-hover:text-forest-700 transition-colors">
+            AI Botanical Insights
+          </h3>
+          <p className="text-xs text-forest-600 mt-1">
+            Predictive plant reordering, seasonal horticultural advice, and cart recovery.
+          </p>
+        </Link>
+
+        <Link
+          href="/admin/audit-logs"
+          className="group p-5 rounded-2xl bg-white border border-forest-100 shadow-soft-sm hover:shadow-soft-md hover:-translate-y-0.5 transition-all"
+        >
+          <div className="w-10 h-10 rounded-xl bg-purple-50 text-purple-800 flex items-center justify-center mb-3">
+            <ShieldAlert className="w-5 h-5" />
+          </div>
+          <h3 className="font-bold text-sm text-forest-950 group-hover:text-forest-700 transition-colors">
+            Security & Audit Logs
+          </h3>
+          <p className="text-xs text-forest-600 mt-1">
+            Track immutable administrative mutations, order updates, and CSV audit reports.
           </p>
         </Link>
       </div>

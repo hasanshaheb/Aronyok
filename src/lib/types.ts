@@ -288,3 +288,62 @@ export interface CampaignBanner {
   end_date?: string;
   created_at: string;
 }
+
+// -------------------------------------------------------------
+// PHASE 4 EXTENSIONS: AUTOMATION, AI INSIGHTS, RBAC & AUDIT LOGS
+// -------------------------------------------------------------
+
+export interface StockMovement {
+  id: string;
+  product_id: string;
+  product_name: string;
+  type: 'po_receipt' | 'order_deduction' | 'manual_adjustment' | 'damage_loss';
+  quantity_change: number;
+  balance_after: number;
+  reference?: string;
+  performed_by: string;
+  notes?: string;
+  created_at: string;
+}
+
+export interface AdminUser {
+  id: string;
+  name: string;
+  email: string;
+  role: 'super_admin' | 'store_manager' | 'botanist' | 'fulfillment_agent';
+  permissions: string[];
+  is_active: boolean;
+  phone?: string;
+  last_login?: string;
+  created_at: string;
+}
+
+export interface AuditLog {
+  id: string;
+  staff_email: string;
+  action: string;
+  entity: string;
+  entity_id?: string;
+  details?: string;
+  ip_address?: string;
+  created_at: string;
+}
+
+export interface AbandonedCart {
+  id: string;
+  customer_name?: string;
+  customer_phone?: string;
+  customer_email?: string;
+  items_count: number;
+  total_value: number;
+  items: Array<{
+    product_id: string;
+    product_name: string;
+    price: number;
+    quantity: number;
+  }>;
+  recovery_status: 'abandoned' | 'contacted' | 'recovered' | 'lost';
+  notes?: string;
+  last_activity: string;
+  created_at: string;
+}
