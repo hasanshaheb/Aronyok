@@ -32,13 +32,14 @@ export default function OrderInvoiceModal({ order, onClose }: OrderInvoiceModalP
         {
           product_id: "item-1",
           product_name: "Aronyok Eco Products Package",
-          price: order.total_amount,
+          price: order.total_amount || order.total_price || 0,
           quantity: 1,
         },
       ];
 
   const subtotal = items.reduce((acc, item) => acc + (item.price * item.quantity), 0);
-  const deliveryFee = order.total_amount > subtotal ? order.total_amount - subtotal : 0;
+  const total = order.total_amount || order.total_price || subtotal;
+  const deliveryFee = total > subtotal ? total - subtotal : 0;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/60 backdrop-blur-xs overflow-y-auto">
@@ -215,7 +216,7 @@ export default function OrderInvoiceModal({ order, onClose }: OrderInvoiceModalP
               )}
               <div className="flex justify-between py-2 border-t border-forest-200 text-sm font-extrabold text-forest-950">
                 <span>Grand Total</span>
-                <span className="text-base text-forest-800">৳{order.total_amount}</span>
+                <span className="text-base text-forest-800">৳{total}</span>
               </div>
             </div>
           </div>

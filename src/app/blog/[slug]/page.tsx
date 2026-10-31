@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useParams } from "next/navigation";
 import { ArrowLeft, Clock, Calendar, Leaf, Share2 } from "lucide-react";
 import { useLanguage } from "../../../context/LanguageContext";
@@ -85,7 +86,7 @@ export default function SingleBlogPostPage() {
       {/* Featured Banner Image */}
       {post.image_url && (
         <div className="relative aspect-[16/9] w-full rounded-3xl overflow-hidden shadow-soft-md">
-          <img
+          <Image fill unoptimized
             src={post.image_url}
             alt={localize(post.title)}
             onError={(e) => {

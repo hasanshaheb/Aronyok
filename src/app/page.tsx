@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowRight, Sparkles, BookOpen, Wrench, ShieldCheck, Leaf } from "lucide-react";
 import Hero from "../components/storefront/Hero";
 import CategoryFilter from "../components/storefront/CategoryFilter";
@@ -21,8 +22,8 @@ export default function HomePage() {
     async function fetchData() {
       try {
         const [prodRes, blogRes] = await Promise.all([
-          fetch("/api/admin/data?entity=products"),
-          fetch("/api/admin/data?entity=blogs"),
+          fetch("/api/products"),
+          fetch("/api/blog"),
         ]);
         if (prodRes.ok) {
           const prods = await prodRes.json();
@@ -33,7 +34,7 @@ export default function HomePage() {
         if (blogRes.ok) {
           const blogs = await blogRes.json();
           if (Array.isArray(blogs) && blogs.length > 0) {
-            setBlogPosts(blogs.filter((b: any) => b.status === "published"));
+            setBlogPosts(blogs.filter((b: any) => b.status === "published" || b.is_published));
           }
         }
       } catch (err) {
@@ -165,7 +166,7 @@ export default function HomePage() {
             >
               <div className="relative w-full aspect-[16/9] bg-stone-100 overflow-hidden">
                 {post.image_url && (
-                  <img
+                  <Image fill unoptimized
                     src={post.image_url}
                     alt={localize(post.title)}
                     onError={(e) => {

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import {
   X,
@@ -28,12 +28,19 @@ export default function QuickImageModal({
   onClose,
   onProductUpdated,
 }: QuickImageModalProps) {
-  if (!isOpen || !product) return null;
-
-  const [imageUrl, setImageUrl] = useState<string>(product.image_url || "");
+  const [imageUrl, setImageUrl] = useState<string>(product?.image_url || "");
   const [syncToGit, setSyncToGit] = useState<boolean>(true);
   const [isSaving, setIsSaving] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
+
+  useEffect(() => {
+    if (product) {
+      setImageUrl(product.image_url || "");
+      setErrorMessage("");
+    }
+  }, [product]);
+
+  if (!isOpen || !product) return null;
 
   const handleSaveImage = async (forceGitPush?: boolean) => {
     if (!imageUrl || imageUrl.trim() === "") {

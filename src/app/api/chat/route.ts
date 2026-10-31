@@ -3,6 +3,8 @@ import { getServerSupabase } from "@/lib/supabase/server";
 import { fallbackSettings } from "@/lib/supabase/fallback-data";
 import { runtimeStore } from "@/lib/runtime-store";
 
+export const dynamic = "force-dynamic";
+
 // Fallback intelligent natural herbal answers for demo mode if no OpenRouter key is set
 function getBotanicalDemoResponse(query: string, lang: string): string {
   const q = query.toLowerCase();

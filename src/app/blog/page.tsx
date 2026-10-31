@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { BookOpen, ArrowRight, Calendar, Clock } from "lucide-react";
 import { useLanguage } from "../../context/LanguageContext";
 import { fallbackBlogPosts } from "../../lib/supabase/fallback-data";
@@ -51,7 +52,7 @@ export default function BlogIndexPage() {
           >
             <div className="relative w-full aspect-[16/10] bg-stone-100 overflow-hidden">
               {post.image_url && (
-                <img
+                <Image fill unoptimized
                   src={post.image_url}
                   alt={localize(post.title)}
                   onError={(e) => {

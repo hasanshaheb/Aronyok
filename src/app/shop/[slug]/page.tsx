@@ -48,10 +48,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     };
   }
 
-  const title = `${product.name.en} (${product.name.bn}) | Aronyok (আরণ্যক)`;
+  const title = `${product.name?.en || product.slug} (${product.name?.bn || ""}) | Aronyok (আরণ্যক)`;
   const description =
     product.seo_description?.en ||
-    product.description.en.slice(0, 160) ||
+    (typeof product.description === "object" ? product.description?.en : product.description)?.slice(0, 160) ||
     "Discover certified organic botanicals and plants from Aronyok.";
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://aronyok.vercel.app";
@@ -66,10 +66,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       siteName: "Aronyok (আরণ্যক)",
       images: [
         {
-          url: product.image_url,
+          url: product.image_url || "https://images.unsplash.com/photo-1545241047-6083a3684587?auto=format&fit=crop&w=800&q=80",
           width: 800,
           height: 800,
-          alt: product.name.en,
+          alt: product.name?.en || product.slug,
         },
       ],
       type: "website",
@@ -78,7 +78,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       card: "summary_large_image",
       title,
       description,
-      images: [product.image_url],
+      images: [product.image_url || "https://images.unsplash.com/photo-1545241047-6083a3684587?auto=format&fit=crop&w=800&q=80"],
     },
   };
 }
@@ -106,10 +106,10 @@ export default async function ProductDetailPage({ params }: PageProps) {
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Product",
-    name: product.name.en,
-    alternateName: product.name.bn,
+    name: product.name?.en || product.slug,
+    alternateName: product.name?.bn || "",
     image: product.image_url,
-    description: product.description.en,
+    description: (typeof product.description === "object" ? product.description?.en : product.description) || "",
     category: product.category,
     offers: {
       "@type": "Offer",

@@ -3,6 +3,8 @@ import { getServerSupabase } from "@/lib/supabase/server";
 import { runtimeStore } from "@/lib/runtime-store";
 import { checkRateLimit } from "@/lib/rate-limiter";
 
+export const dynamic = "force-dynamic";
+
 export async function POST(req: NextRequest) {
   try {
     // 1. IP Rate Limiting (5 checkouts per minute per IP)
@@ -142,6 +144,8 @@ export async function POST(req: NextRequest) {
             shipping_address: `${shipping_address.trim()}${thana ? `, ${thana}` : ""}`,
             city: city || division || "Dhaka",
             total_amount: serverTotalAmount,
+
+
             payment_method: payment_method || "cod",
             payment_status: "pending",
             order_status: "processing",
@@ -178,6 +182,8 @@ export async function POST(req: NextRequest) {
       shipping_address: `${shipping_address.trim()}${thana ? `, ${thana}` : ""}`,
       city: city || division || "Dhaka",
       total_amount: serverTotalAmount,
+
+
       payment_method: payment_method || "cod",
       payment_status: "pending",
       order_status: "processing",
@@ -211,6 +217,8 @@ export async function POST(req: NextRequest) {
       subtotal: serverSubtotal,
       deliveryCharge,
       total_amount: serverTotalAmount,
+
+
       payment_method: payment_method || "cod",
       paymentInstructions,
       itemsCount: verifiedOrderItems.reduce((acc, i) => acc + i.quantity, 0),

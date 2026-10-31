@@ -34,7 +34,8 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
   const { addToCart } = useCart();
 
   const [quantity, setQuantity] = useState(1);
-  const [selectedImage, setSelectedImage] = useState(product.image_url);
+  const defaultImg = product.image_url || "https://images.unsplash.com/photo-1545241047-6083a3684587?auto=format&fit=crop&w=800&q=80";
+  const [selectedImage, setSelectedImage] = useState(defaultImg);
   const [isAdded, setIsAdded] = useState(false);
   const [activeTab, setActiveTab] = useState<"details" | "care" | "guarantee">("details");
 
@@ -82,7 +83,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
         <div className="lg:col-span-6 space-y-4">
           <div className="relative aspect-square rounded-3xl overflow-hidden bg-stone-100 border border-forest-100 shadow-soft-sm">
             <Image
-              src={selectedImage}
+              src={selectedImage || defaultImg}
               alt={localize(product.name)}
               fill
               priority

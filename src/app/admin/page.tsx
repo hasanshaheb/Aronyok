@@ -83,7 +83,7 @@ export default function AdminDashboardPage() {
         ]);
 
         const totalRev = Array.isArray(orders)
-          ? orders.reduce((sum: number, o: any) => sum + Number(o.total_amount || 0), 0)
+          ? orders.reduce((sum: number, o: any) => sum + Number(o.total_amount || o.total_price || 0), 0)
           : 14850;
 
         setStats({
@@ -99,17 +99,17 @@ export default function AdminDashboardPage() {
           setRecentOrders(
             orders.slice(0, 5).map((o: any) => ({
               id: o.id,
-              number: o.order_number,
-              customer: o.customer_name,
+              number: o.order_number || (o.invoice_number ? `#${o.invoice_number}` : `#${o.id.slice(0, 8)}`),
+              customer: o.customer_name || "Customer",
               items:
                 Array.isArray(o.items) && o.items.length > 0
                   ? o.items
-                      .map((i: any) => `${i.product_name || "Item"} (x${i.quantity || 1})`)
+                      .map((i: any) => `${i.product_name || i.title || "Item"} (x${i.quantity || 1})`)
                       .join(", ")
                   : "Eco Order Package",
-              amount: Number(o.total_amount),
-              payment: o.payment_method,
-              status: o.order_status,
+              amount: Number(o.total_amount || o.total_price || 0),
+              payment: o.payment_method || "cod",
+              status: o.order_status || "confirmed",
               time: o.created_at
                 ? new Date(o.created_at).toLocaleDateString("en-US", {
                     month: "short",

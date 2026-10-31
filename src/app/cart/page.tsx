@@ -139,7 +139,13 @@ export default function CartCheckoutPage() {
           )}
         </div>
         <p className="text-xs text-forest-700">{t.checkout.weWillContact}</p>
-        <div className="flex items-center justify-center gap-3 pt-2">
+        <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+          <Link
+            href="/order-tracking"
+            className="px-5 py-2.5 rounded-2xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs shadow-xs transition-colors"
+          >
+            {language === "bn" ? "অর্ডার ট্র্যাক করুন" : "Track Order"}
+          </Link>
           <button
             onClick={() => window.print()}
             className="px-5 py-2.5 rounded-2xl border border-forest-200 bg-white hover:bg-cream-50 text-forest-900 font-bold text-xs shadow-xs transition-colors cursor-pointer"
