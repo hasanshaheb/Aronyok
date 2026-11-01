@@ -22,7 +22,7 @@ The objective of this engineering release is to transform Aronyok from a prototy
 ## 2. Brand Identity & Visual Design Guidelines
 
 ### 2.1 Color Palette
-* **Forest Green (`#234B36`):** Primary brand anchor representing lush native vegetation, deep forest canopy, authority, and organic authenticity.
+* **Forest Green (`#051F20`):** Primary brand anchor representing lush native vegetation, deep nocturnal spruce canopy, authority, and organic authenticity.
 * **Sage Green (`#9EAF91`):** Gentle secondary tone evoking tender herbal shoots, soothing botanical care, and balance.
 * **Warm Cream (`#F5F1E7`):** Background foundation providing an organic, non-sterile canvas reminiscent of handmade recycled paper.
 * **Earth Brown (`#8B684B`):** Warm tertiary accent echoing fertile Bengal riverbed soil and natural bark.

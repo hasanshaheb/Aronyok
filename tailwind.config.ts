@@ -13,20 +13,21 @@ const config: Config = {
         background: "var(--background)",
         foreground: "var(--foreground)",
         // Brand Master Colors:
-        // Forest Green: #234B36
+        // Forest Green: #051F20 (Official Green Main Color)
         forest: {
-          50: "#f2f7f4",
-          100: "#e0efe7",
-          200: "#c3dfd1",
-          300: "#9ec9b4",
-          400: "#70ad90",
-          500: "#48906f",
-          600: "#347356",
-          700: "#2a5c45",
-          800: "#234B36", // Official Aronyok Forest Green
-          850: "#1d3e2d",
-          900: "#183526",
-          950: "#0e1f16", // Deep Midnight Botanical
+          DEFAULT: "#051F20",
+          50: "#f0f7f6",
+          100: "#d6ecea",
+          200: "#b3ddd8",
+          300: "#87c7c0",
+          400: "#55ada5",
+          500: "#359088",
+          600: "#23706a",
+          700: "#17534f",
+          800: "#051F20", // Official Aronyok Forest Green Main Color
+          850: "#04191a",
+          900: "#031314",
+          950: "#020b0c", // Deep Midnight Botanical
         },
         // Terracotta: #C47D5A (Vibrant Opposite / Complementary Fire)
         terracotta: {
@@ -135,10 +136,10 @@ const config: Config = {
         sm: "calc(var(--radius) - 4px)",
       },
       boxShadow: {
-        'soft-sm': '0 2px 8px -2px rgba(35, 75, 54, 0.06), 0 1px 4px -1px rgba(35, 75, 54, 0.04)',
-        'soft-md': '0 6px 18px -4px rgba(35, 75, 54, 0.1), 0 2px 8px -2px rgba(35, 75, 54, 0.05)',
-        'soft-lg': '0 12px 32px -6px rgba(35, 75, 54, 0.14), 0 4px 14px -2px rgba(35, 75, 54, 0.08)',
-        'soft-xl': '0 20px 45px -8px rgba(35, 75, 54, 0.18), 0 6px 18px -3px rgba(35, 75, 54, 0.1)',
+        'soft-sm': '0 2px 8px -2px rgba(5, 31, 32, 0.06), 0 1px 4px -1px rgba(5, 31, 32, 0.04)',
+        'soft-md': '0 6px 18px -4px rgba(5, 31, 32, 0.1), 0 2px 8px -2px rgba(5, 31, 32, 0.05)',
+        'soft-lg': '0 12px 32px -6px rgba(5, 31, 32, 0.14), 0 4px 14px -2px rgba(5, 31, 32, 0.08)',
+        'soft-xl': '0 20px 45px -8px rgba(5, 31, 32, 0.18), 0 6px 18px -3px rgba(5, 31, 32, 0.1)',
         'terracotta-sm': '0 2px 8px -1px rgba(196, 125, 90, 0.25)',
         'terracotta-md': '0 8px 20px -3px rgba(196, 125, 90, 0.35)',
         'terracotta-lg': '0 14px 30px -4px rgba(196, 125, 90, 0.45)',

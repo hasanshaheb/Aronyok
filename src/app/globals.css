@@ -12,10 +12,10 @@
   --card-foreground: #292C27;
   --popover: #FFFFFF;
   --popover-foreground: #292C27;
-  --primary: #234B36; /* Forest Green */
+  --primary: #051F20; /* Forest Green Main Color */
   --primary-foreground: #FFFFFF;
   --secondary: #F5F1E7; /* Warm Cream */
-  --secondary-foreground: #234B36;
+  --secondary-foreground: #051F20;
   --muted: #EBF0E8; /* Sage wash */
   --muted-foreground: #555751;
   --accent: #C47D5A; /* Terracotta Vibrant Opposite */
@@ -24,7 +24,7 @@
   --destructive-foreground: #FFFFFF;
   --border: #E8E2D5;
   --input: #E8E2D5;
-  --ring: #234B36;
+  --ring: #051F20;
   --radius: 1rem;
 }
 
@@ -54,7 +54,7 @@ body {
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #234B36;
+  background: #051F20;
 }
 
 /* Hide scrollbars for horizontal carousels */
