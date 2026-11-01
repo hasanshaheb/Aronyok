@@ -74,16 +74,16 @@ export default function Navbar() {
           </Link>
 
           {/* Desktop Navigation Links */}
-          <nav className="hidden lg:flex items-center gap-8">
+          <nav className="hidden lg:flex items-center gap-7">
             {navLinks.map((link) => {
               const isActive = pathname === link.href;
               return (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`text-xs uppercase tracking-wider font-bold transition-all duration-200 py-1.5 px-0.5 relative ${
+                  className={`text-[16px] font-semibold transition-all duration-200 py-1.5 px-0.5 relative ${
                     isActive
-                      ? "text-forest-900"
+                      ? "text-forest-900 font-bold"
                       : "text-charcoal-700 hover:text-forest-900"
                   }`}
                 >
@@ -193,7 +193,7 @@ export default function Navbar() {
               key={link.href}
               href={link.href}
               onClick={() => setMobileMenuOpen(false)}
-              className="block py-1.5 text-sm font-bold text-forest-950 hover:text-terracotta-600 transition-colors"
+              className="block py-2 text-[16px] font-semibold text-forest-950 hover:text-terracotta-600 transition-colors"
             >
               {link.label}
             </Link>
