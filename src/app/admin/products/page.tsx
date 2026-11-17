@@ -20,7 +20,10 @@ import ProductImagePicker from "../../../components/admin/ProductImagePicker";
 import QuickImageModal from "../../../components/admin/QuickImageModal";
 import { fallbackProducts } from "../../../lib/supabase/fallback-data";
 import { Product } from "../../../lib/types";
-import { slugify } from "../../../lib/utils";
+import { slugify, formatImageLink, isValidImageUrl } from "../../../lib/utils";
+
+const FALLBACK_ADMIN_IMAGE =
+  "https://images.unsplash.com/photo-1587049352846-4a222e784d38?auto=format&fit=crop&w=800&q=80";
 
 export default function AdminProductsPage() {
   const [products, setProducts] = useState<Product[]>(fallbackProducts);
@@ -62,7 +65,7 @@ export default function AdminProductsPage() {
   const loadProducts = async () => {
     setIsLoading(true);
     try {
-      const res = await fetch("/api/admin/data?entity=products");
+      const res = await fetch("/api/admin/data?entity=products", { cache: "no-store" });
       if (res.ok) {
         const data = await res.json();
         if (Array.isArray(data) && data.length > 0) {
@@ -165,10 +168,17 @@ export default function AdminProductsPage() {
       const res = await fetch("/api/admin/data?entity=products", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(productPayload),
+        body: JSON.stringify({
+          ...productPayload,
+          image_url: formatImageLink(productPayload.image_url),
+        }),
       });
 
       const result = await res.json();
+      if (!res.ok || !result.success) {
+        throw new Error(result.error || "Failed to save product. Please ensure you are signed in as admin.");
+      }
+
       if (result.items) {
         setProducts(result.items);
       }
@@ -176,18 +186,13 @@ export default function AdminProductsPage() {
       if (result.git_sync?.success) {
         setNotification(`Product saved to Database & Codebase! Pushed to GitHub (${result.git_sync.commitHash || "main"}) 🚀`);
       } else {
-        setNotification(editingProduct ? "Product updated in Database & Codebase (fallback-data.ts)!" : "Product added to Database & Codebase!");
+        setNotification(editingProduct ? "Product updated successfully!" : "Product added successfully!");
       }
       setTimeout(() => setNotification(""), 4000);
       setIsModalOpen(false);
-    } catch {
-      // Optimistic local update
-      if (editingProduct) {
-        setProducts(prev => prev.map(p => p.id === editingProduct.id ? { ...p, ...productPayload } : p));
-      } else {
-        setProducts(prev => [{ ...productPayload, id: `prod-${Date.now()}` }, ...prev]);
-      }
-      setIsModalOpen(false);
+    } catch (err: any) {
+      setNotification(`Error: ${err?.message || "Could not save product."}`);
+      setTimeout(() => setNotification(""), 5000);
     } finally {
       setIsSaving(false);
     }
@@ -265,8 +270,14 @@ export default function AdminProductsPage() {
       </div>
 
       {notification && (
-        <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-xs font-bold text-emerald-800 flex items-center gap-2 animate-in fade-in">
-          <CheckCircle className="w-4 h-4" />
+        <div
+          className={`p-3 rounded-xl text-xs font-bold flex items-center gap-2 animate-in fade-in border ${
+            notification.startsWith("Error:")
+              ? "bg-red-50 border-red-200 text-red-800"
+              : "bg-emerald-50 border-emerald-200 text-emerald-800"
+          }`}
+        >
+          <CheckCircle className="w-4 h-4 shrink-0" />
           <span>{notification}</span>
         </div>
       )}
@@ -309,9 +320,14 @@ export default function AdminProductsPage() {
                       title="Click to quick-change picture & deploy"
                     >
                       <Image
-                        src={product.image_url}
+                        src={
+                          isValidImageUrl(formatImageLink(product.image_url))
+                            ? formatImageLink(product.image_url)
+                            : FALLBACK_ADMIN_IMAGE
+                        }
                         alt={product.name.en}
                         fill
+                        unoptimized
                         className="object-cover group-hover:scale-105 transition-transform"
                       />
                       <div className="absolute inset-0 bg-forest-950/45 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">

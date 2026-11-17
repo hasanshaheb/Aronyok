@@ -13,7 +13,11 @@ import {
   GitBranch,
 } from "lucide-react";
 import { Product } from "@/lib/types";
+import { formatImageLink, isValidImageUrl } from "@/lib/utils";
 import ProductImagePicker from "./ProductImagePicker";
+
+const FALLBACK_MODAL_IMAGE =
+  "https://images.unsplash.com/photo-1545241047-6083a3684587?auto=format&fit=crop&w=800&q=80";
 
 interface QuickImageModalProps {
   product: Product | null;
@@ -59,7 +63,7 @@ export default function QuickImageModal({
         body: JSON.stringify({
           id: product.id,
           slug: product.slug,
-          image_url: imageUrl,
+          image_url: formatImageLink(imageUrl),
           sync_git: shouldPushGit,
           git_message: `Admin CMS: Update picture for "${product.name.en || product.slug}"`,
         }),
@@ -136,7 +140,11 @@ export default function QuickImageModal({
               </span>
               <div className="relative aspect-video rounded-xl overflow-hidden bg-stone-100 border border-stone-200">
                 <Image
-                  src={product.image_url}
+                  src={
+                    isValidImageUrl(formatImageLink(product.image_url))
+                      ? formatImageLink(product.image_url)
+                      : FALLBACK_MODAL_IMAGE
+                  }
                   alt={product.name.en}
                   fill
                   unoptimized
@@ -151,9 +159,9 @@ export default function QuickImageModal({
                 <span>New Preview</span>
               </span>
               <div className="relative aspect-video rounded-xl overflow-hidden bg-stone-100 border-2 border-forest-500 shadow-xs">
-                {imageUrl ? (
+                {isValidImageUrl(formatImageLink(imageUrl)) ? (
                   <Image
-                    src={imageUrl}
+                    src={formatImageLink(imageUrl)}
                     alt="New Preview"
                     fill
                     unoptimized
@@ -161,7 +169,7 @@ export default function QuickImageModal({
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-stone-400 text-xs font-semibold">
-                    No image selected
+                    No valid image selected
                   </div>
                 )}
               </div>

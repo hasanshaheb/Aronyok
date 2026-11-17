@@ -9,6 +9,9 @@ import { getServerSupabase } from "@/lib/supabase/server";
 import { fallbackProducts } from "@/lib/supabase/fallback-data";
 import { Product } from "@/lib/types";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 interface PageProps {
   params: { slug: string };
 }

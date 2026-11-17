@@ -9,18 +9,35 @@ export const dynamic = "force-dynamic";
 
 const ALLOWED_MIME_TYPES = new Set([
   "image/jpeg",
+  "image/jpg",
+  "image/jfif",
   "image/png",
   "image/webp",
+  "image/avif",
   "image/gif",
   "image/svg+xml",
 ]);
 
 const EXTENSION_MAP: Record<string, string> = {
   "image/jpeg": "jpg",
+  "image/jpg": "jpg",
+  "image/jfif": "jpg",
   "image/png": "png",
   "image/webp": "webp",
+  "image/avif": "avif",
   "image/gif": "gif",
   "image/svg+xml": "svg",
+};
+
+const EXT_TO_MIME: Record<string, string> = {
+  ".jpg": "image/jpeg",
+  ".jpeg": "image/jpeg",
+  ".jfif": "image/jpeg",
+  ".png": "image/png",
+  ".webp": "image/webp",
+  ".avif": "image/avif",
+  ".gif": "image/gif",
+  ".svg": "image/svg+xml",
 };
 
 export async function POST(req: NextRequest) {
@@ -41,20 +58,27 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "No file provided" }, { status: 400 });
     }
 
-    // 2. File size limit (5MB)
-    const MAX_SIZE = 5 * 1024 * 1024;
+    // 2. File size limit (10MB)
+    const MAX_SIZE = 10 * 1024 * 1024;
     if (file.size > MAX_SIZE) {
       return NextResponse.json(
-        { error: "File exceeds 5MB maximum upload limit." },
+        { error: "File exceeds 10MB maximum upload limit." },
         { status: 400 }
       );
     }
 
-    // 3. MIME type validation
-    const rawType = (file.type || "").toLowerCase();
+    // 3. MIME type validation (with filename extension fallback)
+    let rawType = (file.type || "").toLowerCase();
+    if (!rawType || rawType === "application/octet-stream") {
+      const fileExt = path.extname(file.name || "").toLowerCase();
+      rawType = EXT_TO_MIME[fileExt] || rawType;
+    }
+    if (rawType === "image/jpg" || rawType === "image/jfif") {
+      rawType = "image/jpeg";
+    }
     if (!ALLOWED_MIME_TYPES.has(rawType)) {
       return NextResponse.json(
-        { error: "Invalid file format. Allowed formats: JPG, PNG, WebP, GIF, SVG." },
+        { error: "Invalid file format. Allowed formats: JPG, PNG, WebP, AVIF, GIF, SVG." },
         { status: 400 }
       );
     }
@@ -69,17 +93,29 @@ export async function POST(req: NextRequest) {
     const supabase = getServerSupabase();
     let publicUrl = "";
 
-    // 5. Attempt Supabase Storage upload
+    // 5. Attempt Supabase Storage upload (auto-creating public bucket if missing)
     if (supabase) {
       try {
         const bucketName = "products";
 
-        const { data: uploadData, error: uploadError } = await supabase.storage
+        let { data: uploadData, error: uploadError } = await supabase.storage
           .from(bucketName)
           .upload(uniqueFilename, buffer, {
             contentType: rawType,
             upsert: true,
           });
+
+        if (uploadError && /bucket/i.test(uploadError.message || "")) {
+          await supabase.storage.createBucket(bucketName, { public: true }).catch(() => {});
+          const retry = await supabase.storage
+            .from(bucketName)
+            .upload(uniqueFilename, buffer, {
+              contentType: rawType,
+              upsert: true,
+            });
+          uploadData = retry.data;
+          uploadError = retry.error;
+        }
 
         if (!uploadError && uploadData) {
           const { data: urlData } = supabase.storage
@@ -95,6 +131,8 @@ export async function POST(req: NextRequest) {
               filename: uniqueFilename,
             });
           }
+        } else if (uploadError) {
+          console.warn("Supabase storage upload error:", uploadError.message);
         }
       } catch (err) {
         console.warn("Supabase storage exception, proceeding to fallback:", err);

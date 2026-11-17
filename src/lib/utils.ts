@@ -39,14 +39,28 @@ export function formatImageLink(url: string): string {
   // Pattern 1: https://drive.google.com/file/d/ID/view...
   const match1 = trimmed.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
   if (match1 && match1[1]) {
-    return `https://drive.google.com/uc?export=view&id=${match1[1]}`;
+    return `https://lh3.googleusercontent.com/d/${match1[1]}`;
   }
 
-  // Pattern 2: https://drive.google.com/open?id=ID
-  const match2 = trimmed.match(/id=([a-zA-Z0-9_-]+)/);
+  // Pattern 2: https://drive.google.com/open?id=ID or legacy /uc?export=view&id=ID
+  const match2 = trimmed.match(/[?&]id=([a-zA-Z0-9_-]+)/);
   if (trimmed.includes('drive.google.com') && match2 && match2[1]) {
-    return `https://drive.google.com/uc?export=view&id=${match2[1]}`;
+    return `https://lh3.googleusercontent.com/d/${match2[1]}`;
   }
 
   return trimmed;
+}
+
+// Validate whether a string is safe to pass to next/image src
+export function isValidImageUrl(url: string | undefined | null): boolean {
+  if (!url || typeof url !== 'string') return false;
+  const trimmed = url.trim();
+  if (!trimmed) return false;
+  if (trimmed.startsWith('/') || trimmed.startsWith('data:image/')) return true;
+  try {
+    const parsed = new URL(trimmed);
+    return parsed.protocol === 'http:' || parsed.protocol === 'https:';
+  } catch {
+    return false;
+  }
 }

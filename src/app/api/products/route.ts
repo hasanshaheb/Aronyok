@@ -4,6 +4,12 @@ import { runtimeStore } from "@/lib/runtime-store";
 
 export const dynamic = "force-dynamic";
 
+const NO_CACHE_HEADERS = {
+  "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
+  Pragma: "no-cache",
+  Expires: "0",
+};
+
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
@@ -27,7 +33,7 @@ export async function GET(req: NextRequest) {
         const { data, error } = await query.order("created_at", { ascending: false });
         if (!error && data && data.length > 0) {
           if (slug) {
-            return NextResponse.json(data[0]);
+            return NextResponse.json(data[0], { headers: NO_CACHE_HEADERS });
           }
           products = data;
         }
@@ -37,9 +43,9 @@ export async function GET(req: NextRequest) {
     if (slug) {
       const product = products.find((p) => p.slug === slug && p.is_active);
       if (!product) {
-        return NextResponse.json({ error: "Product not found" }, { status: 404 });
+        return NextResponse.json({ error: "Product not found" }, { status: 404, headers: NO_CACHE_HEADERS });
       }
-      return NextResponse.json(product);
+      return NextResponse.json(product, { headers: NO_CACHE_HEADERS });
     }
 
     // Filter by category if specified
@@ -61,7 +67,7 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    return NextResponse.json(products);
+    return NextResponse.json(products, { headers: NO_CACHE_HEADERS });
   } catch (err: any) {
     return NextResponse.json({ error: err.message || "Failed to fetch products" }, { status: 500 });
   }

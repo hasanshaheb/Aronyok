@@ -28,8 +28,12 @@ export async function gitCommitAndPush(customMessage?: string): Promise<GitSyncR
       } catch {}
     }
 
-    // 1. Stage the fallback code, order database, seed script, and public uploads (if exists)
+    // 1. Stage the fallback code, order database, products cache, seed script, and public uploads (if exists)
     const pathsToStage = ["src/lib/supabase/fallback-data.ts", "data/orders.json", "supabase/seed.sql"];
+    const productsJsonPath = path.join(cwd, "data", "products.json");
+    if (fs.existsSync(productsJsonPath)) {
+      pathsToStage.push("data/products.json");
+    }
     const uploadsDir = path.join(cwd, "public", "uploads");
     if (fs.existsSync(uploadsDir)) {
       pathsToStage.push("public/uploads");

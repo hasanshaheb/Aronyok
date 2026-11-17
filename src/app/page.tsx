@@ -35,8 +35,8 @@ export default function HomePage() {
     async function fetchData() {
       try {
         const [prodRes, blogRes] = await Promise.all([
-          fetch("/api/products"),
-          fetch("/api/blog"),
+          fetch("/api/products", { cache: "no-store" }),
+          fetch("/api/blog", { cache: "no-store" }),
         ]);
         if (prodRes.ok) {
           const prods = await prodRes.json();

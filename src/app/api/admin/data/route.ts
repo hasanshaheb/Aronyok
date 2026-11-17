@@ -1,8 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { getServerSupabase } from "@/lib/supabase/server";
 import { runtimeStore, persistToCodebase } from "@/lib/runtime-store";
 import { gitCommitAndPush } from "@/lib/git-sync";
 import { verifyAdminSession } from "@/lib/auth/admin-guard";
+import { formatImageLink } from "@/lib/utils";
+
+export const dynamic = "force-dynamic";
+
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const NO_CACHE_HEADERS = {
+  "Cache-Control": "no-store, no-cache, must-revalidate",
+};
 
 export async function GET(req: NextRequest) {
   const staff = await verifyAdminSession(req);
@@ -26,11 +35,11 @@ export async function GET(req: NextRequest) {
           .order("created_at", { ascending: false });
         if (!error && data && data.length > 0) {
           runtimeStore.setProducts(data);
-          return NextResponse.json(data);
+          return NextResponse.json(data, { headers: NO_CACHE_HEADERS });
         }
       } catch {}
     }
-    return NextResponse.json(runtimeStore.getProducts());
+    return NextResponse.json(runtimeStore.getProducts(), { headers: NO_CACHE_HEADERS });
   }
 
   if (entity === "blogs") {
@@ -321,6 +330,10 @@ export async function POST(req: NextRequest) {
         ? runtimeStore.getProducts().find((p) => p.id === productId || (body.slug && p.slug === body.slug))
         : null;
 
+      if (typeof body.image_url === "string") {
+        body.image_url = formatImageLink(body.image_url);
+      }
+
       if (supabase) {
         try {
           const dbPayload: any = {};
@@ -338,26 +351,58 @@ export async function POST(req: NextRequest) {
           if (body.seo_description !== undefined) dbPayload.seo_description = body.seo_description;
           dbPayload.updated_at = new Date().toISOString();
 
-          const targetSlug = body.slug || existingProduct?.slug;
-          if (targetSlug) {
+          // 1a. Match by UUID id first if valid UUID
+          if (productId && UUID_REGEX.test(productId)) {
             const { data, error } = await supabase
               .from("products")
               .update(dbPayload)
-              .eq("slug", targetSlug)
+              .eq("id", productId)
               .select("id");
             if (!error && data && data.length > 0) {
               isSynced = true;
             }
           }
 
-          if (!isSynced && productId && !productId.startsWith("prod-")) {
-            const { error } = await supabase.from("products").update(dbPayload).eq("id", productId);
-            if (!error) isSynced = true;
+          // 1b. Match by existing slug (handles slug edits) or incoming slug
+          const slugsToTry = [existingProduct?.slug, body.slug].filter(
+            (s, idx, arr): s is string => Boolean(s) && arr.indexOf(s) === idx
+          );
+          for (const slugCandidate of slugsToTry) {
+            if (isSynced) break;
+            const { data, error } = await supabase
+              .from("products")
+              .update(dbPayload)
+              .eq("slug", slugCandidate)
+              .select("id");
+            if (!error && data && data.length > 0) {
+              isSynced = true;
+            }
           }
 
-          if (!isSynced && !productId && dbPayload.name && dbPayload.slug) {
-            const { error } = await supabase.from("products").insert(dbPayload);
-            if (!error) isSynced = true;
+          // 1c. If row did not exist in Supabase yet (e.g. only in fallback-data or brand new), insert it
+          if (!isSynced) {
+            const merged = existingProduct ? { ...existingProduct, ...dbPayload } : dbPayload;
+            if (merged.name && merged.slug && merged.image_url !== undefined) {
+              const insertPayload = {
+                name: merged.name,
+                slug: merged.slug,
+                description: merged.description || { en: "", bn: "" },
+                price: Number(merged.price ?? 0),
+                compare_at_price: merged.compare_at_price ? Number(merged.compare_at_price) : null,
+                stock: Number(merged.stock ?? 50),
+                image_url: merged.image_url,
+                category: merged.category || "plants",
+                is_active: merged.is_active !== undefined ? merged.is_active : true,
+                is_featured: merged.is_featured !== undefined ? merged.is_featured : false,
+                seo_title: merged.seo_title || { en: "", bn: "" },
+                seo_description: merged.seo_description || { en: "", bn: "" },
+                updated_at: new Date().toISOString(),
+              };
+              const { error } = await supabase
+                .from("products")
+                .upsert(insertPayload, { onConflict: "slug" });
+              if (!error) isSynced = true;
+            }
           }
         } catch (dbErr) {
           console.warn("Supabase product update notice:", dbErr);
@@ -371,6 +416,17 @@ export async function POST(req: NextRequest) {
         const newProduct = { ...cleanProduct, id: `prod-${Date.now()}` };
         runtimeStore.addProduct(newProduct);
       }
+
+      // Purge Next.js storefront caches so frontend reflects changes immediately
+      try {
+        revalidatePath("/");
+        revalidatePath("/shop");
+        revalidatePath("/shop/[slug]", "page");
+        const targetSlug = body.slug || existingProduct?.slug;
+        if (targetSlug) {
+          revalidatePath(`/shop/${targetSlug}`);
+        }
+      } catch {}
 
       let gitSyncResult = null;
       if (body.sync_git || (action === "change_image" && body.sync_git !== false)) {

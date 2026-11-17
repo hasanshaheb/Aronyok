@@ -3,7 +3,7 @@
 import React, { useState, useRef } from "react";
 import Image from "next/image";
 import { Upload, Link as LinkIcon, CheckCircle, AlertCircle, X, Image as ImageIcon, Cloud } from "lucide-react";
-import { formatImageLink } from "../../lib/utils";
+import { formatImageLink, isValidImageUrl } from "../../lib/utils";
 
 interface ProductImagePickerProps {
   value: string;
@@ -42,7 +42,13 @@ export default function ProductImagePicker({ value, onChange }: ProductImagePick
       const data = await res.json();
       if (res.ok && data.url) {
         onChange(data.url);
-        setStorageType(data.storage === "supabase" ? "Supabase Cloud Storage" : "Local Drive Storage");
+        setStorageType(
+          data.storage === "supabase"
+            ? "Supabase Cloud Storage"
+            : data.storage === "base64"
+            ? "Embedded Image Data"
+            : "Local Drive Storage"
+        );
       } else {
         throw new Error(data.error || "Failed to upload image");
       }
@@ -155,15 +161,19 @@ export default function ProductImagePicker({ value, onChange }: ProductImagePick
       {/* Image Preview Box */}
       {value && (
         <div className="p-3 bg-white rounded-2xl border border-forest-100 shadow-soft-sm flex items-center gap-3.5">
-          <div className="relative w-16 h-16 rounded-xl overflow-hidden bg-stone-100 flex-shrink-0 border border-forest-200/50">
-            <Image
-              src={value}
-              alt="Preview"
-              fill
-              className="object-cover"
-              sizes="64px"
-              unoptimized
-            />
+          <div className="relative w-16 h-16 rounded-xl overflow-hidden bg-stone-100 flex-shrink-0 border border-forest-200/50 flex items-center justify-center">
+            {isValidImageUrl(value) ? (
+              <Image
+                src={value}
+                alt="Preview"
+                fill
+                className="object-cover"
+                sizes="64px"
+                unoptimized
+              />
+            ) : (
+              <ImageIcon className="w-6 h-6 text-stone-400" />
+            )}
           </div>
 
           <div className="flex-1 min-w-0">

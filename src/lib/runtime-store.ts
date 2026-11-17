@@ -29,6 +29,7 @@ import {
 } from "./types";
 
 const DATA_DIR = path.join(process.cwd(), "data");
+const PRODUCTS_FILE_PATH = path.join(DATA_DIR, "products.json");
 const ORDERS_FILE_PATH = path.join(DATA_DIR, "orders.json");
 const CUSTOMERS_FILE_PATH = path.join(DATA_DIR, "customers.json");
 const LEADS_FILE_PATH = path.join(DATA_DIR, "leads.json");
@@ -497,8 +498,51 @@ const initialAbandonedCarts: AbandonedCart[] = [
   },
 ];
 
+// Shared global cache across Next.js route bundles in the same Node process
+const globalStore = globalThis as typeof globalThis & {
+  __aronyokProducts?: Product[];
+  __aronyokProductsMtime?: number;
+};
+
+function loadLatestProducts(): Product[] {
+  try {
+    if (fs.existsSync(PRODUCTS_FILE_PATH)) {
+      const stat = fs.statSync(PRODUCTS_FILE_PATH);
+      if (
+        !globalStore.__aronyokProducts ||
+        globalStore.__aronyokProductsMtime !== stat.mtimeMs
+      ) {
+        const parsed = safeReadJson<Product[]>(PRODUCTS_FILE_PATH, fallbackProducts);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          globalStore.__aronyokProducts = parsed;
+          globalStore.__aronyokProductsMtime = stat.mtimeMs;
+        }
+      }
+    }
+  } catch (err) {
+    console.warn("Could not stat/read products.json:", err);
+  }
+
+  if (!globalStore.__aronyokProducts) {
+    globalStore.__aronyokProducts = [...fallbackProducts];
+  }
+  return globalStore.__aronyokProducts;
+}
+
+function saveLatestProducts(prods: Product[]) {
+  memoryProducts = prods;
+  globalStore.__aronyokProducts = prods;
+  safeWriteJson(PRODUCTS_FILE_PATH, prods);
+  try {
+    if (fs.existsSync(PRODUCTS_FILE_PATH)) {
+      globalStore.__aronyokProductsMtime = fs.statSync(PRODUCTS_FILE_PATH).mtimeMs;
+    }
+  } catch {}
+  persistToCodebase();
+}
+
 // In-memory stores
-let memoryProducts: Product[] = [...fallbackProducts];
+let memoryProducts: Product[] = loadLatestProducts();
 let memoryBlogPosts: BlogPost[] = [...fallbackBlogPosts];
 let memoryDynamicPages: DynamicPage[] = [...fallbackDynamicPages];
 let memoryTools: ToolMicroApp[] = [...fallbackTools];
@@ -540,24 +584,27 @@ export const fallbackTools: ToolMicroApp[] = ${JSON.stringify(memoryTools, null,
 
 export const runtimeStore = {
   // PRODUCTS
-  getProducts: () => memoryProducts,
+  getProducts: () => {
+    memoryProducts = loadLatestProducts();
+    return memoryProducts;
+  },
   setProducts: (prods: Product[]) => {
-    memoryProducts = prods;
-    persistToCodebase();
+    saveLatestProducts(prods);
   },
   addProduct: (p: Product) => {
-    memoryProducts = [p, ...memoryProducts];
-    persistToCodebase();
+    const current = loadLatestProducts();
+    saveLatestProducts([p, ...current]);
   },
   updateProduct: (id: string, updated: Partial<Product>) => {
-    memoryProducts = memoryProducts.map((p) =>
+    const current = loadLatestProducts();
+    const next = current.map((p) =>
       p.id === id || (updated.slug && p.slug === updated.slug) ? { ...p, ...updated } : p
     );
-    persistToCodebase();
+    saveLatestProducts(next);
   },
   deleteProduct: (id: string) => {
-    memoryProducts = memoryProducts.filter((p) => p.id !== id);
-    persistToCodebase();
+    const current = loadLatestProducts();
+    saveLatestProducts(current.filter((p) => p.id !== id));
   },
 
   // BLOGS

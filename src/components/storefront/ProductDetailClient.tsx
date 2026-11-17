@@ -22,8 +22,11 @@ import {
 import { useLanguage } from "../../context/LanguageContext";
 import { useCart } from "../../context/CartContext";
 import { Product } from "../../lib/types";
-import { formatCurrency, toBengaliNumerals } from "../../lib/utils";
+import { formatCurrency, formatImageLink, isValidImageUrl, toBengaliNumerals } from "../../lib/utils";
 import { trackEvent } from "../../lib/analytics/events";
+
+const FALLBACK_DETAIL_IMAGE =
+  "https://images.unsplash.com/photo-1545241047-6083a3684587?auto=format&fit=crop&w=800&q=80";
 
 interface ProductDetailClientProps {
   product: Product;
@@ -35,18 +38,23 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
   const { addToCart } = useCart();
 
   const [quantity, setQuantity] = useState(1);
-  const defaultImg = product.image_url || "https://images.unsplash.com/photo-1545241047-6083a3684587?auto=format&fit=crop&w=800&q=80";
+  const normalizedMain = formatImageLink(product.image_url);
+  const defaultImg = isValidImageUrl(normalizedMain) ? normalizedMain : FALLBACK_DETAIL_IMAGE;
   const [selectedImage, setSelectedImage] = useState(defaultImg);
   const [isAdded, setIsAdded] = useState(false);
   const [activeTab, setActiveTab] = useState<"details" | "care" | "guarantee">("details");
+
+  useEffect(() => {
+    setSelectedImage(defaultImg);
+  }, [defaultImg]);
 
   const isLowStock = product.stock > 0 && product.stock <= 5;
   const isOutOfStock = product.stock <= 0;
 
   const galleryImages = [
-    product.image_url,
-    ...(product.gallery_images || []),
-  ].filter(Boolean);
+    defaultImg,
+    ...(product.gallery_images || []).map((img) => formatImageLink(img)).filter(isValidImageUrl),
+  ].filter((img, index, arr) => Boolean(img) && arr.indexOf(img) === index);
 
   useEffect(() => {
     trackEvent("ViewContent", {
@@ -116,6 +124,11 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
               priority
               unoptimized
               className="object-cover"
+              onError={() => {
+                if (selectedImage !== FALLBACK_DETAIL_IMAGE) {
+                  setSelectedImage(FALLBACK_DETAIL_IMAGE);
+                }
+              }}
             />
             {product.is_featured && (
               <span className="absolute top-4 left-4 bg-terracotta-600 text-white text-[11px] font-bold uppercase tracking-wider px-3 py-1 rounded-full shadow-md">

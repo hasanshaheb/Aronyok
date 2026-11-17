@@ -1,23 +1,33 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Plus, Check, Sprout, AlertCircle, Droplets, Leaf } from "lucide-react";
 import { Product } from "../../lib/types";
 import { useLanguage } from "../../context/LanguageContext";
 import { useCart } from "../../context/CartContext";
-import { formatCurrency, toBengaliNumerals } from "../../lib/utils";
+import { formatCurrency, formatImageLink, isValidImageUrl, toBengaliNumerals } from "../../lib/utils";
 import { trackEvent } from "../../lib/analytics/events";
+
+const FALLBACK_PRODUCT_IMAGE =
+  "https://images.unsplash.com/photo-1545241047-6083a3684587?auto=format&fit=crop&w=800&q=80";
 
 export default function ProductCard({ product }: { product: Product }) {
   const { language, t, localize } = useLanguage();
   const { addToCart } = useCart();
   const [isAdded, setIsAdded] = useState(false);
-  const [imgSrc, setImgSrc] = useState(
-    product.image_url ||
-      "https://images.unsplash.com/photo-1545241047-6083a3684587?auto=format&fit=crop&w=800&q=80"
-  );
+
+  const normalizedUrl = formatImageLink(product.image_url);
+  const resolvedImage = isValidImageUrl(normalizedUrl)
+    ? normalizedUrl
+    : FALLBACK_PRODUCT_IMAGE;
+
+  const [imgSrc, setImgSrc] = useState(resolvedImage);
+
+  useEffect(() => {
+    setImgSrc(resolvedImage);
+  }, [resolvedImage]);
 
   const isBn = language === "bn";
   const isOutOfStock = product.stock <= 0;
