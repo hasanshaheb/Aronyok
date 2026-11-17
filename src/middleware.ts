@@ -1,5 +1,10 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import {
+  ADMIN_FALLBACK_COOKIE,
+  verifySignedAdminToken,
+  resolveSupabaseStaffRole,
+} from "@/lib/auth/admin-guard";
 
 export async function middleware(request: NextRequest) {
   let response = NextResponse.next({
@@ -13,16 +18,27 @@ export async function middleware(request: NextRequest) {
   const isAdminPage = pathname.startsWith("/admin");
   const isAdminApi = pathname.startsWith("/api/admin");
 
-  // Allow login page and authentication endpoints without token
+  // Allow login page and auth endpoints to handle their own session checks cleanly
   if (
     pathname === "/admin/login" ||
-    pathname === "/api/admin/auth/login"
+    pathname === "/api/admin/auth/login" ||
+    pathname === "/api/admin/auth/logout" ||
+    pathname === "/api/admin/auth/me"
   ) {
     return response;
   }
 
-  // Intercept and protect all administrative pages and API endpoints
   if (isAdminPage || isAdminApi) {
+    // 1. Verify signed env-admin cookie if present
+    const fallbackToken = request.cookies.get(ADMIN_FALLBACK_COOKIE)?.value;
+    if (fallbackToken) {
+      const verified = await verifySignedAdminToken(fallbackToken);
+      if (verified) {
+        return response;
+      }
+    }
+
+    // 2. Verify Supabase Auth session
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
     const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
 
@@ -36,33 +52,48 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL("/admin/login?error=config_missing", request.url));
     }
 
-    const supabase = createServerClient(supabaseUrl, anonKey, {
-      cookies: {
-        getAll() {
-          return request.cookies.getAll();
+    try {
+      const supabase = createServerClient(supabaseUrl, anonKey, {
+        cookies: {
+          getAll() {
+            return request.cookies.getAll();
+          },
+          setAll(cookiesToSet: Array<{ name: string; value: string; options?: any }>) {
+            cookiesToSet.forEach(({ name, value }) => {
+              request.cookies.set(name, value);
+            });
+            response = NextResponse.next({
+              request,
+            });
+            cookiesToSet.forEach(({ name, value, options }) => {
+              response.cookies.set(name, value, options);
+            });
+          },
         },
-        setAll(cookiesToSet: Array<{ name: string; value: string; options?: any }>) {
-          cookiesToSet.forEach(({ name, value, options }) =>
-            response.cookies.set(name, value, options)
+      });
+
+      const {
+        data: { user },
+        error,
+      } = await supabase.auth.getUser();
+
+      const staffRole = !error && user ? await resolveSupabaseStaffRole(user) : null;
+
+      if (error || !user || !staffRole) {
+        if (isAdminApi) {
+          return NextResponse.json(
+            { error: "Unauthorized: Valid Administrator session required." },
+            { status: 401 }
           );
-        },
-      },
-    });
-
-    const {
-      data: { user },
-      error,
-    } = await supabase.auth.getUser();
-
-    const role = user?.user_metadata?.role;
-    const isStaff =
-      Boolean(user) &&
-      (role === "admin" || role === "super_admin" || role === "store_manager" || role === "fulfillment_agent");
-
-    if (error || !isStaff) {
+        }
+        const loginUrl = new URL("/admin/login", request.url);
+        loginUrl.searchParams.set("redirect", pathname);
+        return NextResponse.redirect(loginUrl);
+      }
+    } catch {
       if (isAdminApi) {
         return NextResponse.json(
-          { error: "Unauthorized: Valid Administrator session required." },
+          { error: "Unauthorized: Could not verify administrator session." },
           { status: 401 }
         );
       }

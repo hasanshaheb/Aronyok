@@ -1,36 +1,51 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { getServerSupabase } from "@/lib/supabase/server";
 import { runtimeStore } from "@/lib/runtime-store";
+import { verifyAdminSession } from "@/lib/auth/admin-guard";
+import {
+  loadLatestSettings,
+  loadLatestCampaigns,
+  persistCloudSnapshot,
+} from "@/lib/data-hydrator";
 
 export const dynamic = "force-dynamic";
 
+const NO_CACHE_HEADERS = {
+  "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
+  Pragma: "no-cache",
+  Expires: "0",
+};
+
 export async function GET() {
-  const supabase = getServerSupabase();
-  if (supabase) {
-    try {
-      const { data, error } = await supabase
-        .from("settings")
-        .select("*")
-        .limit(1)
-        .single();
-      if (!error && data) {
-        runtimeStore.updateSettings(data);
-      }
-    } catch {
-      // Use runtimeStore
-    }
-  }
-  const activeCampaign = runtimeStore.getCampaigns().find((c) => c.is_active);
-  return NextResponse.json({
-    ...runtimeStore.getSettings(),
-    active_campaign: activeCampaign,
-  });
+  const [settings, campaigns] = await Promise.all([
+    loadLatestSettings(),
+    loadLatestCampaigns(),
+  ]);
+  const activeCampaign = campaigns.find((c) => c.is_active) || null;
+  return NextResponse.json(
+    {
+      ...settings,
+      active_campaign: activeCampaign,
+    },
+    { headers: NO_CACHE_HEADERS }
+  );
 }
 
 export async function POST(req: NextRequest) {
   try {
+    const staff = await verifyAdminSession(req);
+    if (!staff) {
+      return NextResponse.json(
+        { error: "Unauthorized: Administrator access required." },
+        { status: 401 }
+      );
+    }
+
+    await loadLatestSettings();
     const updated = await req.json();
-    const currentSettings = runtimeStore.updateSettings(updated);
+    const { sync_git, git_message, ...cleanSettings } = updated;
+    const currentSettings = runtimeStore.updateSettings(cleanSettings);
 
     const supabase = getServerSupabase();
     let syncedToSupabase = false;
@@ -46,20 +61,20 @@ export async function POST(req: NextRequest) {
           ai_system_prompt: currentSettings.ai_system_prompt,
           contact_email: currentSettings.contact_email,
           contact_phone: currentSettings.contact_phone,
-          meta_pixel_id: currentSettings.meta_pixel_id,
-          meta_capi_token: currentSettings.meta_capi_token,
-          ga4_measurement_id: currentSettings.ga4_measurement_id,
-          google_site_verification: currentSettings.google_site_verification,
-          announcement_bar_enabled: currentSettings.announcement_bar_enabled,
           updated_at: new Date().toISOString(),
         });
         if (!error) {
           syncedToSupabase = true;
         }
-      } catch {
-        // Fallback to runtimeStore
-      }
+      } catch {}
     }
+
+    const cloudSaved = await persistCloudSnapshot("settings", currentSettings);
+    syncedToSupabase = syncedToSupabase || cloudSaved;
+
+    try {
+      revalidatePath("/", "layout");
+    } catch {}
 
     return NextResponse.json({
       success: true,

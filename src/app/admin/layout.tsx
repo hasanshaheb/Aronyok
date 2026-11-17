@@ -23,7 +23,7 @@ export default function AdminLayout({
       }
 
       try {
-        const res = await fetch("/api/admin/auth/me");
+        const res = await fetch("/api/admin/auth/me", { cache: "no-store" });
         if (res.ok) {
           const data = await res.json();
           if (data.authenticated) {
@@ -34,7 +34,7 @@ export default function AdminLayout({
       } catch {}
 
       setIsAuthenticated(false);
-      router.push(`/admin/login?redirect=${encodeURIComponent(pathname)}`);
+      router.replace(`/admin/login?redirect=${encodeURIComponent(pathname)}`);
     }
 
     checkAuth();
@@ -44,12 +44,14 @@ export default function AdminLayout({
     return <div className="min-h-screen bg-[#fdfbf7]">{children}</div>;
   }
 
-  if (isAuthenticated === null) {
+  if (isAuthenticated !== true) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-forest-950 text-cream-100">
         <div className="flex flex-col items-center gap-3">
           <div className="w-8 h-8 border-4 border-mint-400 border-t-transparent rounded-full animate-spin" />
-          <p className="text-xs text-forest-300 font-medium">Verifying Staff Session...</p>
+          <p className="text-xs text-forest-300 font-medium">
+            {isAuthenticated === false ? "Redirecting to Admin Login..." : "Verifying Staff Session..."}
+          </p>
         </div>
       </div>
     );

@@ -19,7 +19,7 @@ export default function SingleBlogPostPage() {
   useEffect(() => {
     async function loadPost() {
       try {
-        const res = await fetch(`/api/blog?slug=${encodeURIComponent(slug)}`);
+        const res = await fetch(`/api/blog?slug=${encodeURIComponent(slug)}`, { cache: "no-store" });
         if (res.ok) {
           const found = await res.json();
           if (found && found.slug === slug) {

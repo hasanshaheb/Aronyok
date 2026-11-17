@@ -11,13 +11,27 @@ export interface GitSyncResult {
   commitHash?: string;
   hasChanges?: boolean;
   details?: string;
+  isCloud?: boolean;
+}
+
+export function isCloudRuntime(): boolean {
+  return Boolean(process.env.VERCEL) || !fs.existsSync(path.join(process.cwd(), ".git"));
 }
 
 /**
  * Commits changed fallback data, orders, and local uploads to Git and pushes to origin main.
- * This triggers an automatic Vercel deployment with the updated code.
+ * On Vercel Cloud, skips local git exec because changes persist directly to Supabase Cloud.
  */
 export async function gitCommitAndPush(customMessage?: string): Promise<GitSyncResult> {
+  if (isCloudRuntime()) {
+    return {
+      success: true,
+      isCloud: true,
+      hasChanges: false,
+      message: "Saved directly to Cloud Database! Live immediately on Vercel (no Git push required).",
+    };
+  }
+
   const cwd = process.cwd();
   try {
     // Clean up any stale git lock file if present on Windows
@@ -113,7 +127,21 @@ export async function gitCommitAndPush(customMessage?: string): Promise<GitSyncR
 /**
  * Gets the current git status & last commit info
  */
-export async function getGitStatus(): Promise<{ branch: string; lastCommit: string; hasUncommitted: boolean }> {
+export async function getGitStatus(): Promise<{
+  branch: string;
+  lastCommit: string;
+  hasUncommitted: boolean;
+  isCloud: boolean;
+}> {
+  if (isCloudRuntime()) {
+    return {
+      branch: process.env.VERCEL_GIT_COMMIT_REF || "main",
+      lastCommit: "Vercel Cloud Live — Instant Supabase Sync",
+      hasUncommitted: false,
+      isCloud: true,
+    };
+  }
+
   const cwd = process.cwd();
   try {
     const { stdout: branch } = await execAsync(`git rev-parse --abbrev-ref HEAD`, { cwd, timeout: 5000 });
@@ -123,12 +151,14 @@ export async function getGitStatus(): Promise<{ branch: string; lastCommit: stri
       branch: branch.trim(),
       lastCommit: commit.trim(),
       hasUncommitted: Boolean(status.trim()),
+      isCloud: false,
     };
-  } catch (err) {
+  } catch {
     return {
       branch: "main",
-      lastCommit: "Unknown",
+      lastCommit: "Cloud Runtime Active",
       hasUncommitted: false,
+      isCloud: true,
     };
   }
 }

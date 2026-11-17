@@ -23,7 +23,7 @@ export default function AdBanner() {
 
     async function loadBanner() {
       try {
-        const res = await fetch("/api/settings");
+        const res = await fetch("/api/settings", { cache: "no-store" });
         if (res.ok) {
           const data = await res.json();
           if (data.active_campaign && data.active_campaign.is_active) {

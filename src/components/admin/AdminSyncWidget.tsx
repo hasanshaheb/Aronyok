@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { GitBranch, RefreshCw, CheckCircle2, ArrowUpRight, CloudUpload } from "lucide-react";
+import { GitBranch, CloudUpload, Cloud, CheckCircle2 } from "lucide-react";
 
 export default function AdminSyncWidget() {
   const [isSyncing, setIsSyncing] = useState(false);
@@ -9,12 +9,13 @@ export default function AdminSyncWidget() {
     branch: string;
     lastCommit: string;
     hasUncommitted: boolean;
+    isCloud: boolean;
   } | null>(null);
   const [statusMsg, setStatusMsg] = useState<string | null>(null);
 
   const fetchStatus = async () => {
     try {
-      const res = await fetch("/api/admin/git-sync");
+      const res = await fetch("/api/admin/git-sync", { cache: "no-store" });
       if (res.ok) {
         const data = await res.json();
         if (data.success) {
@@ -22,6 +23,7 @@ export default function AdminSyncWidget() {
             branch: data.branch || "main",
             lastCommit: data.lastCommit || "",
             hasUncommitted: data.hasUncommitted ?? false,
+            isCloud: Boolean(data.isCloud),
           });
         }
       }
@@ -43,18 +45,40 @@ export default function AdminSyncWidget() {
       });
       const data = await res.json();
       if (data.success) {
-        setStatusMsg(data.hasChanges === false ? "Already up to date!" : "Pushed! Vercel redeploying 🚀");
+        if (data.isCloud) {
+          setStatusMsg("Live Cloud Sync active — changes save instantly!");
+        } else {
+          setStatusMsg(data.hasChanges === false ? "Already up to date!" : "Pushed! Vercel redeploying 🚀");
+        }
         fetchStatus();
       } else {
-        setStatusMsg("Git commit stored locally");
+        setStatusMsg(data.message || "Sync status updated");
       }
     } catch {
-      setStatusMsg("Sync completed on local disk");
+      setStatusMsg("Could not sync right now");
     } finally {
       setIsSyncing(false);
       setTimeout(() => setStatusMsg(null), 4000);
     }
   };
+
+  if (gitInfo?.isCloud) {
+    return (
+      <div className="p-3 bg-forest-900/80 rounded-2xl border border-forest-800 text-xs space-y-1.5">
+        <div className="flex items-center justify-between text-emerald-300">
+          <div className="flex items-center gap-1.5 font-bold text-[11px]">
+            <Cloud className="w-3.5 h-3.5 text-emerald-400" />
+            <span>Vercel Live Cloud</span>
+          </div>
+          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+        </div>
+        <p className="text-[10px] text-forest-200/80 leading-snug flex items-center gap-1">
+          <CheckCircle2 className="w-3 h-3 text-emerald-400 shrink-0" />
+          <span>Changes sync live instantly</span>
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="p-3 bg-forest-900/80 rounded-2xl border border-forest-800 text-xs space-y-2">
@@ -67,7 +91,7 @@ export default function AdminSyncWidget() {
       </div>
 
       <p className="text-[10px] text-forest-200/80 line-clamp-1" title={gitInfo?.lastCommit}>
-        {gitInfo?.lastCommit || "Checking git repository..."}
+        {gitInfo?.lastCommit || "Checking sync status..."}
       </p>
 
       {statusMsg && (

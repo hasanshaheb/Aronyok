@@ -3,8 +3,19 @@ import { getServerSupabase } from "@/lib/supabase/server";
 import { runtimeStore } from "@/lib/runtime-store";
 import { checkRateLimit } from "@/lib/rate-limiter";
 import { sendMetaCapiEvent } from "@/lib/analytics/capi";
+import {
+  loadLatestProducts,
+  loadLatestCoupons,
+  loadLatestOrders,
+  loadLatestCustomers,
+  loadLatestStockMovements,
+  loadLatestAuditLogs,
+  persistCloudSnapshot,
+} from "@/lib/data-hydrator";
 
 export const dynamic = "force-dynamic";
+
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 export async function POST(req: NextRequest) {
   try {
@@ -53,7 +64,14 @@ export async function POST(req: NextRequest) {
     }
 
     // 3. SERVER-SIDE PRICE LOOKUP & STOCK VERIFICATION (ANTI-TAMPERING)
-    const currentProducts = runtimeStore.getProducts();
+    const [currentProducts] = await Promise.all([
+      loadLatestProducts(),
+      loadLatestCoupons(),
+      loadLatestOrders(),
+      loadLatestCustomers(),
+      loadLatestStockMovements(),
+      loadLatestAuditLogs(),
+    ]);
     const verifiedOrderItems: Array<{
       product_id: string;
       product_name: string;
@@ -142,6 +160,21 @@ export async function POST(req: NextRequest) {
       if (current) {
         const newStock = Math.max(0, current.stock - verified.quantity);
         runtimeStore.updateProduct(current.id, { stock: newStock });
+        if (supabase) {
+          try {
+            if (UUID_REGEX.test(current.id)) {
+              await supabase
+                .from("products")
+                .update({ stock: newStock, updated_at: new Date().toISOString() })
+                .eq("id", current.id);
+            } else if (current.slug) {
+              await supabase
+                .from("products")
+                .update({ stock: newStock, updated_at: new Date().toISOString() })
+                .eq("slug", current.slug);
+            }
+          } catch {}
+        }
         runtimeStore.addStockMovement({
           id: `mv-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
           product_id: current.id,
@@ -226,10 +259,20 @@ export async function POST(req: NextRequest) {
       customer_email || "guest@checkout",
       "CUSTOMER_ORDER_PLACED",
       "orders",
-      `New order ${orderNumber} placed for ৳${serverTotalAmount} (${payment_method.toUpperCase()})`,
+      `New order ${orderNumber} placed for ৳${serverTotalAmount} (${(payment_method || "cod").toUpperCase()})`,
       orderId,
       ip
     );
+
+    // 7b. PERSIST ALL UPDATED COLLECTIONS TO CLOUD STORE (INSTANT ADMIN VISIBILITY ON VERCEL)
+    await Promise.all([
+      persistCloudSnapshot("products", runtimeStore.getProducts()),
+      persistCloudSnapshot("orders", runtimeStore.getOrders()),
+      persistCloudSnapshot("customers", runtimeStore.getCustomers()),
+      persistCloudSnapshot("coupons", runtimeStore.getCoupons()),
+      persistCloudSnapshot("stock_movements", runtimeStore.getStockMovements()),
+      persistCloudSnapshot("audit_logs", runtimeStore.getAuditLogs()),
+    ]);
 
     // 8. DISPATCH SERVER-SIDE META CONVERSIONS API (CAPI) PURCHASE EVENT
     // Uses identical orderNumber as event_id so Meta deduplicates with browser Pixel!

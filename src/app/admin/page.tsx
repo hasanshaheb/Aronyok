@@ -72,10 +72,10 @@ export default function AdminDashboardPage() {
     async function loadStats() {
       try {
         const [pRes, bRes, pgRes, oRes] = await Promise.all([
-          fetch("/api/admin/data?entity=products"),
-          fetch("/api/admin/data?entity=blogs"),
-          fetch("/api/admin/data?entity=pages"),
-          fetch("/api/admin/data?entity=orders"),
+          fetch("/api/admin/data?entity=products", { cache: "no-store" }),
+          fetch("/api/admin/data?entity=blogs", { cache: "no-store" }),
+          fetch("/api/admin/data?entity=pages", { cache: "no-store" }),
+          fetch("/api/admin/data?entity=orders", { cache: "no-store" }),
         ]);
 
         const [prods, blogs, pages, orders] = await Promise.all([

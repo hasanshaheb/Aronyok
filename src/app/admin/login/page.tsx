@@ -1,12 +1,11 @@
 "use client";
 
 import React, { useState, Suspense } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Sprout, ShieldCheck, Lock, Mail, ArrowRight, AlertCircle } from "lucide-react";
 
 function AdminLoginForm() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const redirectPath = searchParams.get("redirect") || "/admin";
   const urlError = searchParams.get("error");
@@ -35,8 +34,8 @@ function AdminLoginForm() {
       const data = await res.json();
 
       if (res.ok && data.success) {
-        router.push(redirectPath);
-        router.refresh();
+        // Use hard navigation so freshly set HttpOnly auth cookies are guaranteed on middleware
+        window.location.assign(redirectPath.startsWith("/") ? redirectPath : "/admin");
       } else {
         setErrorMsg(data.error || "Invalid credentials. Please verify your email and password.");
       }

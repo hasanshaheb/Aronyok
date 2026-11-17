@@ -2,7 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
   Package,
@@ -32,7 +32,6 @@ import AdminSyncWidget from "./AdminSyncWidget";
 
 export default function AdminSidebar() {
   const pathname = usePathname();
-  const router = useRouter();
 
   // If on login page, don't show admin sidebar
   if (pathname === "/admin/login") {
@@ -96,8 +95,7 @@ export default function AdminSidebar() {
       } catch {}
     }
     localStorage.removeItem("aronyok_admin_auth");
-    router.push("/admin/login");
-    router.refresh();
+    window.location.assign("/admin/login");
   };
 
   return (

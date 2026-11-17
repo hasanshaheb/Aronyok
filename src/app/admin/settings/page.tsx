@@ -11,11 +11,11 @@ export default function AdminSettingsPage() {
   const [isSaved, setIsSaved] = useState(false);
   const [loading, setLoading] = useState(false);
   const [syncedNotice, setSyncedNotice] = useState("");
-  const [syncToGit, setSyncToGit] = useState(true);
+  const [syncToGit, setSyncToGit] = useState(false);
 
   const loadSettings = async () => {
     try {
-      const res = await fetch("/api/admin/data?entity=settings");
+      const res = await fetch("/api/admin/data?entity=settings", { cache: "no-store" });
       if (res.ok) {
         const data = await res.json();
         if (data && data.global_seo_title) {
@@ -50,15 +50,18 @@ export default function AdminSettingsPage() {
       });
 
       const result = await res.json();
+      if (!res.ok || !result.success) {
+        throw new Error(result.error || "Failed to save settings");
+      }
       if (result.settings) {
         setSettings(result.settings);
       }
 
       setIsSaved(true);
-      if (result.git_sync?.success) {
-        setSyncedNotice(`Settings saved to Database & Codebase! Pushed to GitHub (${result.git_sync.commitHash || "main"}) 🚀`);
+      if (result.git_sync?.success && !result.git_sync?.isCloud) {
+        setSyncedNotice(`Settings saved! Pushed to GitHub (${result.git_sync.commitHash || "main"}) 🚀`);
       } else {
-        setSyncedNotice(result.synced ? "Synced to Supabase & Codebase (fallback-data.ts)!" : "Saved to active runtime cache & Codebase!");
+        setSyncedNotice(result.synced ? "Saved to Cloud Database — live immediately!" : "Settings saved!");
       }
       setTimeout(() => {
         setIsSaved(false);

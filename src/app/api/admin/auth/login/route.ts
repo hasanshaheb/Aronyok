@@ -1,5 +1,13 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextRequest, NextResponse } from "next/server";
+import {
+  ADMIN_FALLBACK_COOKIE,
+  createSignedAdminToken,
+  verifyEnvAdminCredentials,
+  resolveSupabaseStaffRole,
+} from "@/lib/auth/admin-guard";
+
+export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
   try {
@@ -12,6 +20,35 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    const normalizedEmail = String(email).trim().toLowerCase();
+    const rawPassword = String(password);
+
+    // 1. Check optional explicit env-configured admin credentials first (works even if Supabase pauses)
+    const envStaff = verifyEnvAdminCredentials(normalizedEmail, rawPassword);
+    if (envStaff) {
+      const signedToken = await createSignedAdminToken(envStaff);
+      if (signedToken) {
+        const res = NextResponse.json({
+          success: true,
+          user: {
+            id: envStaff.userId,
+            email: envStaff.email,
+            fullName: envStaff.fullName || "Admin",
+            role: envStaff.role,
+          },
+        });
+        res.cookies.set(ADMIN_FALLBACK_COOKIE, signedToken, {
+          httpOnly: true,
+          sameSite: "lax",
+          secure: process.env.NODE_ENV === "production",
+          path: "/",
+          maxAge: 60 * 60 * 24 * 7,
+        });
+        return res;
+      }
+    }
+
+    // 2. Primary Supabase Auth sign-in
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
     const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
 
@@ -22,7 +59,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    let response = NextResponse.json({ success: true });
+    const cookiesToApply: Array<{ name: string; value: string; options?: any }> = [];
 
     const supabase = createServerClient(supabaseUrl, anonKey, {
       cookies: {
@@ -30,21 +67,14 @@ export async function POST(req: NextRequest) {
           return req.cookies.getAll();
         },
         setAll(cookiesToSet: Array<{ name: string; value: string; options?: any }>) {
-          cookiesToSet.forEach(({ name, value, options }) =>
-            response.cookies.set(name, value, {
-              ...options,
-              httpOnly: true,
-              sameSite: "lax",
-              secure: process.env.NODE_ENV === "production",
-            })
-          );
+          cookiesToApply.push(...cookiesToSet);
         },
       },
     });
 
     const { data, error } = await supabase.auth.signInWithPassword({
-      email: email.trim().toLowerCase(),
-      password,
+      email: normalizedEmail,
+      password: rawPassword,
     });
 
     if (error || !data.user) {
@@ -54,14 +84,9 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const role = data.user.user_metadata?.role;
-    const isStaff =
-      role === "admin" ||
-      role === "super_admin" ||
-      role === "store_manager" ||
-      role === "fulfillment_agent";
+    const role = await resolveSupabaseStaffRole(data.user);
 
-    if (!isStaff) {
+    if (!role) {
       await supabase.auth.signOut();
       return NextResponse.json(
         { error: "Access denied. Administrator privileges required." },
@@ -69,20 +94,28 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    return NextResponse.json(
-      {
-        success: true,
-        user: {
-          id: data.user.id,
-          email: data.user.email,
-          fullName: data.user.user_metadata?.full_name || "Admin",
-          role,
-        },
+    const finalResponse = NextResponse.json({
+      success: true,
+      user: {
+        id: data.user.id,
+        email: data.user.email,
+        fullName: data.user.user_metadata?.full_name || data.user.user_metadata?.name || "Admin",
+        role,
       },
-      {
-        headers: response.headers,
-      }
-    );
+    });
+
+    // Apply every Supabase auth cookie directly onto the final response (prevents dropped chunked cookies on Vercel)
+    for (const { name, value, options } of cookiesToApply) {
+      finalResponse.cookies.set(name, value, {
+        ...options,
+        httpOnly: true,
+        sameSite: "lax",
+        secure: process.env.NODE_ENV === "production",
+        path: "/",
+      });
+    }
+
+    return finalResponse;
   } catch (err: any) {
     return NextResponse.json(
       { error: err.message || "Authentication error occurred." },

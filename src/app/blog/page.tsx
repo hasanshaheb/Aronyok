@@ -16,7 +16,7 @@ export default function BlogIndexPage() {
   useEffect(() => {
     async function loadBlogs() {
       try {
-        const res = await fetch("/api/blog");
+        const res = await fetch("/api/blog", { cache: "no-store" });
         if (res.ok) {
           const data = await res.json();
           if (Array.isArray(data) && data.length > 0) {

@@ -36,7 +36,7 @@ export default function AdminOrdersPage() {
   const loadOrders = async () => {
     setIsLoading(true);
     try {
-      const res = await fetch("/api/admin/data?entity=orders");
+      const res = await fetch("/api/admin/data?entity=orders", { cache: "no-store" });
       if (res.ok) {
         const data = await res.json();
         if (Array.isArray(data)) {
@@ -67,35 +67,41 @@ export default function AdminOrdersPage() {
   // Status updates
   const updateOrderStatus = async (id: string, newStatus: any) => {
     try {
-      const res = await fetch("/api/admin/data?entity=orders", {
+      const res = await fetch("/api/admin/data?entity=orders&action=update_status", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id, order_status: newStatus }),
+        body: JSON.stringify({ id, status: newStatus, order_status: newStatus }),
       });
       const result = await res.json();
+      if (!res.ok || !result.success) {
+        throw new Error(result.error || "Failed to update order status");
+      }
       if (result.items) {
         setOrders(result.items);
       }
       showSuccess(`Order status updated to "${newStatus}"`);
-    } catch {
-      setOrders(prev => prev.map(o => o.id === id ? { ...o, order_status: newStatus } : o));
+    } catch (err: any) {
+      showError(err?.message || "Failed to update order status");
     }
   };
 
   const updatePaymentStatus = async (id: string, newStatus: any) => {
     try {
-      const res = await fetch("/api/admin/data?entity=orders", {
+      const res = await fetch("/api/admin/data?entity=orders&action=update_payment", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id, payment_status: newStatus }),
+        body: JSON.stringify({ id, status: newStatus, payment_status: newStatus }),
       });
       const result = await res.json();
+      if (!res.ok || !result.success) {
+        throw new Error(result.error || "Failed to update payment status");
+      }
       if (result.items) {
         setOrders(result.items);
       }
       showSuccess(`Payment status updated to "${newStatus}"`);
-    } catch {
-      setOrders(prev => prev.map(o => o.id === id ? { ...o, payment_status: newStatus } : o));
+    } catch (err: any) {
+      showError(err?.message || "Failed to update payment status");
     }
   };
 

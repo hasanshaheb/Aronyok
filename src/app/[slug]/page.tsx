@@ -20,7 +20,7 @@ export default function DynamicPageRoute() {
     async function loadPage() {
       setIsLoading(true);
       try {
-        const res = await fetch(`/api/pages?slug=${encodeURIComponent(slug)}`);
+        const res = await fetch(`/api/pages?slug=${encodeURIComponent(slug)}`, { cache: "no-store" });
         if (res.ok) {
           const found = await res.json();
           if (found && found.slug === slug && found.is_published) {

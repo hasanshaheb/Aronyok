@@ -33,7 +33,7 @@ export default function QuickImageModal({
   onProductUpdated,
 }: QuickImageModalProps) {
   const [imageUrl, setImageUrl] = useState<string>(product?.image_url || "");
-  const [syncToGit, setSyncToGit] = useState<boolean>(true);
+  const [syncToGit, setSyncToGit] = useState<boolean>(false);
   const [isSaving, setIsSaving] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
 
@@ -72,8 +72,8 @@ export default function QuickImageModal({
       const result = await res.json();
 
       if (res.ok && result.success) {
-        let successNotice = "Product image updated successfully in Database & Codebase!";
-        if (result.git_sync?.success) {
+        let successNotice = "Product picture updated & live on storefront immediately!";
+        if (result.git_sync?.success && !result.git_sync?.isCloud) {
           successNotice = `Product picture updated! Pushed to GitHub (${result.git_sync.commitHash || "main"}) 🚀 Vercel deployment triggered.`;
         }
         onProductUpdated(result.items || [], successNotice);
@@ -228,18 +228,20 @@ export default function QuickImageModal({
               type="button"
               disabled={isSaving}
               onClick={() => handleSaveImage(false)}
-              className="px-3.5 py-2 rounded-xl bg-forest-100 hover:bg-forest-200 text-forest-900 text-xs font-bold transition-all cursor-pointer border border-forest-300 disabled:opacity-50"
+              className="inline-flex items-center justify-center gap-2 px-5 py-2 rounded-xl bg-forest-700 hover:bg-forest-800 text-white text-xs font-bold shadow-md hover:shadow-lg transition-all cursor-pointer disabled:opacity-50"
             >
-              Save Locally & DB
+              <CheckCircle2 className="w-3.5 h-3.5" />
+              <span>{isSaving ? "Saving..." : "Save & Publish Live"}</span>
             </button>
             <button
               type="button"
               disabled={isSaving}
               onClick={() => handleSaveImage(true)}
-              className="inline-flex items-center justify-center gap-2 px-5 py-2 rounded-xl bg-forest-700 hover:bg-forest-800 text-white text-xs font-bold shadow-md hover:shadow-lg transition-all cursor-pointer disabled:opacity-50"
+              className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl bg-forest-100 hover:bg-forest-200 text-forest-900 text-xs font-bold transition-all cursor-pointer border border-forest-300 disabled:opacity-50"
+              title="Saves to cloud and also pushes local codebase when running locally"
             >
               <CloudUpload className={`w-3.5 h-3.5 ${isSaving ? "animate-bounce" : ""}`} />
-              <span>{isSaving ? "Syncing & Deploying..." : "Update & Deploy to GitHub / Vercel"}</span>
+              <span>{isSaving ? "Syncing..." : "Save + Git Sync"}</span>
             </button>
           </div>
         </div>

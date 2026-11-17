@@ -1,8 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getServerSupabase } from "@/lib/supabase/server";
-import { runtimeStore } from "@/lib/runtime-store";
+import { loadLatestBlogs } from "@/lib/data-hydrator";
 
 export const dynamic = "force-dynamic";
+
+const NO_CACHE_HEADERS = {
+  "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
+  Pragma: "no-cache",
+  Expires: "0",
+};
 
 export async function GET(req: NextRequest) {
   try {
@@ -10,33 +15,17 @@ export async function GET(req: NextRequest) {
     const slug = searchParams.get("slug");
     const category = searchParams.get("category");
 
-    let blogs = runtimeStore.getBlogs();
-
-    const supabase = getServerSupabase();
-    if (supabase) {
-      try {
-        let query = supabase.from("blog_posts").select("*").eq("status", "published");
-        if (slug) {
-          query = query.eq("slug", slug);
-        } else if (category && category !== "all") {
-          query = query.eq("category", category);
-        }
-        const { data, error } = await query.order("created_at", { ascending: false });
-        if (!error && data && data.length > 0) {
-          if (slug) {
-            return NextResponse.json(data[0]);
-          }
-          blogs = data;
-        }
-      } catch {}
-    }
+    let blogs = await loadLatestBlogs();
 
     if (slug) {
       const blog = blogs.find((b) => b.slug === slug && b.status === "published");
       if (!blog) {
-        return NextResponse.json({ error: "Article not found" }, { status: 404 });
+        return NextResponse.json(
+          { error: "Article not found" },
+          { status: 404, headers: NO_CACHE_HEADERS }
+        );
       }
-      return NextResponse.json(blog);
+      return NextResponse.json(blog, { headers: NO_CACHE_HEADERS });
     }
 
     if (category && category !== "all") {
@@ -45,8 +34,11 @@ export async function GET(req: NextRequest) {
       blogs = blogs.filter((b) => b.status === "published");
     }
 
-    return NextResponse.json(blogs);
+    return NextResponse.json(blogs, { headers: NO_CACHE_HEADERS });
   } catch (err: any) {
-    return NextResponse.json({ error: err.message || "Failed to fetch articles" }, { status: 500 });
+    return NextResponse.json(
+      { error: err.message || "Failed to fetch articles" },
+      { status: 500, headers: NO_CACHE_HEADERS }
+    );
   }
 }

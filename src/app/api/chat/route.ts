@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getServerSupabase } from "@/lib/supabase/server";
 import { fallbackSettings } from "@/lib/supabase/fallback-data";
-import { runtimeStore } from "@/lib/runtime-store";
+import { loadLatestSettings } from "@/lib/data-hydrator";
 
 export const dynamic = "force-dynamic";
 
@@ -55,23 +54,9 @@ export async function POST(req: NextRequest) {
 
     const latestUserMessage = messages[messages.length - 1]?.content || "";
 
-    // 1. Fetch dynamic system prompt from runtime store or Supabase Settings
-    let systemPrompt = runtimeStore.getSettings().ai_system_prompt || fallbackSettings.ai_system_prompt;
-    const supabase = getServerSupabase();
-    if (supabase) {
-      try {
-        const { data } = await supabase
-          .from("settings")
-          .select("ai_system_prompt")
-          .limit(1)
-          .single();
-        if (data?.ai_system_prompt) {
-          systemPrompt = data.ai_system_prompt;
-        }
-      } catch {
-        // Fallback used
-      }
-    }
+    // 1. Fetch dynamic system prompt from Cloud / Supabase / Runtime Settings
+    const latestSettings = await loadLatestSettings();
+    const systemPrompt = latestSettings.ai_system_prompt || fallbackSettings.ai_system_prompt;
 
     const openRouterApiKey = process.env.OPENROUTER_API_KEY;
     const candidateModels = [

@@ -16,7 +16,7 @@ export default function AdminBlogPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [notification, setNotification] = useState("");
   const [isSaving, setIsSaving] = useState(false);
-  const [syncToGit, setSyncToGit] = useState(true);
+  const [syncToGit, setSyncToGit] = useState(false);
 
   const [form, setForm] = useState({
     title: { en: "", bn: "" },
@@ -32,7 +32,7 @@ export default function AdminBlogPage() {
   const loadBlogs = async () => {
     setIsLoading(true);
     try {
-      const res = await fetch("/api/admin/data?entity=blogs");
+      const res = await fetch("/api/admin/data?entity=blogs", { cache: "no-store" });
       if (res.ok) {
         const data = await res.json();
         if (Array.isArray(data) && data.length > 0) {
@@ -111,24 +111,23 @@ export default function AdminBlogPage() {
       });
 
       const result = await res.json();
+      if (!res.ok || !result.success) {
+        throw new Error(result.error || "Failed to save article");
+      }
       if (result.items) {
         setPosts(result.items);
       }
 
-      if (result.git_sync?.success) {
-        setNotification(`Article saved to Database & Codebase! Pushed to GitHub (${result.git_sync.commitHash || "main"}) 🚀`);
+      if (result.git_sync?.success && !result.git_sync?.isCloud) {
+        setNotification(`Article saved! Pushed to GitHub (${result.git_sync.commitHash || "main"}) 🚀`);
       } else {
-        setNotification(editingPost ? "Article updated in Database & Codebase (fallback-data.ts)!" : "Article saved to Database & Codebase!");
+        setNotification(editingPost ? "Article updated & live on storefront!" : "Article published & live on storefront!");
       }
       setTimeout(() => setNotification(""), 4000);
       setIsModalOpen(false);
-    } catch {
-      if (editingPost) {
-        setPosts(prev => prev.map(item => item.id === editingPost.id ? { ...item, ...payload } : item));
-      } else {
-        setPosts(prev => [{ ...payload, id: `blog-${Date.now()}` }, ...prev]);
-      }
-      setIsModalOpen(false);
+    } catch (err: any) {
+      setNotification(`Error: ${err?.message || "Could not save article."}`);
+      setTimeout(() => setNotification(""), 5000);
     } finally {
       setIsSaving(false);
     }

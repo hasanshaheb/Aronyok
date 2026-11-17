@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
-import { runtimeStore } from "@/lib/runtime-store";
-import { isSupabaseConfigured, supabase } from "@/lib/supabase/client";
+import { loadLatestOrders, loadLatestShipments } from "@/lib/data-hydrator";
 
 export const dynamic = "force-dynamic";
 
@@ -27,24 +26,18 @@ export async function POST(request: Request) {
       );
     }
 
-    let orders = runtimeStore.getOrders();
-    if (isSupabaseConfigured && supabase) {
-      try {
-        const { data } = await supabase.from("orders").select("*");
-        if (data && data.length > 0) {
-          orders = data;
-        }
-      } catch {}
-    }
+    const [orders, shipments] = await Promise.all([
+      loadLatestOrders(),
+      loadLatestShipments(),
+    ]);
 
-    // Match order by ID and phone suffix
     const order = orders.find((o) => {
       const matchId =
         String(o.id).toLowerCase() === cleanOrderId ||
         String(o.id).toLowerCase().includes(cleanOrderId) ||
         (o as any).invoice_number?.toLowerCase() === cleanOrderId ||
         (o as any).order_number?.toLowerCase() === cleanOrderId;
-      
+
       const orderPhone = String(o.customer_phone || "").replace(/[^0-9]/g, "");
       const matchPhone =
         orderPhone.length >= 6 &&
@@ -64,9 +57,9 @@ export async function POST(request: Request) {
       );
     }
 
-    // Check if there is shipment tracking
-    const shipments = runtimeStore.getShipments();
-    const shipment = shipments.find((s) => s.order_id === order.id);
+    const shipment = shipments.find(
+      (s) => s.order_id === order.id || (order.order_number && s.order_number === order.order_number)
+    );
 
     return NextResponse.json({
       order: {
@@ -92,7 +85,7 @@ export async function POST(request: Request) {
           : null,
       },
     });
-  } catch (error: any) {
+  } catch {
     return NextResponse.json(
       { error: "Error looking up order / অর্ডার অনুসন্ধানে সমস্যা হয়েছে" },
       { status: 500 }

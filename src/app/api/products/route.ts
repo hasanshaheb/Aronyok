@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getServerSupabase } from "@/lib/supabase/server";
-import { runtimeStore } from "@/lib/runtime-store";
+import { loadLatestProducts } from "@/lib/data-hydrator";
 
 export const dynamic = "force-dynamic";
 
@@ -17,45 +16,25 @@ export async function GET(req: NextRequest) {
     const category = searchParams.get("category");
     const search = searchParams.get("search");
 
-    let products = runtimeStore.getProducts();
-
-    const supabase = getServerSupabase();
-    if (supabase) {
-      try {
-        let query = supabase.from("products").select("*").eq("is_active", true);
-
-        if (slug) {
-          query = query.eq("slug", slug);
-        } else if (category && category !== "all") {
-          query = query.eq("category", category);
-        }
-
-        const { data, error } = await query.order("created_at", { ascending: false });
-        if (!error && data && data.length > 0) {
-          if (slug) {
-            return NextResponse.json(data[0], { headers: NO_CACHE_HEADERS });
-          }
-          products = data;
-        }
-      } catch {}
-    }
+    let products = await loadLatestProducts();
 
     if (slug) {
       const product = products.find((p) => p.slug === slug && p.is_active);
       if (!product) {
-        return NextResponse.json({ error: "Product not found" }, { status: 404, headers: NO_CACHE_HEADERS });
+        return NextResponse.json(
+          { error: "Product not found" },
+          { status: 404, headers: NO_CACHE_HEADERS }
+        );
       }
       return NextResponse.json(product, { headers: NO_CACHE_HEADERS });
     }
 
-    // Filter by category if specified
     if (category && category !== "all") {
       products = products.filter((p) => p.category === category && p.is_active);
     } else {
       products = products.filter((p) => p.is_active);
     }
 
-    // Filter by search query if specified
     if (search && search.trim() !== "") {
       const q = search.trim().toLowerCase();
       products = products.filter(
@@ -69,6 +48,9 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json(products, { headers: NO_CACHE_HEADERS });
   } catch (err: any) {
-    return NextResponse.json({ error: err.message || "Failed to fetch products" }, { status: 500 });
+    return NextResponse.json(
+      { error: err.message || "Failed to fetch products" },
+      { status: 500, headers: NO_CACHE_HEADERS }
+    );
   }
 }

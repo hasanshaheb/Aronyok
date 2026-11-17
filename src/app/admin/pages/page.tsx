@@ -15,7 +15,7 @@ export default function AdminDynamicPagesPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [notification, setNotification] = useState("");
   const [isSaving, setIsSaving] = useState(false);
-  const [syncToGit, setSyncToGit] = useState(true);
+  const [syncToGit, setSyncToGit] = useState(false);
 
   const [form, setForm] = useState({
     page_title: { en: "", bn: "" },
@@ -29,7 +29,7 @@ export default function AdminDynamicPagesPage() {
   const loadPages = async () => {
     setIsLoading(true);
     try {
-      const res = await fetch("/api/admin/data?entity=pages");
+      const res = await fetch("/api/admin/data?entity=pages", { cache: "no-store" });
       if (res.ok) {
         const data = await res.json();
         if (Array.isArray(data) && data.length > 0) {
@@ -102,24 +102,23 @@ export default function AdminDynamicPagesPage() {
       });
 
       const result = await res.json();
+      if (!res.ok || !result.success) {
+        throw new Error(result.error || "Failed to save page");
+      }
       if (result.items) {
         setPages(result.items);
       }
 
-      if (result.git_sync?.success) {
-        setNotification(`Page saved to Database & Codebase! Pushed to GitHub (${result.git_sync.commitHash || "main"}) 🚀`);
+      if (result.git_sync?.success && !result.git_sync?.isCloud) {
+        setNotification(`Page saved! Pushed to GitHub (${result.git_sync.commitHash || "main"}) 🚀`);
       } else {
-        setNotification(editingPage ? "Page updated in Database & Codebase (fallback-data.ts)!" : "Page created in Database & Codebase!");
+        setNotification(editingPage ? "Page updated & live on storefront!" : "Page created & live on storefront!");
       }
       setTimeout(() => setNotification(""), 4000);
       setIsModalOpen(false);
-    } catch {
-      if (editingPage) {
-        setPages(prev => prev.map(item => item.id === editingPage.id ? { ...item, ...payload } : item));
-      } else {
-        setPages(prev => [{ ...payload, id: `page-${Date.now()}` }, ...prev]);
-      }
-      setIsModalOpen(false);
+    } catch (err: any) {
+      setNotification(`Error: ${err?.message || "Could not save page."}`);
+      setTimeout(() => setNotification(""), 5000);
     } finally {
       setIsSaving(false);
     }

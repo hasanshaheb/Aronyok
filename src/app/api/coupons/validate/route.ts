@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { runtimeStore } from "@/lib/runtime-store";
 import { checkRateLimit } from "@/lib/rate-limiter";
+import { loadLatestCoupons } from "@/lib/data-hydrator";
 
 export const dynamic = "force-dynamic";
 
@@ -30,6 +31,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    await loadLatestCoupons();
     const numericSubtotal = Math.max(0, Number(subtotal) || 0);
     const result = runtimeStore.validateCoupon(code, numericSubtotal);
 

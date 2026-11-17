@@ -67,7 +67,10 @@ function safeReadJson<T>(filePath: string, fallback: T): T {
   return fallback;
 }
 
+const IS_VERCEL = Boolean(process.env.VERCEL);
+
 function safeWriteJson(filePath: string, data: any) {
+  if (IS_VERCEL) return;
   try {
     fs.writeFileSync(filePath, JSON.stringify(data, null, 2), "utf-8");
   } catch (err) {
@@ -561,8 +564,9 @@ let memoryAdminUsers: AdminUser[] = safeReadJson<AdminUser[]>(ADMIN_USERS_FILE_P
 let memoryAuditLogs: AuditLog[] = safeReadJson<AuditLog[]>(AUDIT_LOGS_FILE_PATH, initialAuditLogs);
 let memoryAbandonedCarts: AbandonedCart[] = safeReadJson<AbandonedCart[]>(ABANDONED_CARTS_FILE_PATH, initialAbandonedCarts);
 
-// Codebase Fallback Persistence
+// Codebase Fallback Persistence (local dev only; skipped on Vercel read-only FS)
 export function persistToCodebase() {
+  if (IS_VERCEL) return;
   try {
     const fileContent = `import { Product, BlogPost, DynamicPage, ToolMicroApp, SiteSettings } from "../types";
 
@@ -651,6 +655,10 @@ export const runtimeStore = {
 
   // TOOLS
   getTools: () => memoryTools,
+  setTools: (tools: ToolMicroApp[]) => {
+    memoryTools = tools;
+    persistToCodebase();
+  },
   updateTool: (id: string, updated: Partial<ToolMicroApp>) => {
     memoryTools = memoryTools.map((t) =>
       t.id === id ? { ...t, ...updated } : t
@@ -660,6 +668,11 @@ export const runtimeStore = {
 
   // SETTINGS
   getSettings: () => memorySettings,
+  setSettings: (s: SiteSettings) => {
+    memorySettings = { ...memorySettings, ...s };
+    persistToCodebase();
+    return memorySettings;
+  },
   updateSettings: (updated: Partial<SiteSettings>) => {
     memorySettings = { ...memorySettings, ...updated };
     persistToCodebase();
@@ -668,6 +681,10 @@ export const runtimeStore = {
 
   // ORDERS
   getOrders: () => memoryOrders,
+  setOrders: (orders: Order[]) => {
+    memoryOrders = orders;
+    safeWriteJson(ORDERS_FILE_PATH, memoryOrders);
+  },
   addOrder: (o: Order) => {
     memoryOrders = [o, ...memoryOrders];
     safeWriteJson(ORDERS_FILE_PATH, memoryOrders);
@@ -705,6 +722,10 @@ export const runtimeStore = {
 
   // CRM: CUSTOMERS
   getCustomers: () => memoryCustomers,
+  setCustomers: (items: Customer[]) => {
+    memoryCustomers = items;
+    safeWriteJson(CUSTOMERS_FILE_PATH, memoryCustomers);
+  },
   syncCustomerFromOrder: (order: Order) => {
     const phone = order.customer_phone?.trim();
     if (!phone) return;
@@ -764,6 +785,10 @@ export const runtimeStore = {
 
   // CRM: LEADS
   getLeads: () => memoryLeads,
+  setLeads: (items: Lead[]) => {
+    memoryLeads = items;
+    safeWriteJson(LEADS_FILE_PATH, memoryLeads);
+  },
   addLead: (l: Lead) => {
     memoryLeads = [l, ...memoryLeads];
     safeWriteJson(LEADS_FILE_PATH, memoryLeads);
@@ -781,6 +806,10 @@ export const runtimeStore = {
 
   // PROCUREMENT: SUPPLIERS
   getSuppliers: () => memorySuppliers,
+  setSuppliers: (items: Supplier[]) => {
+    memorySuppliers = items;
+    safeWriteJson(SUPPLIERS_FILE_PATH, memorySuppliers);
+  },
   addSupplier: (s: Supplier) => {
     memorySuppliers = [s, ...memorySuppliers];
     safeWriteJson(SUPPLIERS_FILE_PATH, memorySuppliers);
@@ -798,6 +827,10 @@ export const runtimeStore = {
 
   // PROCUREMENT: PURCHASES & AUTO-RESTOCKING
   getPurchases: () => memoryPurchases,
+  setPurchases: (items: Purchase[]) => {
+    memoryPurchases = items;
+    safeWriteJson(PURCHASES_FILE_PATH, memoryPurchases);
+  },
   addPurchase: (p: Purchase) => {
     memoryPurchases = [p, ...memoryPurchases];
     safeWriteJson(PURCHASES_FILE_PATH, memoryPurchases);
@@ -857,6 +890,10 @@ export const runtimeStore = {
 
   // LOGISTICS: SHIPMENTS & COURIER TRACKING
   getShipments: () => memoryShipments,
+  setShipments: (items: Shipment[]) => {
+    memoryShipments = items;
+    safeWriteJson(SHIPMENTS_FILE_PATH, memoryShipments);
+  },
   createShipment: (s: Shipment) => {
     memoryShipments = [s, ...memoryShipments];
     safeWriteJson(SHIPMENTS_FILE_PATH, memoryShipments);
@@ -879,6 +916,10 @@ export const runtimeStore = {
 
   // RETURNS & REFUNDS
   getReturns: () => memoryReturns,
+  setReturns: (items: ReturnRefund[]) => {
+    memoryReturns = items;
+    safeWriteJson(RETURNS_FILE_PATH, memoryReturns);
+  },
   addReturn: (r: ReturnRefund) => {
     memoryReturns = [r, ...memoryReturns];
     safeWriteJson(RETURNS_FILE_PATH, memoryReturns);
@@ -892,6 +933,10 @@ export const runtimeStore = {
 
   // PHASE 3: MARKETING, COUPONS & PROMOTIONAL CAMPAIGNS
   getCoupons: () => memoryCoupons,
+  setCoupons: (items: Coupon[]) => {
+    memoryCoupons = items;
+    safeWriteJson(COUPONS_FILE_PATH, memoryCoupons);
+  },
   addCoupon: (c: Coupon) => {
     memoryCoupons = [c, ...memoryCoupons];
     safeWriteJson(COUPONS_FILE_PATH, memoryCoupons);
@@ -977,6 +1022,10 @@ export const runtimeStore = {
 
   // CAMPAIGNS & ANNOUNCEMENT BANNERS
   getCampaigns: () => memoryCampaigns,
+  setCampaigns: (items: CampaignBanner[]) => {
+    memoryCampaigns = items;
+    safeWriteJson(CAMPAIGNS_FILE_PATH, memoryCampaigns);
+  },
   addCampaign: (c: CampaignBanner) => {
     memoryCampaigns = [c, ...memoryCampaigns];
     safeWriteJson(CAMPAIGNS_FILE_PATH, memoryCampaigns);
@@ -994,12 +1043,20 @@ export const runtimeStore = {
 
   // PHASE 4: INVENTORY MOVEMENTS, AUDIT LOGS, RBAC & ABANDONED CARTS
   getStockMovements: () => memoryStockMovements,
+  setStockMovements: (items: StockMovement[]) => {
+    memoryStockMovements = items;
+    safeWriteJson(STOCK_MOVEMENTS_FILE_PATH, memoryStockMovements);
+  },
   addStockMovement: (m: StockMovement) => {
     memoryStockMovements = [m, ...memoryStockMovements];
     safeWriteJson(STOCK_MOVEMENTS_FILE_PATH, memoryStockMovements);
   },
 
   getAdminUsers: () => memoryAdminUsers,
+  setAdminUsers: (items: AdminUser[]) => {
+    memoryAdminUsers = items;
+    safeWriteJson(ADMIN_USERS_FILE_PATH, memoryAdminUsers);
+  },
   addAdminUser: (u: AdminUser) => {
     memoryAdminUsers = [u, ...memoryAdminUsers];
     safeWriteJson(ADMIN_USERS_FILE_PATH, memoryAdminUsers);
@@ -1016,6 +1073,10 @@ export const runtimeStore = {
   },
 
   getAuditLogs: () => memoryAuditLogs,
+  setAuditLogs: (items: AuditLog[]) => {
+    memoryAuditLogs = items;
+    safeWriteJson(AUDIT_LOGS_FILE_PATH, memoryAuditLogs);
+  },
   logAuditEvent: (
     staffEmail: string,
     action: string,
@@ -1040,6 +1101,10 @@ export const runtimeStore = {
   },
 
   getAbandonedCarts: () => memoryAbandonedCarts,
+  setAbandonedCarts: (items: AbandonedCart[]) => {
+    memoryAbandonedCarts = items;
+    safeWriteJson(ABANDONED_CARTS_FILE_PATH, memoryAbandonedCarts);
+  },
   updateAbandonedCartStatus: (id: string, status: any, notes?: string) => {
     memoryAbandonedCarts = memoryAbandonedCarts.map((c) =>
       c.id === id ? { ...c, recovery_status: status, notes: notes || c.notes } : c

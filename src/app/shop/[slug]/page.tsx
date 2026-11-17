@@ -4,8 +4,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import ProductDetailClient from "@/components/storefront/ProductDetailClient";
-import { runtimeStore } from "@/lib/runtime-store";
-import { getServerSupabase } from "@/lib/supabase/server";
+import { loadLatestProducts } from "@/lib/data-hydrator";
 import { fallbackProducts } from "@/lib/supabase/fallback-data";
 import { Product } from "@/lib/types";
 
@@ -17,24 +16,8 @@ interface PageProps {
 }
 
 async function getProductBySlug(slug: string): Promise<Product | null> {
-  const supabase = getServerSupabase();
-  if (supabase) {
-    try {
-      const { data, error } = await supabase
-        .from("products")
-        .select("*")
-        .eq("slug", slug)
-        .eq("is_active", true)
-        .maybeSingle();
-
-      if (!error && data) {
-        return data as Product;
-      }
-    } catch {}
-  }
-
-  // Fallback to runtime store
-  const found = runtimeStore.getProducts().find((p) => p.slug === slug && p.is_active);
+  const products = await loadLatestProducts();
+  const found = products.find((p) => p.slug === slug && p.is_active);
   if (found) return found;
 
   const foundFallback = fallbackProducts.find((p) => p.slug === slug && p.is_active);

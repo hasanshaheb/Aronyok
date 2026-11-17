@@ -33,7 +33,7 @@ export default function AdminProductsPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [notification, setNotification] = useState("");
   const [isSaving, setIsSaving] = useState(false);
-  const [syncToGit, setSyncToGit] = useState(true);
+  const [syncToGit, setSyncToGit] = useState(false);
   const [selectedProductForImage, setSelectedProductForImage] = useState<Product | null>(null);
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
 
@@ -610,18 +610,19 @@ export default function AdminProductsPage() {
                     type="button"
                     disabled={isSaving}
                     onClick={() => handleSaveProduct(undefined, false)}
-                    className="px-4 py-2 rounded-xl bg-forest-100 hover:bg-forest-200 text-forest-900 text-xs font-bold transition-all cursor-pointer border border-forest-300 disabled:opacity-50"
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-forest-700 hover:bg-forest-800 text-white text-xs font-bold shadow-md transition-all cursor-pointer disabled:opacity-50"
                   >
-                    Save Locally & DB
+                    <CheckCircle className="w-3.5 h-3.5" />
+                    <span>{isSaving ? "Saving..." : "Save & Publish Live"}</span>
                   </button>
                   <button
                     type="button"
                     disabled={isSaving}
                     onClick={() => handleSaveProduct(undefined, true)}
-                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-forest-700 hover:bg-forest-800 text-white text-xs font-bold shadow-md transition-all cursor-pointer disabled:opacity-50"
+                    className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-forest-100 hover:bg-forest-200 text-forest-900 text-xs font-bold transition-all cursor-pointer border border-forest-300 disabled:opacity-50"
                   >
                     <CloudUpload className={`w-3.5 h-3.5 ${isSaving ? "animate-spin" : ""}`} />
-                    <span>{isSaving ? "Deploying..." : "Save & Push to GitHub"}</span>
+                    <span>{isSaving ? "Syncing..." : "Save + Git Sync"}</span>
                   </button>
                 </div>
               </div>
